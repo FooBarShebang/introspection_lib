@@ -1,0 +1,61 @@
+@startuml traceback_use_cases
+
+title Typical Usecase Scenarios Involving Call Stack or Exception Traceback Analysis
+
+usecase "Call stack analysis" as Analysis
+
+actor StackTraceback <<class>>
+
+Analysis - StackTraceback
+
+actor "inspect.stack()" <<function>> as Stack
+
+StackTraceback -|> Stack
+
+usecase "Work flow" as Flow
+
+Analysis --|> Flow
+
+actor Client <<class method / function>>
+
+Analysis -- Client
+
+actor Worker <<class method / function>>
+
+actor CustomError <<exception class>>
+
+usecase "Fault - raise exception" as Raise
+
+usecase "Exception capture\nand analysis" as Capture
+
+Client - Flow
+
+Flow - Worker
+
+Flow <|-- Raise
+
+Capture -|> Raise
+
+Client -- Capture
+
+Worker -- Raise
+
+Capture  -- CustomError
+
+Raise -- CustomError
+
+usecase "Traceback acquisition" as Acquire
+
+Raise <|-- Acquire
+
+CustomError - Acquire
+
+actor ExceptionTraceback <<class>>
+
+Acquire - ExceptionTraceback
+
+actor "inspect.trace()" <<function>> as Trace
+
+ExceptionTraceback -|> Trace
+
+@enduml

@@ -1,0 +1,25 @@
+@startuml traceback_stacktraceback_del
+
+title Activity Diagram of the Method traceback.StackTraceback._ _del_ _()
+
+start
+
+if (traceback is stored?) then (True)
+    while (traceback list is not empty?)
+        if (in the try...except) then (no exceptions)
+            :pop the last element from the list;
+            
+            :delete object referenced by that element;
+        else (exception raised)
+            :ignore exception and proceed;
+        endif
+    end while
+
+    :delete the object referenced by the traceback attribute;
+endif
+
+:store <b>None</b> in the <b>self._tblstTraceback</b> attribute;
+
+stop
+
+@enduml

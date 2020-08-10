@@ -1,0 +1,13 @@
+!define TRACEBACK_COMPONENTS
+
+!ifndef COMPONENTS
+!include ../Templates/Components.cuml
+!endif
+
+module(traceback) {
+    class(StackTraceback)
+    
+    class(ExceptionTraceback)
+    
+    ExceptionTraceback -|> StackTraceback
+}

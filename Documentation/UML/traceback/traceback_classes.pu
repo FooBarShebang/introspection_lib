@@ -1,0 +1,19 @@
+@startuml traceback_classes
+
+title Class Diagram of the Module introspection_lib.traceback
+
+!ifndef CLASSES
+!include ../Templates/Classes.cuml
+!endif
+
+!ifndef TRACEBACK_STACKTRACEBACK
+!include ./StackTraceback.iuml
+!endif
+
+!ifndef TRACEBACK_EXCEPTIONTRACEBACK
+!include ./ExceptionTraceback.iuml
+!endif
+
+StackTraceback <|- ExceptionTraceback
+
+@enduml

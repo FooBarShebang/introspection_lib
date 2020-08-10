@@ -1,0 +1,13 @@
+@startuml components
+
+title Components Diagram of the Library introspection_lib
+
+!ifndef COMPONENTS
+!include ./Templates/Components.cuml
+!endif
+
+!ifndef TRACEBACK_COMPONENTS
+!include ./traceback/traceback_components.iuml
+!endif
+
+@enduml
