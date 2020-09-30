@@ -6,8 +6,8 @@ Performs the installation / dependencies checks. Attention: this module is
 designed to be executable. All tests are run automatically upon import.
 """
 
-__version__= '1.0.0.0'
-__date__ = '05-08-2020'
+__version__= '1.1.0.0'
+__date__ = '30-09-2020'
 __status__ = 'Production'
 
 #actual imports
@@ -19,6 +19,7 @@ from importlib import import_module
 
 MODULE_PATH = os.path.realpath(__file__)
 LIB_FOLDER = os.path.dirname(MODULE_PATH)
+LIB_NAME = os.path.basename(LIB_FOLDER)
 ROOT_FOLDER = os.path.dirname(LIB_FOLDER)
 CHECK_PATH = os.path.join(LIB_FOLDER, 'dependencies.json')
 
@@ -30,7 +31,7 @@ with open(CHECK_PATH, 'rt') as fFile:
 
 #checks!
 
-print('Dependencies checks for {}...'.format(os.path.basename(LIB_FOLDER)))
+print('Dependencies checks for {}...'.format(LIB_NAME))
 
 #+ Python version
 
@@ -73,18 +74,25 @@ for strKey in ['3rd_party', 'DO']:
         for strModule, dictVersions in dictCheck.items():
             try:
                 modImport = import_module(strModule)
-                print('Library "{}" version {} is found'.format(strModule,
+                try:
+                    print('Library "{}" version {} is found'.format(strModule,
                                                         modImport.__version__))
-                strlstSplitVersion = modImport.__version__.split('.')
-                iMajor = int(strlstSplitVersion[0])
-                iMinor = int(strlstSplitVersion[1])
-                bCond1 = iMajor < dictVersions["major"]
-                bCond2 = ((iMajor == dictVersions["major"]) and
+                    strlstSplitVersion = modImport.__version__.split('.')
+                    iMajor = int(strlstSplitVersion[0])
+                    iMinor = int(strlstSplitVersion[1])
+                    bCond1 = iMajor < dictVersions["major"]
+                    bCond2 = ((iMajor == dictVersions["major"]) and
                                             (iMinor < dictVersions["minor"]))
-                if bCond1 or bCond2:
-                    print('This version is too old, >{}.{} is required'.format(
-                                dictVersions["major"], dictVersions["minor"]))
-                    print('Install from "{}"'.format(dictVersions["path"]))
+                    if bCond1 or bCond2:
+                        strError = ' '.join(['This version is too old,'
+                                                '>{}.{} is required'.format(
+                                                        dictVersions["major"],
+                                                        dictVersions["minor"])])
+                        print(strError)
+                        print('Install from "{}"'.format(dictVersions["path"]))
+                        bFault = True
+                except:
+                    print('Library {} - no version found'.format(LIB_NAME))
                     bFault = True
             except ImportError:
                 print('Library {} is not found'.format(strModule))
