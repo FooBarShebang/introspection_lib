@@ -5,8 +5,8 @@ Module introspection_lib.Tests.UT001_traceback
 Implements unit testing of the module introspection_lib.traceback.
 """
 
-__version__ = "1.0.0.0"
-__date__ = "10-08-2020"
+__version__ = "1.0.1.0"
+__date__ = "06-11-2020"
 __status__ = "Testing"
 
 #imports
@@ -263,6 +263,37 @@ class Test_ExceptionTraceback(Test_StackTraceback):
             outer()
         except ValueError:
             super(Test_ExceptionTraceback, self).test_Info()
+    
+    def test_FromTraceback(self):
+        """
+        Checks the correctness of the instantiation from a traceback object.
+        
+        Test: TEST-T-112. Covers requirements: REQ-FUN-114.
+        """
+        try:
+            outer()
+        except ValueError as err:
+            objTest = self.TestClass()
+            tbTest = err.__traceback__
+        lstCallChain = objTest.CallChain
+        strInfo = objTest.Info
+        del objTest
+        try:
+            raise TypeError('test')
+        except TypeError:
+            objTest = self.TestClass()
+        lstCallChain1 = objTest.CallChain
+        strInfo1 = objTest.Info
+        del objTest
+        self.assertNotEqual(strInfo, strInfo1)
+        self.assertGreater(len(lstCallChain), len(lstCallChain1))
+        objTest = self.TestClass(FromTraceback = tbTest)
+        lstCallChain1 = objTest.CallChain
+        strInfo1 = objTest.Info
+        del tbTest
+        del objTest
+        self.assertEqual(strInfo, strInfo1)
+        self.assertEqual(lstCallChain, lstCallChain1)
 
 #+ test suites
 

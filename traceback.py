@@ -5,48 +5,128 @@ Module introspection_lib.traceback
 Implements classes to obtain, store and analyze the stack and exception
 traceback.
 
+Functions:
+    ParseFramesList(Frames, *, SkipFrames = None):
+        list(inspect.FrameInfo)/, int > 0 OR None/
+            -> list(tuple(str, str, str, int >= 0, int >= 0, list(str) OR None))
+
 Classes:
     StackTraceback: function / method call stack traceback
     ExceptionTraceback: exception traceback
 """
 
-__version__ = "1.0.0.0"
-__date__ = "10-08-2020"
+__version__ = "1.0.1.0"
+__date__ = "06-11-2020"
 __status__ = "Production"
 
 #imports
 
 #+ standard libraries
 
+import os
 import inspect
 
-import os
-
-from typing import TypeVar, List
+from types import TracebackType
+from typing import TypeVar, List, Tuple
 
 #types
 
-TIntNone = TypeVar('TStrNone', int, None)
+TIntNone = TypeVar('TIntNone', int, None)
 TStringList = List[str]
+TFramesList = List[inspect.FrameInfo]
+TParsedFrame = List[Tuple[str, str, str, int, int, TStringList]]
+TTracebackNone = TypeVar('TTracebackNone', TracebackType, None)
+
+#helper functions
+
+def ParseFramesList(Frames: TFramesList, *,
+                    SkipFrames: TIntNone = None) -> TParsedFrame:
+    """
+    Parses the passed list of the inspect.FrameInfo objects into a list of
+    tuples of simple atomic and atomic container objects not containg any frame
+    object, which helps in avoiding the circular referencing.
+
+    Signature:
+        list(inspect.FrameInfo)/, int > 0 OR None/
+            -> list(tuple(str, str, str, int >= 0, int >= 0, list(str) OR None))
+
+    Args:
+        Frames: list(inspect.FrameInfo); list of FrameInfo objects as named
+            tuples
+        SkipFrames: (keyword) int > 0 OR None; number of the most inner frames
+            to skip as a non-negative integer, otherwise is ignored, defaults
+            to None
+    
+    Returns:
+        list(tuple(str, str, str, int > 0, int >= 0, list(str))): a list of
+            tuples, possibly empty, with each element (tuple) being the parsed
+            frame data not containg the a frame object itself, and the elements
+            of each tuple being the path to the source code module, name of the
+            caller (module or function / method), the fully qualified name of
+            the caller, position index of the offending code line in the module,
+            position index of the same line in the provided code sniplet, and
+            the code sniplet as a list of the source code lines (strings)
+    
+    Version 1.0.0.0
+    """
+    iLen = len(Frames)
+    gtuplstResult = []
+    if iLen:
+        if (isinstance(SkipFrames, int) and (0 < SkipFrames < (iLen-1))):
+            iEnd = iLen - SkipFrames
+        else:
+            iEnd = iLen
+        for iIndex in range(iEnd):
+            #resolving module, caller name and qualified name
+            Item = Frames[iIndex]
+            objFrame = Item.frame
+            objModule = inspect.getmodule(objFrame)
+            if objModule is None:
+                strModule = '<console input>'
+            else:
+                strModule = objModule.__name__
+            strCaller = Item.function
+            if strCaller == '<module>':
+                strFullName = strModule
+            else:
+                dictLocals = objFrame.f_locals
+                if 'self' in dictLocals:
+                    strClass = dictLocals['self'].__class__.__name__
+                    strFullName = '.'.join([strModule, strClass, strCaller])
+                elif 'cls' in dictLocals:
+                    strClass = dictLocals['cls'].__name__
+                    strFullName = '.'.join([strModule, strClass, strCaller])
+                else:
+                    strFullName = '.'.join([strModule, strCaller])
+            strFilePath = Item.filename
+            #getting content 
+            iLineNum = Item.lineno
+            iLineIndex = Item.index
+            strlstCodeLines = Item.code_context
+            #adding entry to the list
+            glstTemp = (strFilePath, strCaller, strFullName, iLineNum,
+                                                iLineIndex, strlstCodeLines)
+            gtuplstResult.append(glstTemp)
+    return gtuplstResult
 
 #classes
 
 class StackTraceback():
     """
     Utility class to obtain and analyze the traceback of the current state of
-    the call stack up to the frame, where this object is instantiated, and to
-    extract the call chain from it with an option to 'hide' the specified number
-    of the deepest (inner) frames. Note that stack traceback created is in the
-    reversed order with respect to that of the returned by the function
-    inspect.stack(), i.e. the interpreter's loop (outmost call) is the first
-    element, and the frame, where this class is instantiated, is the last
-    element.
+    the call stack up to but excluding the frame, where this object is
+    instantiated, and to extract the call chain from it with an option to 'hide'
+    the specified number of the deepest (inner) frames. Note that stack
+    traceback created is in the reversed order with respect to that of the
+    returned by the function inspect.stack(), i.e. the interpreter's loop
+    (outmost call) is the first element, and the frame, where this class is
+    instantiated, is the last element.
     
     Properties:
         CallChain: (read-only) list(str); list of the names of the callers
         Info: (read-only) str; human-readable frames data
     
-    Version 1.0.0.0
+    Version 1.0.1.0
     """
     
     #class data attributes
@@ -81,42 +161,46 @@ class StackTraceback():
                 characters (default is None -> the value of the class field
                 ConsoleWidth)
         
-        Version 1.0.0.0
+        Version 1.0.1.0
         """
         if (isinstance(ContextLength, int) and ContextLength > 0):
-            self.ContextLenght = ContextLength
+            _ContextLenght = ContextLength
+        else:
+            _ContextLenght = self.ContextLenght
         if (isinstance(ConsoleWidth, int) and ConsoleWidth > 0):
             self.ConsoleWidth = ConsoleWidth
-        try:
-            tblstTemp = list(reversed(inspect.stack(self.ContextLenght)))
-            if (isinstance(SkipFrames, int) and
-                                        (0 < SkipFrames < (len(tblstTemp)-1))):
-                self._tblstTraceback = tblstTemp[ : -(SkipFrames + 1)]
-            else:
-                self._tblstTraceback = tblstTemp[ : - 1]
-            del tblstTemp
-        except:
-            self._tblstTraceback = None
+        tblstTemp = list(reversed(inspect.stack(_ContextLenght)))
+        if isinstance(SkipFrames, int) and SkipFrames > 0:
+            _SkipFrames = SkipFrames + 1
+        else:
+            _SkipFrames = 1
+        self._lstTraceback = ParseFramesList(tblstTemp, SkipFrames= _SkipFrames)
+        #cleaning up, removing the frame objects
+        #+ de-referencing the invidual frames
+        while len(tblstTemp):
+            tblstTemp.pop()
+        #+ de-referncing the temporary list
+        del tblstTemp
     
     def __del__(self) -> None:
         """
-        Special method to ensure proper deletion of the frame objects references
-        when the class instance is deleted, so to avoid orphan references.
+        Special method to ensure proper deletion of the stored data, i.e. the
+        parsed traceback data.
         
         Signature:
             None -> None
         
-        Version 1.0.0.0
+        Version 1.0.1.0
         """
-        if not (self._tblstTraceback is None):
-            while len(self._tblstTraceback):
-                try:
-                    TempFrame = self._tblstTraceback.pop()
-                    del TempFrame
-                except:
-                    pass
-            del self._tblstTraceback
-        self._tblstTraceback = None
+        while len(self._lstTraceback):
+            TempFrame = self._lstTraceback.pop()
+            for gItem in TempFrame:
+                if isinstance(gItem, list):
+                    while len(gItem):
+                        gItem.pop()
+                del gItem
+            del TempFrame
+        self._lstTraceback = []
     
     #public methods
     
@@ -125,38 +209,15 @@ class StackTraceback():
     @property
     def CallChain(self) -> TStringList:
         """
-        Extracts and returns the call chain from the stored snapshot of the
+        Extracts and returns the call chain from the stored parsed snapshot of
         the traceback. All callers names are fully qualified.
         
         Signature:
             None -> list(str)
         
-        Version 1.0.0.0
+        Version 1.0.1.0
         """
-        strlstCallers = []
-        if not (self._tblstTraceback is None):
-            for Frame in self._tblstTraceback:
-                objFrame = Frame.frame
-                objModule = inspect.getmodule(objFrame)
-                if objModule is None:
-                    strModule = '<console input>'
-                else:
-                    strModule = objModule.__name__
-                strCaller = Frame.function
-                if strCaller == '<module>':
-                    strlstCallers.append(strModule)
-                else:
-                    dictLocals = objFrame.f_locals
-                    if 'self' in dictLocals:
-                        strClass = dictLocals['self'].__class__.__name__
-                        strlstCallers.append('.'.join([strModule, strClass,
-                                                                    strCaller]))
-                    elif 'cls' in dictLocals:
-                        strClass = dictLocals['cls'].__name__
-                        strlstCallers.append('.'.join([strModule, strClass,
-                                                                    strCaller]))
-                    else:
-                        strlstCallers.append('.'.join([strModule, strCaller]))
+        strlstCallers = [Item[2] for Item in self._lstTraceback]
         return strlstCallers
     
     @property
@@ -176,54 +237,50 @@ class StackTraceback():
         when required such that the total length together with the line number
         prefix (and two extra characters) does not exceed the specified width
         of the output. The number of the source code lines per frame as well as
-        the output width can be specified during instantiation (iContext and
-        iWidth arguments) as non-negative integers; otherwise the default values
-        stored in the class attributes ContextLength and ConsoleWidth are used.
+        the output width can be specified during instantiation (ContextLength
+        and ContextWidth arguments) as non-negative integers; otherwise the
+        default values stored in the class attributes ContextLength and
+        ConsoleWidth are used.
         
         Signature:
             None -> str
         
-        Version 1.0.0.0
+        Version 1.0.1.0
         """
         strInfo = ''
         strlstCallers = self.CallChain
-        if len(strlstCallers):
-            for iIdx, Frame in enumerate(self._tblstTraceback):
-                strFilePath = Frame.filename
-                iLineNum = Frame.lineno
-                strCaller = Frame.function
-                strFullCaller = strlstCallers[iIdx]
-                strlstCodeLines = Frame.code_context
-                iLineIndex = Frame.index
-                if not (strlstCodeLines is None):
-                    iMaxDigits = len(str(iLineNum + iLineIndex))
-                    if strCaller == '<module>':
-                        strCallerInfo = 'In module {}'.format(strFullCaller)
-                    else:
-                        strCallerInfo = 'Caller {}()'.format(strFullCaller)
-                    strFileInfo = 'Line {} in {}'.format(iLineNum, strFilePath)
-                    strlstCodeInfo = []
-                    for iLineIdx, _strLine in enumerate(strlstCodeLines):
-                        strLine = _strLine.rstrip()
-                        iRealLineNum = iLineNum - iLineIndex + iLineIdx
-                        strLineNum = str(iRealLineNum)
-                        while len(strLineNum) < iMaxDigits:
-                            strLineNum = '0{}'.format(strLineNum)
-                        if iRealLineNum == iLineNum:
-                            strLineNum = '>{} '.format(strLineNum)
-                        else:
-                            strLineNum = ' {} '.format(strLineNum)
-                        if len(strLine) > (self.ConsoleWidth - 2 - iMaxDigits):
-                            strFullLine = '{}{}...'.format(strLineNum,
-                                strLine[ : self.ConsoleWidth - 5 - iMaxDigits])
-                        else:
-                            strFullLine = '{}{}'.format(strLineNum, strLine)
-                        strlstCodeInfo.append(strFullLine)
-                    strCodeInfo = '\n'.join(strlstCodeInfo)
-                    strInfo = '\n'.join([strInfo, strCallerInfo, strFileInfo,
-                                                                strCodeInfo])
+        for Frame in self._lstTraceback:
+            (strFilePath, strCaller, strFullCaller, iLineNum,
+                iLineIndex, strlstCodeLines) = Frame
+            if not (strlstCodeLines is None):
+                iMaxDigits = len(str(iLineNum + iLineIndex))
+                if strCaller == '<module>':
+                    strCallerInfo = 'In module {}'.format(strFullCaller)
                 else:
-                    strInfo = '\n'.join([strInfo, '<console input>',
+                    strCallerInfo = 'Caller {}()'.format(strFullCaller)
+                strFileInfo = 'Line {} in {}'.format(iLineNum, strFilePath)
+                strlstCodeInfo = []
+                for iLineIdx, _strLine in enumerate(strlstCodeLines):
+                    strLine = _strLine.rstrip()
+                    iRealLineNum = iLineNum - iLineIndex + iLineIdx
+                    strLineNum = str(iRealLineNum)
+                    while len(strLineNum) < iMaxDigits:
+                        strLineNum = '0{}'.format(strLineNum)
+                    if iRealLineNum == iLineNum:
+                        strLineNum = '>{} '.format(strLineNum)
+                    else:
+                        strLineNum = ' {} '.format(strLineNum)
+                    if len(strLine) > (self.ConsoleWidth - 2 - iMaxDigits):
+                        strFullLine = '{}{}...'.format(strLineNum,
+                                strLine[ : self.ConsoleWidth - 5 - iMaxDigits])
+                    else:
+                        strFullLine = '{}{}'.format(strLineNum, strLine)
+                    strlstCodeInfo.append(strFullLine)
+                strCodeInfo = '\n'.join(strlstCodeInfo)
+                strInfo = '\n'.join([strInfo, strCallerInfo, strFileInfo,
+                                                                strCodeInfo])
+            else:
+                strInfo = '\n'.join([strInfo, '<console input>',
                                 'Line {} in console input'.format(iLineNum)])
         if len(strInfo):
             strInfo = strInfo.lstrip()
@@ -234,7 +291,11 @@ class ExceptionTraceback(StackTraceback):
     Utility class to obtain and analyze the traceback of the last raised
     exception currently being handled as a a list of frame records for the stack
     between the current frame and the frame in which an exception currently
-    being handled was raised in. Built upon the function inspect.trace();
+    being handled was raised in. Alternatively, can be used for parsing of a
+    traceback of any other exception (including the last one) stored in the
+    exception instance itself.
+    
+    Built upon the functions inspect.trace() and inspect.getinnerframes();
     preserves the order of the frames.
     
     Extends the class StackTraceback and inherits the read-only properties.
@@ -243,29 +304,36 @@ class ExceptionTraceback(StackTraceback):
         CallChain: (read-only) list(str); list of the names of the callers
         Info: (read-only) str; human-readable frames data
     
-    Version 1.0.0.0
+    Version 1.0.1.0
     """
     
     #special methods
     
     def __init__(self, *, SkipFrames: TIntNone = None,
                             ContextLength: TIntNone = None,
-                            ConsoleWidth: TIntNone = None) -> None:
+                            ConsoleWidth: TIntNone = None,
+                            FromTraceback: TTracebackNone = None) -> None:
         """
         Initialization method. Attempts to retrieve and store the traceback of
         the last raised exception as a a list of frame records for the stack
         between the current frame and the frame in which an exception currently
         being handled was raised in. Can accept up to 3 optional positional
-        arguments, which can also be passed as the keyword arguments: iSkip,
-        iContext, iWidth.
+        arguments, which can be passed as the keyword arguments: SkipFrames,
+        ConsoleWidth and ConsoleWidth.
+
+        Alternatively, a traceback stored in an exception can be passed as the
+        keyword argument FromTraceback, in which case the SkipFrames argument
+        is ignored, and the traceback is reconstructed from the passed object.
         
         Signature:
-            /int > 0 OR None, int > 0 OR None, int > 0 OR None/ -> None
+            /int > 0 OR None, int > 0 OR None, int > 0 OR None,
+                types.TracebackType OR None/ -> None
         
         Args:
             SkipFrames: (keyword) int > 0; number of the deepest (inner) frames
                 to 'hide' in the traceback excluding the initialization method
-                itself, which is always removed (default is None -> zero)
+                itself, which is always removed (default is None -> zero),
+                ignored if FromTraceback argument is a proper traceback object
             ContextLength: (keyword) int > 0; total number of lines of the
                 source code to retrieve around and including the one, there a
                 call was made (default is None -> the value of the class field
@@ -274,20 +342,30 @@ class ExceptionTraceback(StackTraceback):
                 lines must be truncated, including the line's number + 2 extra
                 characters (default is None -> the value of the class field
                 ConsoleWidth)
+            FromTraceback: (keyword) types.TracebackType OR None; an instance of
+                a traceback object from which the extract the information, if
+                provided and proper - the SkipFrames argument is ignored
+                (defaults to None -> actual traceback stack is analyzed)
         
-        Version 1.0.0.0
+        Version 1.0.1.0
         """
         if (isinstance(ContextLength, int) and ContextLength > 0):
-            self.ContextLenght = ContextLength
+            _ContextLenght = ContextLength
+        else:
+            _ContextLenght = self.ContextLenght
         if (isinstance(ConsoleWidth, int) and ConsoleWidth > 0):
             self.ConsoleWidth = ConsoleWidth
-        try:
-            tblstTemp = inspect.trace(self.ContextLenght)
-            if (isinstance(SkipFrames, int) and
-                                        (0 < SkipFrames < (len(tblstTemp)-1))):
-                self._tblstTraceback = tblstTemp[ : -SkipFrames ]
-            else:
-                self._tblstTraceback = tblstTemp
-            del tblstTemp
-        except:
-            self._tblstTraceback = None
+        if ((not (FromTraceback is None)) and
+                                    isinstance(FromTraceback, TracebackType)):
+            tblstTemp = inspect.getinnerframes(FromTraceback, _ContextLenght)
+            self._lstTraceback = ParseFramesList(tblstTemp)
+        else:
+            tblstTemp = inspect.trace(_ContextLenght)
+            self._lstTraceback = ParseFramesList(tblstTemp,
+                                                    SkipFrames = SkipFrames)
+        #cleaning up, removing the frame objects
+        #+ de-referencing the invidual frames
+        while len(tblstTemp):
+            tblstTemp.pop()
+        #+ de-referncing the temporary list
+        del tblstTemp

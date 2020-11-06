@@ -55,6 +55,16 @@ The verification method for a requirement is given by a single letter according 
 
 ---
 
+**Requirement ID:** REQ-FUN-103
+
+**Title:** Prevention of call stack's memory leakage
+
+**Description:** The implementation of the stack analysis should avoid creation of circular references, therefore minimizing the possibility of the memory leakage.
+
+**Verification Method:** A
+
+---
+
 **Requirement ID:** REQ-FUN-110
 
 **Title:** Exception traceback
@@ -80,5 +90,25 @@ The verification method for a requirement is given by a single letter according 
 **Title:** Length of the exception stack trace
 
 **Description:** Both functions / methods (simple call chain and detailed stack frames information) should allow 'hidding' of the specificed number of the latest (bottom-most, closest to the place, where the exception is raised) 'callers' in the chain.
+
+**Verification Method:** T
+
+---
+
+**Requirement ID:** REQ-FUN-113
+
+**Title:** Prevention of traceback's memory leakage
+
+**Description:** The implementation of the tracenack analysis should avoid creation of circular references, therefore minimizing the possibility of the memory leakage.
+
+**Verification Method:** A
+
+---
+
+**Requirement ID:** REQ-FUN-114
+
+**Title:** Analysis of a traceback stored by an exception
+
+**Description:** The same functionality can be applied to a ready traceback object stored in an exception, instead of creation of the traceback from the analysis of the system's exception stack.
 
 **Verification Method:** T

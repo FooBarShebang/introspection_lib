@@ -103,6 +103,38 @@ Print the content of the Info property into the console and visually analyze / v
 
 **Test result:** PASS
 
+---
+
+**Test Identifier:** TEST-T-112
+
+**Requirement ID(s)**: REQ-FUN-114
+
+**Verification method:** T
+
+**Test goal:** Instantiation of the exception analysis class from an instance of a traceback object stored in an exception.
+
+**Expected result:** When instantiated from a traceback object, which is different from the current state of the exception stack, the ExceptionTraceback instance describes the traceback of the respective exception and not the currently processed one.
+
+**Test steps:** Run the unit-test module, specifically the test case Test_ExceptionTraceback.test_FromTraceback(). Call function outer() with try ... except clause, i.e. initiate outer() -> middle() -> inner() -> ValueError exception raised chain. Catch the ValueException, store a copy of the exception's traceback and instantiate the ExceptionTraceback from the current stack status. Exit the try ... except clause, and wihtin the second try ... except raise TypeError, catch it, and instantiate the ExceptionTraceback from the current stack status (second copy). Compare the Info properties of two ExceptionTraceback instances - they must be not equal. Compare the CallChain properties of the ExceptionTraceback instances as lists - the first one must be longer than the second. Instantiate the third instance of ExceptionTraceback from the stored traceback of the ValueError exception. Compare the Info as well as CallChain properties of the first and the last instances - they must be equal.
+
+**Test result:** PASS
+
+## Tests definition (Analysis)
+
+**Test Identifier:** TEST-A-100
+
+**Requirement ID(s)**: REQ-FUN-103, REQ-FUN-103
+
+**Verification method:** A
+
+**Test goal:** Imlemenation of the call stack and exception traceback do not couse memory leakage due to circular reference.
+
+**Expected result:** The corresponding functinality is implemented such that the circular references are not created, e.g. the frame snapshot refering to the frame of the analysis objects. The proper delition of the stored objects is implemented by the 'parent' (container) objects.
+
+**Test steps:** Analysis of the source code. The created FrameInfo objects are de-referenced directly after parsing, and the instances of the StackTraceback and ExceptionTraceback do not store instances of FrameInfo, frame or traceback objects, but only strings and integers for the representation of the parsed tracebacks.
+
+**Test result:** PASS
+
 ## Traceability
 
 For traceability the relation between tests and requirements is summarized in the table below:
@@ -112,9 +144,12 @@ For traceability the relation between tests and requirements is summarized in th
 | REQ-FUN-100        | TEST-T-100             | YES                      |
 | REQ-FUN-101        | TEST-T-101             | YES                      |
 | REQ-FUN-102        | TEST-T-100             | YES                      |
+| REQ-FUN-103        | TEST-A-100             | YES                      |
 | REQ-FUN-110        | TEST-T-110             | YES                      |
 | REQ-FUN-111        | TEST-T-111             | YES                      |
 | REQ-FUN-112        | TEST-T-110             | YES                      |
+| REQ-FUN-113        | TEST-A-100             | YES                      |
+| REQ-FUN-114        | TEST-T-112             | YES                      |
 
 | **Software ready for production \[YES/NO\]** | **Rationale**                 |
 | :------------------------------------------: | :---------------------------- |

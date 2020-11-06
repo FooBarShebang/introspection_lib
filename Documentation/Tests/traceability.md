@@ -18,9 +18,12 @@
 | REQ-FUN-100        | TEST-T-100             | YES                      |
 | REQ-FUN-101        | TEST-T-101             | YES                      |
 | REQ-FUN-102        | TEST-T-100             | YES                      |
+| REQ-FUN-103        | TEST-A-100             | YES                      |
 | REQ-FUN-110        | TEST-T-110             | YES                      |
 | REQ-FUN-111        | TEST-T-111             | YES                      |
 | REQ-FUN-112        | TEST-T-110             | YES                      |
+| REQ-FUN-113        | TEST-A-100             | YES                      |
+| REQ-FUN-114        | TEST-T-112             | YES                      |
 
 | **Software ready for production \[YES/NO\]** | **Rationale**                 |
 | :------------------------------------------: | :---------------------------- |
