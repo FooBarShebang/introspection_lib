@@ -5,17 +5,21 @@ title Activity Diagram of the Method traceback.StackTraceback._ _del_ _()
 start
 
 if (traceback is stored?) then (True)
-    while (traceback list is not empty?)
-        if (in the try...except) then (no exceptions)
-            :pop the last element from the list;
-            
-            :delete object referenced by that element;
-        else (exception raised)
-            :ignore exception and proceed;
-        endif
+    while (for each element in traceback list as a frame)
+        while (for each element in the frame)
+            if (element is a sequence?) then (True)
+                while (for each sub-element in the sequence)
+                    :de-reference the sub-element and remove it from the sequence;
+                end while
+            endif
+
+            :de-reference the element and remove it from the frame's data tuple;
+        end while
+
+        :de-reference the frame's data tuple and remove it from the traceback list;
     end while
 
-    :delete the object referenced by the traceback attribute;
+    :de-reference the list referenced by the traceback attribute;
 endif
 
 :store <b>None</b> in the <b>self._tblstTraceback</b> attribute;

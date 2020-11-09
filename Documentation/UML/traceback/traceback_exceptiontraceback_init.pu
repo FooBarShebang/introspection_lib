@@ -6,27 +6,32 @@ start
 
 :<b>SkipFrames</b> - optional non-negative integer, number of the innermost frames to skip
 <b>LinesNumber</b> - optional non-negative integer, number of lines of source code per frame
-<b>Width</b> - optional non-negative integer, total width of the code lines + line numbers to truncate to<
+<b>Width</b> - optional non-negative integer, total width of the code lines + line numbers to truncate to
+<b>Traceback</b> - optional, traceback object<
 
 if (<b>LinesNumber</b> is integer AND <b>LinesNumber</b> > 0 ?) then (True)
-    :<b>self.ContextLength</b> = <b>LinesNumber</b> ;
+    :use this value as <b>ContextLength</b>;
+else (False)
+    :use the value of the class attribute <b>ContextLength</b>;
 endif
 
 if (<b>Width</b> is integer AND <b>Width</b> > 0 ?) then (True)
-    :<b>self.ConsoleWidth</b> = <b>Width</b> ;
+    :store the value of <b>Width</b> in the instance attribute <b>ContextWidth</b>;
 endif
 
-:obtain the system call stack using <b>inspect.trace</b>() function with <b>self.ContextLength</b> lines of code per frame;
+if (<b>Traceback</b> is a proper traceback object?) then (Yes)
+    :obtain a list of inner frames for the current frame\nof this traceback using function <b>inspect.getinnerframes</b>()\nwith <b>ContextLength</b> lines of code per frame;
 
-if (exception is raised?) then (No)
-    if (<b>SkipFrames</b> is integer AND <b>SkipFrames</b> > 0 AND <b>SkipFrames</b> < len(<b>SkipFrames</b>)) then (True)
-        :remove <b>SkipFrames</b> last elements (frames) from the <b>Traceback</b> ;
-    endif
-    
-    :store the remaining list of frames in <b>self._tblstTraceback</b> 'private' instance atttribute;
-else (Yes)
-    :store <b>None</b> instead of the traceback frames;
+    :obtain the parsed traceback via function <b>ParseFramesList(Traceback)</b> |
+else (No)
+    :obtain the system call stack using <b>inspect.trace</b>()\nfunction with <b>ContextLength</b> lines of code per frame;
+
+    :obtain the parsed traceback via function <b>ParseFramesList(Traceback, SkipFrames)</b> |
 endif
+
+:store the returned value in the 'private' instance attribute <b>_lstTraceback</b> list;
+
+:De-reference the elements of the <b>Traceback</b> and the list itself]
 
 stop
 

@@ -6,6 +6,7 @@ This document describes the intended usage, design and implementation of the fun
 
 The functional objects covered in this document are:
 
+* (helper) function **ParseFramesList**()
 * class **StackTraceback**
 * class **ExceptionTraceback**
 
@@ -29,9 +30,13 @@ During instantiation keyword arguments can be passed in order to change the defa
 
 The intended use of this class is for the debugging / profiling, especially for the analysis of the program flow branching under different input data.
 
-The class **ExceptionTraceback** is intended as the same functionality high-level tool for the analysis of the traceback of the exception being handled currently, i.e. the list of the frame records between the frame where the exception is raised and the frame where it is being handled. The common convention is to enclose the critical part of the code within the **try…except** clause. In this case the traceback of the exception caught and being handled in the except branch starts from a call made within the **try** branch (the first element) and ends at the frame where this exception has been raised (the last element). In the marginal case the traceback may consist of a single frame, if the exception is raised directly in the **try** branch and not in another function / method called from it.
+The class **ExceptionTraceback** is intended as the same functionality high-level tool for the analysis of the traceback of an exception, i.e. the list of the frame records between the frame where the exception is raised and the frame where it is being handled. The common convention is to enclose the critical part of the code within the **try…except** clause. In this case the traceback of the exception caught and being handled in the except branch starts from a call made within the **try** branch (the first element) and ends at the frame where this exception has been raised (the last element). In the marginal case the traceback may consist of a single frame, if the exception is raised directly in the **try** branch and not in another function / method called from it.
 
-For the rest, including the instantiation parameters, the functionality of the **ExceptionTraceback** class is the same as of the class **StackTraceback**.
+For the rest, the functionality of the **ExceptionTraceback** class is the same as of the class **StackTraceback**. However, the instantiation of the **ExceptionTraceback** class provides more options:
+
+* The class can be instantiated from a traceback object exctracted from a specific exception in order to analyze that particular exception traceback
+* OR the class can be instantiated w/o an excplicit traceback argument, in which case the system stack is analyzed (the current exception being handled) and a specified amount of the innermost frames can be excluded
+* In the both cases the desired number of the source code strings around the 'offending' line can be specified
 
 The intended use of this class is to extend functionality of the custom defined exception classes, although it can be used for the general debugging / profiling purposes, especially in combination with loggers, see the illustration below:
 
@@ -39,17 +44,21 @@ The intended use of this class is to extend functionality of the custom defined 
 
 ## Design and Implementation
 
-The class **ExceptionTraceback** is implemented as a direct sub class of the **StackTraceback** class, with only the instantiation method being re-defined. Basically, the **StackTraceback** class is based upon the Standard Library’s function **inspect.stack**() with the reversed order of the frames, whereas the **ExceptionTraceback** class is based upon the **inspect.track**() function.
+The class **ExceptionTraceback** is implemented as a direct sub class of the **StackTraceback** class, with only the instantiation method being re-defined. Basically, the **StackTraceback** class is based upon the Standard Library’s function **inspect.stack**() with the reversed order of the frames, whereas the **ExceptionTraceback** class is based upon the **inspect.track**() and **inspect.getinnerframes**() functions.
 
-Both classes use class data attributes to store the default values for the number of the lines of the source code to retrieve and show per frame and their maximal display length, which values can be re-defined per instance. Both classes also use a ‘hidden’ / ‘private’ instance data attribute to store the snapshot of the stack obtained upon their instantiation.
+Both classes use a class data attribute to store the default values for the number of the lines of the source code to retrieve and show per frame and an instance data attribute for the maximal display length of the code lines. Both classes also use a ‘hidden’ / ‘private’ instance data attribute to store the snapshot of the stack obtained upon their instantiation.
 
-The resolution of the fully qualified name of the caller (usual function or a class / instance method) is based on the additional analysis of the frame object referenced by the first element of the frame record of each frame in the traceback. The function **inspect.getmodule**() is used to obtain reference to the frame’s module object in order to determine its name. The detection of a class or instance method call (not usual function or static method) is based on the presence of either ‘self’ or ‘cls’ keys in the locals dictionary of the frame object (attribute **f_locals**). If found, the values corresponding to these keys reference an instance of a class or the class itself respectively. Thus the class name can be resolved. This method is based on the common naming convention for the self-reference for the instance and class methods: ‘self’ and ‘cls’ respectively. It will not work if another naming convention is used in the code.
+Note that the concerned tracebacks are obtained, at first, as a list of **inspect.FrameInfo** class' instances using the module **inspect** functions, and than parsed by this module's function **ParseFramesList**() into a list of tuples of the following structure: *(FilePath :: str, Caller :: str, QualifiedCallerName :: str, FileLineIndex :: int, SnipletLineIndes :: str, Lines :: list(str))*. Therefore, the actual frame or traceback objects are not stored in the instances of these classes, and the original obtained tracebacks can be de-referenced (marked for deletion) directly after parsing. This approach helps in elimination of possibility of creation of circular references, thus avoiding the memory leakage.
+
+![ParseFramesList() function](../UML/traceback/traceback_parseframeslist.png)
+
+The resolution of the fully qualified name of the caller (usual function or a class / instance method) is based on the additional analysis of the frame object referenced by the first element of the frame record of each frame in the traceback. The function **inspect.getmodule**() is used to obtain reference to the frame’s module object in order to determine its name and file path. The detection of a class or instance method call (not usual function or static method) is based on the presence of either ‘self’ or ‘cls’ keys in the locals dictionary of the frame object (attribute **f_locals**). If found, the values corresponding to these keys reference an instance of a class or the class itself respectively. Thus the class name can be resolved. This method is based on the common naming convention for the self-reference for the instance and class methods: ‘self’ and ‘cls’ respectively. It will not work if another naming convention is used in the code.
 
 The class diagram of the module is given in the illustration below.
 
 ![Classes diagram](../UML/traceback/traceback_classes.png)
 
-The activity diagrams of the implemented methods are given in the figures blow. The special method **\_\_del\_\_**() is intended to prevent ‘hanging around’ orphan references to the frame objects, thus the garbage collection can occur properly and earlier.
+The activity diagrams of the implemented methods are given in the figures blow. The special method **\_\_del\_\_**() is intended to de-reference the stored data, thus ensuing that the garbage collector will delete them as soon as possible.
 
 ![StackTraceback initialization](../UML/traceback/traceback_stacktraceback_init.png)
 
@@ -67,6 +76,27 @@ If the frame corresponds to the call made directly from the interactive console 
 
 ## API Reference
 
+### Functions
+
+**ParseFramesList**(Frames, *, SkipFrames = None)
+
+*Signature*:
+
+list(inspect.FrameInfo)/, int > 0 OR None/ -> list(tuple(str, str, str, int >= 0, int >= 0, list(str) OR None))
+
+*Args*:
+
+* *Frames*: list(inspect.FrameInfo); list of FrameInfo objects as named tuples
+* *SkipFrames*: (keyword) int > 0 OR None; number of the most inner frames to skip as a non-negative integer, otherwise is ignored, defaults to None
+
+*Returns*:
+
+**list(tuple(str, str, str, int > 0, int >= 0, list(str)))**: a list of tuples, possibly empty, with each element (tuple) being the parsed frame data not containg the a frame object itself, and the elements of each tuple being the path to the source code module, name of the caller (module or function / method), the fully qualified name of the caller, position index of the offending code line in the module, position index of the same line in the provided code sniplet, and the code sniplet as a list of the source code lines (strings)
+
+*Description*:
+
+Parses the passed list of the inspect.FrameInfo objects into a list of tuples of simple atomic and atomic container objects not containg any frame object, which helps in avoiding the circular referencing.
+
 ### Class StackTraceback
 
 Responsible for the retrieval, storage and analysis of a snapshot of the current state of the call stack. Stack snapshot is created upon instantiation of the class and is stored and shown bottom-up with the first / outmost caller being the first element (normally, the top level of the interpreter’s loop) and the last made / innermost call being the last in frame in the traceback.
@@ -82,22 +112,45 @@ The instance attributes are created automatically upon instantiation and use the
 
 __*Initialization*__:
 
-**\_\_init\_\_**()
-
-Initialization method. Attempts to retrieve and store the traceback of the current stack excluding the instantiation method itself. Can accept up to 3 keyword arguments: *SkipFrames*, *ContextLength*, *ConsoleWidth*.
+**\_\_init\_\_**(*, SkipFrames = None, ContextLength = None, ConsoleWidth = None)
 
 *Signature*:
 
 /int > 0 OR None, int > 0 OR None, int > 0 OR None/ -> None
 
-Args:
+*Args*:
 
 * *SkipFrames*: (keyword) non-negative integer, number of the deepest (inner) frames to 'hide' in the traceback excluding the initialization method itself, which is always removed (default is None -> zero)
 * *ContextLength*: (keyword) non-negative integer, total number of lines of the source code to retrieve around and including the one, there a call was made (default is None -> the value of the class field ContextLenght)
 * *ConsoleWidth*: (keyword) non-negative integer, width to which the source code lines must be truncated, including the line's number + 2 extra characters (default is None -> the value of the class field ConsoleWidth)
 
+*Description*
+
+Initialization method. Attempts to retrieve and store the traceback of the current call stack excluding the instantiation method itself. Can accept up to 3 keyword arguments: *SkipFrames*, *ContextLength*, *ConsoleWidth*.
+
 ### Class ExceptionTraceback
 
 Responsible for the retrieval, storage and analysis of a snapshot of the traceback of the last raised and being handled currently exception. The snapshot is taken upon instantiation of the class. The first element of the traceback is the frame where the exception is handled, where the last element represent the call frame where the exception has been raised.
 
-Sub classes the class **StackTraceback**. The instantiation method **\_\_init\_\_**() is overridden but the signature is preserved. The rest of the API is inherited without changes (class / instance data attributes and properties).
+Sub classes the class **StackTraceback**. The instantiation method **\_\_init\_\_**() is re-defined, but the rest of the API is inherited without changes (class / instance data attributes and properties).
+
+__*Initialization*__:
+
+**\_\_init\_\_**(*, SkipFrames = None, ContextLength = None, ConsoleWidth = None, FromTraceback = None)
+
+*Signature*:
+
+/int > 0 OR None, int > 0 OR None, int > 0 OR None, types.TracebackType OR None/ -> None
+
+*Args*:
+
+* *SkipFrames*: (keyword) non-negative integer, number of the deepest (inner) frames to 'hide' in the traceback excluding the initialization method itself, which is always removed (default is None -> zero), ignored if FromTraceback argument is a proper traceback object
+* *ContextLength*: (keyword) non-negative integer, total number of lines of the source code to retrieve around and including the one, there a call was made (default is None -> the value of the class field ContextLenght)
+* *ConsoleWidth*: (keyword) non-negative integer, width to which the source code lines must be truncated, including the line's number + 2 extra characters (default is None -> the value of the class field ConsoleWidth)
+* *FromTraceback*: (keyword) types.TracebackType OR None; an instance of a traceback object from which the extract the information, if provided and proper - the SkipFrames argument is ignored (defaults to None -> actual traceback stack is analyzed)
+
+*Description*
+
+Initialization method. Attempts to retrieve and store the traceback of the last raised exception as a a list of frame records for the stack between the current frame and the frame in which an exception currently being handled was raised in. Can accept up to 3 optional positional arguments, which can be passed as the keyword arguments: *SkipFrames*, *ConsoleWidth* and *ConsoleWidth*.
+
+Alternatively, a traceback stored in an exception can be passed as the keyword argument *FromTraceback*, in which case the *SkipFrames* argument is ignored, and the traceback is reconstructed from the passed object.

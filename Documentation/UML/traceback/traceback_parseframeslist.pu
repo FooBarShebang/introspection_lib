@@ -1,0 +1,49 @@
+@startuml traceback_parseframeslist
+
+title Activity Diagram of the function traceback.ParseFramesList()
+
+start
+:<b>Frames</b>: list of instances of inspection.FrameInfo
+<b>SkipFrames</b>: (optional), integer > 0 - number of the inner frames to remove from the trace<
+
+:instantiate <b>Result</b> as an empty list;
+
+if (<b>SkipFrames</b> is positive integer AND is less then length of <b>Frames</b> list?) then (Yes)
+    :remove <b>SkipFrames</b> last elements from the <b>Frames</b> list;
+endif
+
+while (for each <b>Frame</b> element in <b>Frames</b> list)
+    :resolve the frame's module object;
+
+    if (module object is None?) then (Yes)
+        :set module's name as '<console input>';
+    else (No)
+        :extract the actual name of the module;
+    endif
+
+    :resolve the frame's caller's name;
+
+    if (it is '<module>'?) then (Yes)
+        :set the module's name as the\nqualified caller's name;
+    else (No)
+        :check the frame's local namespace;
+
+        if ('self' or 'cls' are within?) then (True)
+            :resolve the name of the respecive class;
+
+            :form the qualified caller's name as\n'module.class.method' (caller is the method);
+        else (False)
+            :form the qualified caller's name as\n'module.function' (caller is the function);
+        endif
+    endif
+
+    :extract the module's file path, line index in the source code and sniplet, and the code sniplet from the frame's info object;
+
+    :form a tuple from file path, caller's name and qualified name, line file's and sniplet's indexes and the code sniplet;
+
+    :append this tuple as an element of the <b>Result</b> list;
+endwhile (<b>Frames</b> list is exhausted)
+
+:return <b>Result</b> list>
+stop
+@enduml

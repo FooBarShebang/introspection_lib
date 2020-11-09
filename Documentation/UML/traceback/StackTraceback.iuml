@@ -5,21 +5,17 @@
 !endif
 
 class StackTraceback {
-    + ConsoleWidth : int
-    + ContextLength : int
+    ..class attributes..
+    + static_field(ContextLength) : int = 3
+    ..instance attributes..
+    + ConsoleWidth : int = 80
     ..read-only properties..
     # {field} CallChain : list(str)
     # Info : str
+    ..'private' instance attributes..
+    - {field} _lstTraceback: list(tuple(str, str, str, int >= 0, int >= 0, list(str)))
     ___
     ..special methods..
-    + _ _init_ _() : /int, int, int/ -> None
+    + _ _init_ _(SkipFrames = None, ContextLength = None, ConsoleWidth = None) : /int, int, int/ -> None
     + _ _del_ _() : None -> None
-    ___
-    <b>NB</b> if the desired number of the source
-    code lines per frame and / or their maximum
-    allowed width are not passed as the arguments
-    into the initialization method, or their values
-    are unacceptable, the default values of 3 and 80
-    respectively are used, which are stored as the
-    class data attributes of the same name
 }

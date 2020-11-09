@@ -4,23 +4,22 @@ title Activity Diagram of the Property traceback.StackTraceback.Info
 
 start
 
-if (list of callers is empty?) then (No)
-    while (for each pair of <b>Caller</b> and <b>FrameRecord</b>)
-        :extract <b>Path</b> - the second element of the <b>FrameRecord</b> ;
-        
-        :extract <b>LineNumber</b> - line number in the code - the third element of the <b>FrameRecord</b> ;
-        
-        :extract <b>CodeLines</b> - list of the source code lines - the fifth element of the <b>FrameRecord</b> ;
-        
-        :extract <b>LineIndex</b> - position of the code line in the <b>CodeLines</b> - the sixth element of the <b>FrameRecord</b> ;
-        
-        :add line indicating the fully qualified name of the caller;
-        
-        :add line indicating the path to the module and line number;
-        
-        if (<b>CodeLines</b> list is not empty?) then (Yes)
+:Instantiate <b>Result</b> as an empty string;
+
+while (for each tuple stored in the instance attribute <b>_lstTraceback</b> list)
+    :extract <b>Path</b>, <b>Name</b> and <b>QualifiedName</b> names of the caller, <b>LineNumber</b>\nand <b>LineIndex</b> indexes and <b>CodeLines</b> list by their position;
+    
+    if (<b>CodeLines</b> list is not empty, i.e. None?) then (Yes)
         :get the length of the string representation of the maximum line number (<b>LineNumber + LineIndex</b>);
         
+        if (<b>Name</b> is '<module>'?) then (Yes)
+            :append string 'In module {QualifiedName}' to the <b>Result</b> string;
+        else (No)
+            :append string 'Caller {QualifiedName}()' to the <b>Result</b> string;
+        endif
+
+        :append string 'Line {LineNumber} in {Path}' to the <b>Result</b> string;
+
         while (for each <b>Line</b> in <b>CodeLines</b>)
             :form the string prefix with the actual line number left zero padded to the maximum length;
             
@@ -38,13 +37,10 @@ if (list of callers is empty?) then (No)
             
             :add the formed annotated source code line to the sting buffer;
         end while
-        endif
-    end while
-    
-    :return the formed multi-line string;
-else (yes)
-    :return an empty string>
-endif
+    endif
+end while
+
+:return the <b>Result</b> string>
 
 stop
 

@@ -5,9 +5,13 @@
 !endif
 
 module(traceback) {
+    function(ParseFramesList)
+
     class(StackTraceback)
     
     class(ExceptionTraceback)
     
-    ExceptionTraceback -|> StackTraceback
+    ParseFramesList <-- StackTraceback
+
+    StackTraceback <|- ExceptionTraceback
 }

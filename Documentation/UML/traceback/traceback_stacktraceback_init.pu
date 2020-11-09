@@ -9,28 +9,22 @@ start
 <b>Width</b> - optional non-negative integer, total width of the code lines + line numbers to truncate to<
 
 if (<b>LinesNumber</b> is integer AND <b>LinesNumber</b> > 0 ?) then (True)
-    :<b>self.ContextLength</b> = <b>LinesNumber</b> ;
+    :use this value as <b>ContextLength</b>;
+else (False)
+    :use the value of the class attribute <b>ContextLength</b>;
 endif
 
 if (<b>Width</b> is integer AND <b>Width</b> > 0 ?) then (True)
-    :<b>self.ConsoleWidth</b> = <b>Width</b> ;
+    :store the value of <b>Width</b> in the instance attribute <b>ContextWidth</b>;
 endif
 
-:obtain the system call stack using <b>inspect.stack</b>() function with <b>self.ContextLength</b> lines of code per frame;
+:obtain the system call stack using <b>inspect.stack</b>() function with <b>ContextLength</b> lines of code per frame;
 
 :reverse the order of the frames -> as <b>Traceback</b> ;
 
-if (exception is raised?) then (No)
-    if (<b>SkipFrames</b> is integer AND <b>SkipFrames</b> > 0 AND (<b>SkipFrames</b> + 1) < len(<b>SkipFrames</b>)) then (True)
-        :remove (<b>SkipFrames</b> + 1) last elements (frames) from the <b>Traceback</b> ;
-    else (False)
-        :remove only the last element (frame) from the <b>Traceback</b> ;
-    endif
-    
-    :store the remaining list of frames in <b>self._tblstTraceback</b> 'private' instance atttribute;
-else (Yes)
-    :store <b>None</b> instead of the traceback frames;
-endif
+:obtain the parsed traceback via function <b>ParseFramesList(Traceback, SkipFrames)</b> and store the\nreturned value in the 'private' instance attribute <b>_lstTraceback</b>|
+
+:De-reference the elements of the <b>Traceback</b> and the list itself]
 
 stop
 
