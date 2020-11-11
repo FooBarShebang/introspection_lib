@@ -2,3 +2,4 @@
 
 * Global requirements - [RE000](./RE000_library_requirements.md)
 * Module *traceback* - [RE001](./RE001_traceback_requirements.md)
+* Module *base_exceptions* - [RE002](./RE002_base_exceptions_requirements.md)

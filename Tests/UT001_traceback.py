@@ -56,7 +56,7 @@ def outer():
 
 class Test_StackTraceback(unittest.TestCase):
     """
-    Test cases for the class libexceptions.traceback.StackTraceback
+    Test cases for the class introspection_lib.traceback.StackTraceback
     
     Implements tests: TEST-T-100 and TEST-T-101. Covers the requirements
     REQ-FUN-100, REQ-FUN-101 and REQ-FUN-102.
@@ -189,8 +189,8 @@ class Test_StackTraceback(unittest.TestCase):
 
 class Test_ExceptionTraceback(Test_StackTraceback):
     """
-    Test cases for the class libexceptions.traceback.ExceptionTraceback. Extends
-    the unit test class Test_StackTraceback.
+    Test cases for the class introspection_lib.traceback.ExceptionTraceback.
+    Extends the unit test class Test_StackTraceback.
     
     Implements tests: TEST-T-110 and TEST-T-111. Covers the requirements
     REQ-FUN-110, REQ-FUN-111 and REQ-FUN-112.

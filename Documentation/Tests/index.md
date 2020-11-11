@@ -2,5 +2,6 @@
 
 * Global library's requirements - [TE000](./TE000_library_test_report.md)
 * Module *traceback* - [TE001](./TE001_traceback_test_report.md)
+* Module *traceback* - [TE002](./TE002_base_exceptions_test_report.md)
 * Requirements testing traceability [list](./traceability.md)
 * Tested OS and Python versions [list](./tested_OS.md)

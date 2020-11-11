@@ -35,8 +35,6 @@ The verification method for a requirement is given by a single letter according 
 
 Prepare the unit-test module with the test cases classes for the StackTraceback and ExceptionTraceback classes, see module [Tests/UT001_traceback.py](../../Tests/UT001_traceback.py). Also define a set of helper functions for the exception traceback testing, which implement the following call chain: outer() -> middle() -> inner() -> exception raised.
 
-See unit-test module libexceptions.tests.traceback_ut.
-
 ## Tests definition (Test)
 
 **Test Identifier:** TEST-T-100

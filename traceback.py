@@ -23,19 +23,18 @@ __status__ = "Production"
 
 #+ standard libraries
 
-import os
 import inspect
 
 from types import TracebackType
-from typing import TypeVar, List, Tuple
+from typing import List, Tuple, Optional
 
 #types
 
-TIntNone = TypeVar('TIntNone', int, None)
+TIntNone = Optional[int]
 TStringList = List[str]
 TFramesList = List[inspect.FrameInfo]
 TParsedFrame = List[Tuple[str, str, str, int, int, TStringList]]
-TTracebackNone = TypeVar('TTracebackNone', TracebackType, None)
+TTracebackNone = Optional[TracebackType]
 
 #helper functions
 
