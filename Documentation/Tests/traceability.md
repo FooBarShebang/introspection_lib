@@ -19,9 +19,12 @@
 
 | **Requirement ID** | **Covered in test(s)** | **Verified \[YES/NO\]**) |
 | :----------------- | :--------------------- | :----------------------- |
+| **Requirement ID** | **Covered in test(s)** | **Verified \[YES/NO\]**) |
+| :----------------- | :--------------------- | :----------------------- |
 | REQ-FUN-000        | TEST-T-000             | YES                      |
+| REQ-FUN-001        | TEST-T-003             | YES                      |
 | REQ-IAR-000        | TEST-T-001             | YES                      |
-| REQ-IAR-001        | TEST-T-002             | YES                      |
+| REQ-IAR-001        | TEST-T-002             | NO                       |
 | REQ-IAR-002        | TEST-T-001             | YES                      |
 | REQ-FUN-100        | TEST-T-100             | YES                      |
 | REQ-FUN-101        | TEST-T-101             | YES                      |
@@ -44,6 +47,6 @@
 | REQ-FUN-250        | TEST-T-250             | YES                      |
 | REQ-FUN-260        | TEST-T-260             | YES                      |
 
-| **Software ready for production \[YES/NO\]** | **Rationale**           |
-| :------------------------------------------: | :---------------------- |
-| YES                                          | All tests are passed    |
+| **Software ready for production \[YES/NO\]** | **Rationale**                 |
+| :------------------------------------------: | :---------------------------- |
+| NO                                           | Some tests are not performed  |

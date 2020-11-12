@@ -77,6 +77,22 @@ The verification method for a requirement is given by a single letter according 
 
 **Test steps:** Run each of the defined unit-tests suites (./Tests folder) under, at least, MS Windows and GNU Linux OSes (current releases). Repeat this test under other OSes for which this library is to be tested and released. Mark the tested OS + Python version in the [tested_OS.md](./tested_OS.md) document.
 
+**Test result:** PASS / FAIL
+
+---
+
+**Test Identifier:** TEST-T-003
+
+**Requirement ID(s)**: REQ-FUN-001
+
+**Verification method:** T
+
+**Test goal:** Implementation of the custom exeptions framework.
+
+**Expected result:** All tests defined in the document [TE002](./TE002_base_exceptions_test_report.md) have passed.
+
+**Test steps:** Run the unit-test module [Tests/UT002_base_exceptions.py](../../Tests/UT002_base_exceptions.py).
+
 **Test result:** PASS
 
 ## Traceability
@@ -86,10 +102,11 @@ For traceability the relation between tests and requirements is summarized in th
 | **Requirement ID** | **Covered in test(s)** | **Verified \[YES/NO\]**) |
 | :----------------- | :--------------------- | :----------------------- |
 | REQ-FUN-000        | TEST-T-000             | YES                      |
+| REQ-FUN-001        | TEST-T-003             | YES                      |
 | REQ-IAR-000        | TEST-T-001             | YES                      |
-| REQ-IAR-001        | TEST-T-002             | YES                      |
+| REQ-IAR-001        | TEST-T-002             | NO                       |
 | REQ-IAR-002        | TEST-T-001             | YES                      |
 
 | **Software ready for production \[YES/NO\]** | **Rationale**                 |
 | :------------------------------------------: | :---------------------------- |
-| YES                                          | All tests are passed          |
+| NO                                           | Some tests are not performed  |

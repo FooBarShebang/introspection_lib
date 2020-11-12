@@ -1,0 +1,45 @@
+@startuml ut_typeerror
+
+title Class Diagram of introspection_lib.base_exceptions.UT_TypeError Class
+
+namespace builtins {
+    !ifndef BASE_EXCEPTIONS_EXCEPTION
+    !include ./exception.iuml
+    !endif
+
+    class TypeError <<Builtin>>
+
+    Exception <|-- TypeError
+}
+
+namespace traceback {
+    !ifndef TRACEBACK_EXCEPTIONTRACEBACK
+    !include ../traceback/ExceptionTraceback.iuml
+    !endif
+
+    !ifndef TRACEBACK_STACKTRACEBACK
+    !include ../traceback/StackTraceback.iuml
+    !endif
+
+    ExceptionTraceback --|> StackTraceback
+}
+
+class UT_TypeError {
+    __
+    + __init__(Message, SkipFrames = None, FromTraceback = None):
+    str/, int OR None, type.TracebackType OR None/ -> None
+}
+
+builtins.TypeError <|--- UT_TypeError
+
+!ifndef BASE_EXCEPTION_TRACEBACK_PLUGIN
+!include ./traceback_plugin.iuml
+!endif
+
+TracebackPlugin <|-- UT_TypeError
+
+TracebackPlugin o--- traceback.ExceptionTraceback
+
+builtins.TypeError <.. TracebackPlugin : overrides
+
+@enduml

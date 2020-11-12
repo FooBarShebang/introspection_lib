@@ -1,0 +1,27 @@
+@startuml classes_virtual
+
+title Virtual Sub-Classing Structure of the Module introspection_lib.base_exception
+
+class UT_Exception
+
+class UT_TypeError
+
+UT_Exception <|.. UT_TypeError
+
+class UT_ValueError
+
+UT_Exception <|.. UT_ValueError
+
+class UT_AttributeError
+
+UT_Exception <|.. UT_AttributeError
+
+class UT_IndexError
+
+UT_Exception <|.. UT_IndexError
+
+class UT_KeyError
+
+UT_Exception <|.. UT_KeyError
+
+@enduml

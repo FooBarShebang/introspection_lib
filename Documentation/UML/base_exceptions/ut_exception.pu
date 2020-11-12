@@ -1,0 +1,41 @@
+@startuml ut_exception
+
+title Class Diagram of introspection_lib.base_exceptions.UT_Exception Class
+
+namespace builtins {
+    !ifndef BASE_EXCEPTIONS_EXCEPTION
+    !include ./exception.iuml
+    !endif
+}
+
+namespace traceback {
+    !ifndef TRACEBACK_EXCEPTIONTRACEBACK
+    !include ../traceback/ExceptionTraceback.iuml
+    !endif
+
+    !ifndef TRACEBACK_STACKTRACEBACK
+    !include ../traceback/StackTraceback.iuml
+    !endif
+
+    ExceptionTraceback --|> StackTraceback
+}
+
+class UT_Exception {
+    __
+    + __init__(Message, SkipFrames = None, FromTraceback = None):
+    str/, int OR None, type.TracebackType OR None/ -> None
+}
+
+builtins.Exception <|--- UT_Exception
+
+!ifndef BASE_EXCEPTION_TRACEBACK_PLUGIN
+!include ./traceback_plugin.iuml
+!endif
+
+TracebackPlugin <|-- UT_Exception
+
+TracebackPlugin o--- traceback.ExceptionTraceback
+
+builtins.Exception <.. TracebackPlugin : overrides
+
+@enduml

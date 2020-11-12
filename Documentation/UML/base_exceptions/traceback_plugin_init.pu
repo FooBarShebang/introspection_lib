@@ -1,0 +1,23 @@
+@startuml traceback_plugin_init
+
+title Activity Diagram of Initialization of the TracebackPlugin Class
+
+start
+
+:<b>*args</b>: any number of positional arguments
+<b>SkipFrames</b>: (keyword), number of innermost frames to skip; default is None
+<b>FromTraceback</b>: (keyword), real exception's traceback object; default is None<
+
+:Call to the mixed-in exception's super class initialization method and pass all <b>*args</b> positional arguments]
+
+:Store the received value of <b>SkipFrames</b> in the correspoding 'private' instance attribute;
+
+if (<b>FromTraceback</b> is a proper traceback object?) then (Yes)
+    :Instantiate <b>ExceptionTraceback</b> class with\n<b>FromTraceback</b> argument and store in\nthe 'private' instance attribute _traceback ;
+else (No)
+    :Initialize the 'private' instance attribute\n_traceback with the None value;
+endif
+
+stop
+
+@enduml

@@ -1,0 +1,19 @@
+@startuml get_object_class
+
+title Activity Diagram of the Function introspection_lib.base_exceptions.GetObjectClass()
+
+start
+
+:<b>Object</b>: type A, any type of an argument<
+
+if (<b>Object</b> has attribute _ _name_ _?) then (Yes)
+    :return <b>Object._ _name_ _</b> string>
+elseif (<b>Object</b> has attribute _ _class_ _?) then (Yes)
+    :return <b>Object._ _class_ _._ _name_ _</b> string>
+else (No)
+    :return <b>str(type(Object))</b> string>
+endif
+
+stop
+
+@enduml

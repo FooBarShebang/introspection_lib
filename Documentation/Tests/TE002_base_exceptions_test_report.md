@@ -136,6 +136,6 @@ For traceability the relation between tests and requirements is summarized in th
 | REQ-FUN-250        | TEST-T-250             | YES                      |
 | REQ-FUN-260        | TEST-T-260             | YES                      |
 
-| **Software ready for production \[YES/NO\]** | **Rationale**                 |
-| :------------------------------------------: | :---------------------------- |
-| YES                                          | All tests are passed          |
+| **Software ready for production \[YES/NO\]** | **Rationale**           |
+| :------------------------------------------: | :---------------------- |
+| YES                                          | All tests are passed    |

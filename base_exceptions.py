@@ -105,7 +105,7 @@ class TracebackPlugin():
     def __init__(self, *args, SkipFrames: TIntNone = None,
                              FromTraceback: TTracebackNone = None) -> None:
         """
-        Hooks into instanciation of a custom exception. Passes the provided
+        Hooks into instantiation of a custom exception. Passes the provided
         positional arguments into the standard parent exception initializer.
         Then if a substitution traceback is passed (FromTraceback keyword) the
         analysis object is created from it and stored (see Traceback property);
@@ -200,7 +200,7 @@ class UT_Exception(TracebackPlugin, Exception, abc.ABC):
 
     Sub-classes the standard Exception and the left plugin TracebackPlugin.
 
-    Args:
+    Attributes:
         args: tuple(str x1); one string element tuple storing the passed message
         __traceback__: types.TracebackType; stores the actual traceback of the
             exception
@@ -222,7 +222,7 @@ class UT_Exception(TracebackPlugin, Exception, abc.ABC):
     @classmethod
     def __subclasshook__(cls, C):
         """
-        Special class method to modify the bahaviour of the standard functions
+        Special class method to modify the behaviour of the standard functions
         issubclass() and isinstance() as follows:
             * Any class having attribute Traceback is considered to be a
                 (virtual) sub-class of UT_Exception
@@ -295,7 +295,7 @@ class UT_Exception(TracebackPlugin, Exception, abc.ABC):
 
 class UT_TypeError(TracebackPlugin, TypeError):
     """
-    Custom version of TypeError with the added human-readbale traceback
+    Custom version of TypeError with the added human-readable traceback
     analysis. Should be instantiated as:
 
     * UT_TypeError(Value, type / class OR seq(type / class))
@@ -306,7 +306,7 @@ class UT_TypeError(TracebackPlugin, TypeError):
     Sub-classes the standard TypeError and the left plugin TracebackPlugin, also
     is a virtual sub-class of UT_Exception.
 
-    Args:
+    Attributes:
         args: tuple(str x1); one string element tuple storing the passed message
         __traceback__: types.TracebackType; stores the actual traceback of the
             exception
@@ -330,7 +330,7 @@ class UT_TypeError(TracebackPlugin, TypeError):
                     FromTraceback: TTracebackNone = None) -> None:
         """
         Converts the two passed mandatory (positional) arguments into a single
-        string errror message, which is stored as the only element of the args
+        string error message, which is stored as the only element of the args
         tuple attribute. If the FromTraceback keyword argument holds the proper
         value, the traceback analysis object is created immediately from the
         substituion object; otherwise its creation is delayed until the first
@@ -368,7 +368,7 @@ class UT_TypeError(TracebackPlugin, TypeError):
 
 class UT_ValueError(TracebackPlugin, ValueError):
     """
-    Custom version of ValueError with the added human-readbale traceback
+    Custom version of ValueError with the added human-readable traceback
     analysis. Should be instantiated as:
 
     * UT_ValueError(Value, 'Ranges message')
@@ -378,7 +378,7 @@ class UT_ValueError(TracebackPlugin, ValueError):
     Sub-classes the standard ValueError and the left plugin TracebackPlugin,
     also is a virtual sub-class of UT_Exception.
 
-    Args:
+    Attributes:
         args: tuple(str x1); one string element tuple storing the passed message
         __traceback__: types.TracebackType; stores the actual traceback of the
             exception
@@ -402,7 +402,7 @@ class UT_ValueError(TracebackPlugin, ValueError):
                     FromTraceback: TTracebackNone = None) -> None:
         """
         Converts the two passed mandatory (positional) arguments into a single
-        string errror message, which is stored as the only element of the args
+        string error message, which is stored as the only element of the args
         tuple attribute. If the FromTraceback keyword argument holds the proper
         value, the traceback analysis object is created immediately from the
         substituion object; otherwise its creation is delayed until the first
@@ -434,7 +434,7 @@ class UT_ValueError(TracebackPlugin, ValueError):
 
 class UT_AttributeError(TracebackPlugin, AttributeError):
     """
-    Custom version of AttributeError with the added human-readbale traceback
+    Custom version of AttributeError with the added human-readable traceback
     analysis. Should be instantiated as:
 
     * UT_AttributeError(Object, 'Attr Name')
@@ -444,7 +444,7 @@ class UT_AttributeError(TracebackPlugin, AttributeError):
     Sub-classes the standard AttributeError and the left plugin TracebackPlugin,
     also is a virtual sub-class of UT_Exception.
 
-    Args:
+    Attributes:
         args: tuple(str x1); one string element tuple storing the passed message
         __traceback__: types.TracebackType; stores the actual traceback of the
             exception
@@ -468,7 +468,7 @@ class UT_AttributeError(TracebackPlugin, AttributeError):
                     FromTraceback: TTracebackNone = None) -> None:
         """
         Converts the two passed mandatory (positional) arguments into a single
-        string errror message, which is stored as the only element of the args
+        string error message, which is stored as the only element of the args
         tuple attribute. If the FromTraceback keyword argument holds the proper
         value, the traceback analysis object is created immediately from the
         substituion object; otherwise its creation is delayed until the first
@@ -499,7 +499,7 @@ class UT_AttributeError(TracebackPlugin, AttributeError):
 
 class UT_IndexError(TracebackPlugin, IndexError):
     """
-    Custom version of IndexError with the added human-readbale traceback
+    Custom version of IndexError with the added human-readable traceback
     analysis. Should be instantiated as:
 
     * UT_IndexError('Object name', Index)
@@ -509,7 +509,7 @@ class UT_IndexError(TracebackPlugin, IndexError):
     Sub-classes the standard IndexError and the left plugin TracebackPlugin,
     also is a virtual sub-class of UT_Exception.
 
-    Args:
+    Attributes:
         args: tuple(str x1); one string element tuple storing the passed message
         __traceback__: types.TracebackType; stores the actual traceback of the
             exception
@@ -533,7 +533,7 @@ class UT_IndexError(TracebackPlugin, IndexError):
                     FromTraceback: TTracebackNone = None) -> None:
         """
         Converts the two passed mandatory (positional) arguments into a single
-        string errror message, which is stored as the only element of the args
+        string error message, which is stored as the only element of the args
         tuple attribute. If the FromTraceback keyword argument holds the proper
         value, the traceback analysis object is created immediately from the
         substituion object; otherwise its creation is delayed until the first
@@ -564,7 +564,7 @@ class UT_IndexError(TracebackPlugin, IndexError):
 
 class UT_KeyError(TracebackPlugin, KeyError):
     """
-    Custom version of KeyError with the added human-readbale traceback
+    Custom version of KeyError with the added human-readable traceback
     analysis. Should be instantiated as:
 
     * UT_KeyError('Object name', 'Key Name')
@@ -574,7 +574,7 @@ class UT_KeyError(TracebackPlugin, KeyError):
     Sub-classes the standard KeyError and the left plugin TracebackPlugin, also
     is a virtual sub-class of UT_Exception.
 
-    Args:
+    Attributes:
         args: tuple(str x1); one string element tuple storing the passed message
         __traceback__: types.TracebackType; stores the actual traceback of the
             exception
@@ -598,7 +598,7 @@ class UT_KeyError(TracebackPlugin, KeyError):
                     FromTraceback: TTracebackNone = None) -> None:
         """
         Converts the two passed mandatory (positional) arguments into a single
-        string errror message, which is stored as the only element of the args
+        string error message, which is stored as the only element of the args
         tuple attribute. If the FromTraceback keyword argument holds the proper
         value, the traceback analysis object is created immediately from the
         substituion object; otherwise its creation is delayed until the first

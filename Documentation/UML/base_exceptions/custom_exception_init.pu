@@ -1,0 +1,20 @@
+@startuml custom_exception_init
+
+title Activity Diagram of Initialization of a Custom Exception
+
+start
+
+:<b>*args</b>: one or two mandatory arguments of the required types
+<b>SkipFrames</b>: (keyword), number of innermost frames to skip; default is None
+<b>FromTraceback</b>: (keyword), real exception's traceback object; default is None<
+
+:construction of a single string <b>Message</b> from the passed <b>*args</b> arguments;
+
+:pass <b>Message</b> as a single positional argument, <b>SkipFrames</b> and <b>FromTraceback</b> as
+keyword arguments into the initialization method of the <b>TracebackPlugin</b> class|
+
+:Chained call to the super class exception initialization method]
+
+stop
+
+@enduml

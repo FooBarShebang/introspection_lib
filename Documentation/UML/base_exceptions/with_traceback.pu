@@ -1,0 +1,19 @@
+@startuml with_traceback
+
+title Activity Diagram of the with_traceback() Method of the Custom Exceptions
+
+start
+
+:<b>Traceback</b>: types.TracebackType instance<
+
+:De-reference the object currently stored in the 'private' instance attribute _traceback;
+
+:Set both 'private' instance attributes _traceback and _SkipFrames to None;
+
+:Call the super class (exception) method with_traceback() and pass <b>Traceback</b> into]
+
+:return the result of the super class' method>
+
+stop
+
+@enduml

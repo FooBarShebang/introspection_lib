@@ -1,0 +1,23 @@
+@startuml ut_exception_subclasshook
+
+title Activity Diagram of Special Method UT_Exception._ _subclasshook_ _()
+
+start
+
+:<b>Other</b>: type A, supposedly, a class object<
+
+if (current class is <b>UT_Exception</b> AND <b>Other</b> is a class?) then (True)
+    if (<b>UT_Exception</b> is in <b>Other</b> MRO?) then (Yes)
+        :return <b>True</b> - is a sub-class>
+    elseif (<b>Other</b> has attribute <b>Traceback</b>?) then (Yes)
+        :return <b>True</b> - is a sub-class>
+    else (No)
+        :return <b>False</b> - is not a sub-class>
+    endif
+else (False)
+    :return <b>NotImplemented</b>\n- use standard resolution method>
+endif
+
+stop
+
+@enduml

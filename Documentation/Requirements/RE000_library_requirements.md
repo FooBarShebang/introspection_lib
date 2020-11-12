@@ -33,6 +33,16 @@ The verification method for a requirement is given by a single letter according 
 
 **Verification Method:** T
 
+---
+
+**Requirement ID:** REQ-FUN-001
+
+**Title:** Custom exceptions framework
+
+**Description:** The library should provide a framework of custom exceptions, which are properly integrated into the structure of the standard exceptions and provide the extended version of the corresponding standard ones with the added human-readable traceback analysis functionality. See document [RE002](./RE002_base_exceptions_requirements.md).
+
+**Verification Method:** T
+
 ## Installation and acceptance requirements
 
 **Requirement ID:** REQ-IAR-000

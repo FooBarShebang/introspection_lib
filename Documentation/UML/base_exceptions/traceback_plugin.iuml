@@ -1,0 +1,15 @@
+!define BASE_EXCEPTION_TRACEBACK_PLUGIN
+
+!ifndef CLASSES
+!include ../Templates/Classes.cuml
+!endif
+
+class TracebackPlugin <<LEFT_MIXIN>> {
+    - _traceback : ExceptionTraceback OR None
+    - _SkipFrames: int OR None
+    ..read-only properties..
+    # Traceback : ExceptionTraceback
+    ___
+    + with_traceback(): type.TracebackType -> Exception
+    + __init__(*args, SkipFrames = None, FromTraceback = None): /type A, ..., int OR None, type.TracebackType OR None/ -> None
+}
