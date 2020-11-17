@@ -24,7 +24,7 @@
 | REQ-FUN-000        | TEST-T-000             | YES                      |
 | REQ-FUN-001        | TEST-T-003             | YES                      |
 | REQ-IAR-000        | TEST-T-001             | YES                      |
-| REQ-IAR-001        | TEST-T-002             | NO                       |
+| REQ-IAR-001        | TEST-T-002             | YES                      |
 | REQ-IAR-002        | TEST-T-001             | YES                      |
 | REQ-FUN-100        | TEST-T-100             | YES                      |
 | REQ-FUN-101        | TEST-T-101             | YES                      |
@@ -49,4 +49,4 @@
 
 | **Software ready for production \[YES/NO\]** | **Rationale**                 |
 | :------------------------------------------: | :---------------------------- |
-| NO                                           | Some tests are not performed  |
+| YES                                          | All tests are passed          |
