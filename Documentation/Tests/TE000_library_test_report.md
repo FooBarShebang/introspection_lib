@@ -95,6 +95,22 @@ The verification method for a requirement is given by a single letter according 
 
 **Test result:** PASS
 
+---
+
+**Test Identifier:** TEST-T-004
+
+**Requirement ID(s)**: REQ-FUN-002
+
+**Verification method:** T
+
+**Test goal:** Implementation of the custom logging class.
+
+**Expected result:** All tests defined in the document [TE003](./TE003_logging_test_report.md) have passed.
+
+**Test steps:** TODO.
+
+**Test result:** PASS /FAIL
+
 ## Traceability
 
 For traceability the relation between tests and requirements is summarized in the table below:
@@ -103,10 +119,11 @@ For traceability the relation between tests and requirements is summarized in th
 | :----------------- | :--------------------- | :----------------------- |
 | REQ-FUN-000        | TEST-T-000             | YES                      |
 | REQ-FUN-001        | TEST-T-003             | YES                      |
+| REQ-FUN-002        | TEST-T-004             | NO                       |
 | REQ-IAR-000        | TEST-T-001             | YES                      |
 | REQ-IAR-001        | TEST-T-002             | YES                      |
 | REQ-IAR-002        | TEST-T-001             | YES                      |
 
 | **Software ready for production \[YES/NO\]** | **Rationale**                 |
 | :------------------------------------------: | :---------------------------- |
-| YES                                          | All tests are passed          |
+| NO                                           | Under development             |

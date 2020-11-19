@@ -14,6 +14,7 @@
   * class *UT_AttributeError* specific - 240
   * class *UT_IndexError* specific - 250
   * class *UT_KeyError* specific - 260
+* module **logging** - 30x
 
 ## Requirements vs Tests Traceability
 
@@ -23,6 +24,7 @@
 | :----------------- | :--------------------- | :----------------------- |
 | REQ-FUN-000        | TEST-T-000             | YES                      |
 | REQ-FUN-001        | TEST-T-003             | YES                      |
+| REQ-FUN-002        | TEST-T-004             | NO                       |
 | REQ-IAR-000        | TEST-T-001             | YES                      |
 | REQ-IAR-001        | TEST-T-002             | YES                      |
 | REQ-IAR-002        | TEST-T-001             | YES                      |
@@ -49,4 +51,4 @@
 
 | **Software ready for production \[YES/NO\]** | **Rationale**                 |
 | :------------------------------------------: | :---------------------------- |
-| YES                                          | All tests are passed          |
+| NO                                           | Under development             |

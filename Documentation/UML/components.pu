@@ -6,8 +6,16 @@ title Components Diagram of the Library introspection_lib
 !include ./Templates/Components.cuml
 !endif
 
-!ifndef TRACEBACK_COMPONENTS
-!include ./traceback/traceback_components.iuml
-!endif
+library(introspection_lib) {
+    !ifndef BASE_EXCEPTIONS_COMPONENTS
+    !include ./base_exceptions/base_exceptions_components.iuml
+    !endif
+    
+    !ifndef TRACEBACK_COMPONENTS
+    !include ./traceback/traceback_components.iuml
+    !endif
+    
+    ExceptionTraceback -o CustomExceptions
+}
 
 @enduml

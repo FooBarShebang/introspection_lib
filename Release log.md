@@ -4,3 +4,7 @@
 
 * Re-factored the module *traceback.py* in order to avoid storage of the actual frame objects - only the already parsed data (strings and integers).
 * Added instantiation of ExceptionTraceback from a traceback object.
+
+## 2020-11-18
+
+* Exceptions classes with the built-in human and machine-readable customizable traceback analysis.

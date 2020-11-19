@@ -1,0 +1,13 @@
+!define BASE_EXCEPTIONS_COMPONENTS
+
+!ifndef COMPONENTS
+!include ../Templates/Components.cuml
+!endif
+
+module(base_exceptions) {
+    function(GetObjectClass)
+
+    class(CustomExceptions)
+    
+    GetObjectClass <-- CustomExceptions
+}

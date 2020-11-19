@@ -41,6 +41,14 @@ The verification method for a requirement is given by a single letter according 
 
 **Description:** The library should provide a framework of custom exceptions, which are properly integrated into the structure of the standard exceptions and provide the extended version of the corresponding standard ones with the added human-readable traceback analysis functionality. See document [RE002](./RE002_base_exceptions_requirements.md).
 
+---
+
+**Requirement ID:** REQ-FUN-002
+
+**Title:** Custom logger wrappers
+
+**Description:** The library should provide a customized logger class preserving the **logging.Logger** API from the Standard Library but with the modified functionality: not only the minimum but the maximum severity level to log per handler as well as to propagate to the ancestors' handlers. See document [RE003](./RE003_logging_requirements.md).
+
 **Verification Method:** T
 
 ## Installation and acceptance requirements
