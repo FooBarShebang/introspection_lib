@@ -82,3 +82,23 @@ The verification method for a requirement is given by a single letter according 
 **Description:** Although the same message is allowed to be logged in the different files as it propagates up the ancestor loggers, if it is printed into the console, it should be printed out only once.
 
 **Verification Method:** D
+
+---
+
+**Requirement ID:** REQ-FUN-306
+
+**Title:** Rotation of the log file.
+
+**Description:** By default, a logger object has no own file handler attached, however the user can initiate the file's logging at the runtime. If the log file name is not specified explicitely, it should be created automatically from the date-time stamp and the logger's name. The user should be able to switch to another log file (new or existing), which should be openned in the attach mode (not overwritten). The user should be able to disable the logging into a file at any time.
+
+**Verification Method:** D
+
+---
+
+**Requirement ID:** REQ-FUN-310
+
+**Title:** 'Dummy' logger class.
+
+**Description:** A 'dummy' logger should be also implemented, wich provides the standard API of a logger class: logging at the different levels of severity, changing the severity threshold level of the logger itself - but simply dumps everything into NIL-stream. With such a 'dummy' logger passed or defined as a default value a client method / function can always issue log messages without checking. The user of such a method / function can pass a real logger object with the defined severity logging levels when required.
+
+**Verification Method:** D
