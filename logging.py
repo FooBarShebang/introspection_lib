@@ -6,12 +6,17 @@ Implements custom logging classes.
 
 Classes:
     DummyLogger: all messages are dumped into NIL-stream
-    DualLogger: can simulataneously log into a console and a file
+    DualLogger: can simulataneously log into a console and a file and filter
+        messages by min and max levels in terms of handling and propagation
+    LoggerFilter: helper class - logger level filter
+    ConsoleHandlerFilter: helper class - console handler
+    FileHandlerFilter: helper class - file logging handler
+
 """
 
 __version__ = "1.0.0.0"
-__date__ = "26-11-2020"
-__status__ = "Development"
+__date__ = "27-11-2020"
+__status__ = "Production"
 
 #imports
 
@@ -93,6 +98,170 @@ def _ResolveLevel(Level: TStrInt) -> int:
 
 #classes
 
+#+ helper classes
+
+class LoggerFilter:
+    """
+    A simple data modifying filter intended to be used with a logger object, not
+    with a handler. Adds two flag attributes to a record object - IsToPrint and
+    IsToPropagate - to indicate if the message is intended to be handled by the
+    console handler of this logger or its parent, and the file handler of its
+    parent only respectively. The boolean value True is set if the issued
+    message level is within the corresponding acceptance ranges defined by the
+    logger, and False - otherwise. A reference to the concerned logger is to
+    passed during instantiation of this class.
+
+    Methods:
+        filter(Parent):
+            logging.LogRecord -> bool
+    
+    Attributes:
+        parent: introspection_lib.logging.DualLogger
+    
+    Version 1.0.0.0
+    """
+
+    #special methods
+
+    def __init__(self, Parent: base_logging.Logger) -> None:
+        """
+        Initialization method. Simply stores the passed reference to a logger
+        object in the instance attribite 'parent'.
+
+        Signature:
+            introspection_lib.logging.DualLogger -> None
+        
+        Args:
+            Parent: introspection_lib.logging.DualLogger; reference to a logger
+
+        Version 1.0.0.0
+        """
+        self.parent = Parent
+    
+    #public API
+
+    def filter(self, Record: base_logging.LogRecord) -> bool:
+        """
+        Adds two flag attributes to a record object - IsToPrint and
+        IsToPropagate - to indicate if the message is intended to be handled by
+        the console handler of this logger or its parent, and the file handler
+        of its parent only respectively. The boolean value True is set if the
+        issued message level is within the corresponding acceptance ranges
+        defined by the logger, and False - otherwise.
+
+        Signature:
+            logging.LogRecord -> bool
+        
+        Args:
+            Record: logging.Record; the log message to be processed
+
+        Returns:
+            bool: always True value
+        
+        Version 1.0.0.0
+        """
+        iMin, iMax = self.parent.getConsoleRange()
+        if (Record.levelno >= iMin) and (Record.levelno <= iMax):
+            Record.IsToPrint = True
+        else:
+            Record.IsToPrint = False
+        iMin, iMax = self.parent.getPropagateRange()
+        if (Record.levelno >= iMin) and (Record.levelno <= iMax):
+            Record.IsToPropagate = True
+        else:
+            Record.IsToPropagate = False
+        return True
+
+class ConsoleHandlerFilter(LoggerFilter):
+    """
+    Filter for a console hanlder of a logger object. Allows only the messages,
+    witch are marked to be intended for the console by a logger object, which
+    issued that message - may be this logger or one of its children. The
+    reference to the logger with the concerned handler attached must be passed
+    to the instantiation method of this class. Sub-classes LoggerFilter.
+
+    Methods:
+        filter(Parent):
+            logging.LogRecord -> bool
+    
+    Attributes:
+        parent: introspection_lib.logging.DualLogger
+    
+    Version 1.0.0.0
+    """
+
+    #public API
+
+    def filter(self, Record: base_logging.LogRecord) -> bool:
+        """
+        Actual file handler filter functionality. Simply returns the value of
+        the boolean flag IsToPrint of the passed LogRecord object.
+
+        Signature:
+            logging.LogRecord -> bool
+        
+        Args:
+            Record: logging.Record; the log message to be processed
+
+        Returns:
+            bool: True if the message must be processed by the handler, False
+                otherwise
+        
+        Version 1.0.0.0
+        """
+        return Record.IsToPrint
+
+class FileHandlerFilter(LoggerFilter):
+    """
+    Filter for a file hanlder of a logger object. Allows only the messages with
+    the level within the acceptance range of this handler (defined by the logger
+    object) and either the message is issued by this logger or it is marked as
+    to be propaged by a child logger issued this message. The reference to the
+    logger with the concerned handler attached must be passed to the
+    instantiation method of this class. Sub-classes LoggerFilter.
+    
+    Methods:
+        filter(Parent):
+            logging.LogRecord -> bool
+    
+    Attributes:
+        parent: introspection_lib.logging.DualLogger
+    
+    Version 1.0.0.0
+    """
+
+    #public API
+
+    def filter(self, Record: base_logging.LogRecord) -> bool:
+        """
+        Actual file handler filter functionality. Returns True only if the
+        message level is within the acceptance range of this handler (defined by
+        the logger object) and either the message is issued by this logger or
+        marked as to be propaged by a child logger issued this message.
+
+        Signature:
+            logging.LogRecord -> bool
+        
+        Args:
+            Record: logging.Record; the log message to be processed
+
+        Returns:
+            bool: True if the message must be processed by the handler, False
+                otherwise
+        
+        Version 1.0.0.0
+        """
+        iMin, iMax = self.parent.getFileRange()
+        if (Record.levelno >= iMin) and (Record.levelno <= iMax):
+            if Record.name == self.parent.name:
+                bResult = True
+            else:
+                bResult = Record.IsToPropagate
+        else:
+            bResult = False
+        return bResult
+
+#+ main classes
 class DummyLogger(base_logging.Logger):
     """
     Specialized sub-class of the logging.Logger class (Standard Python Library),
@@ -173,6 +342,14 @@ class DualLogger(base_logging.Logger):
     Version 1.0.0.0
     """
 
+    #private class attributes
+
+    _DefaultFormatter = base_logging.Formatter(' '.join(['{asctime}',
+                            '{levelname}@{name} FROM {funcName} IN {filename}',
+                            '(LINE {lineno})\n{message}']),
+                            datefmt = '%Y-%m-%d %H:%M:%S',
+                            style = '{')
+
     #special methods
 
     def __init__(self, Name: TStrNone = None, *args, **kwargs) -> None:
@@ -213,11 +390,14 @@ class DualLogger(base_logging.Logger):
             self.parent = None
             objTemp = base_logging.StreamHandler()
             objTemp.setLevel(ALL)
+            objTemp.addFilter(ConsoleHandlerFilter(self))
+            objTemp.setFormatter(self._DefaultFormatter)
             self.addHandler(objTemp)
             self.propagate = False
         else:
             self.propagate = True
         self.setLevel('ALL')
+        self.addFilter(LoggerFilter(self))
         self.setMinConsoleLevel('ALL')
         self.setMaxConsoleLevel('NONE')
         self.setMinFileLevel('ALL')
@@ -361,6 +541,8 @@ class DualLogger(base_logging.Logger):
         if self._FileHandler is None:
             self._FileHandler = base_logging.FileHandler(strFilePath)
             self._FileHandler.setLevel(ALL)
+            self._FileHandler.addFilter(FileHandlerFilter(self))
+            self._FileHandler.setFormatter(self._DefaultFormatter)
             self.addHandler(self._FileHandler)
 
     def disableFileLogging(self) -> None:

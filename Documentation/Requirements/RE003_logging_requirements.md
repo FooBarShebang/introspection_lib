@@ -95,6 +95,16 @@ The verification method for a requirement is given by a single letter according 
 
 ---
 
+**Requirement ID:** REQ-FUN-307
+
+**Title:** Format of the log messages.
+
+**Description:** The log messages (regardless of the level) should contain the following data: date and time (up to the second precision), string severity level of the message, name of the logger issued this message, name of the funciton / method called the logger, base filename of the module containg the caller and the line number in the source code - followed by the passed body of the message itself.
+
+**Verification Method:** D
+
+---
+
 **Requirement ID:** REQ-FUN-310
 
 **Title:** 'Dummy' logger class.

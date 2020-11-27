@@ -48,6 +48,15 @@
 | REQ-FUN-240        | TEST-T-240             | YES                      |
 | REQ-FUN-250        | TEST-T-250             | YES                      |
 | REQ-FUN-260        | TEST-T-260             | YES                      |
+| REQ-FUN-300        | TEST-D-300             | YES                      |
+| REQ-FUN-301        | TEST-D-302, TEST-D-304 | YES                      |
+| REQ-FUN-302        | TEST-D-303, TEST-D-304 | YES                      |
+| REQ-FUN-303        | TEST-D-300             | YES                      |
+| REQ-FUN-304        | TEST-D-303, TEST-D-304 | YES                      |
+| REQ-FUN-305        | TEST-D-300             | YES                      |
+| REQ-FUN-306        | TEST-D-300, TEST-D-301 | YES                      |
+| REQ-FUN-307        | TEST-D-300             | YES                      |
+| REQ-FUN-310        | TEST-D-310             | YES                      |
 
 | **Software ready for production \[YES/NO\]** | **Rationale**                 |
 | :------------------------------------------: | :---------------------------- |
