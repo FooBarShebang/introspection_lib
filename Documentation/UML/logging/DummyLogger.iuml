@@ -1,0 +1,11 @@
+!define LOGGING_DUMMY_LOGGER
+
+!ifndef CLASSES
+!include ../Templates/Classes.cuml
+!endif
+
+class DummyLogger {
+    + parent = None
+    + propagate = False
+    + __init__(Name = None): str OR None -> None
+}

@@ -1,0 +1,69 @@
+@startuml logging_classes
+
+title Class Diagram of the Module introspection_lib.logging
+
+!ifndef CLASSES
+!include ../Templates/Classes.cuml
+!endif
+
+namespace logging <<Standard Library>> {
+    class NullHandler
+    
+    !ifndef LOGGING_LOGGER
+    !include ./Logger.iuml
+    !endif
+    
+    NullHandler -[hidden] Logger
+    
+    class Formatter
+    
+    Logger -[hidden] Formatter
+    
+    class FileHandler
+    
+    Formatter -[hidden] FileHandler
+    
+    class StreamHandler
+    
+    FileHandler -[hidden] StreamHandler
+}
+
+!ifndef LOGGING_DUMMY_LOGGER
+!include ./DummyLogger.iuml
+!endif
+
+logging.NullHandler --o "1" DummyLogger
+
+logging.Logger <|-- DummyLogger
+
+!ifndef LOGGING_DUAL_LOGGER
+!include ./DualLogger.iuml
+!endif
+
+logging.Logger <|-- DualLogger
+
+logging.Formatter --o "1" DualLogger
+
+logging.FileHandler --o "0..1" DualLogger
+
+logging.StreamHandler --o "0..1" DualLogger
+
+class FileHandlerFilter
+
+logging.FileHandler "1" o-- FileHandlerFilter
+
+class ConsoleHandlerFilter
+
+FileHandlerFilter -[hidden]- ConsoleHandlerFilter
+
+logging.StreamHandler "1" o--- ConsoleHandlerFilter
+
+class LoggerFilter
+
+DualLogger "1" o-- LoggerFilter
+
+LoggerFilter <|- ConsoleHandlerFilter
+
+FileHandlerFilter --|> LoggerFilter
+
+@enduml

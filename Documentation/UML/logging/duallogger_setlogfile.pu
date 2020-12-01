@@ -1,0 +1,33 @@
+@startuml duallogger_setlogfile
+
+title Activity Diagram of the Method DualLogger.setLogFile()
+
+start
+
+:FileName: optional string, path to a log file, defaults to None>
+
+if (FileName is a string?) then (Yes)
+    :get the absolute path from FileName as FilePath;
+else (No)
+    :construct Basename from the date-time stamp and the name\nof the logger as {YYYYMMDD_HHMMSS}_{LoggerName}.log;
+    
+    :get the absolute path from the Basename\n- will be in the current working directory\n- as FilePath;
+endif
+
+if (there is attached file handler AND it used different than FilePath file?) then (Yes)
+    :close the file, see disableFileLogging() method|
+endif
+
+if (there is no attached file handler?) then (Yes)
+    :open FilePath file in 'attach' mode;
+    
+    :create instance of logging.FileHandler class and associate it with FilePath file;
+    
+    :set its threshold to ALL = logging.DEBUG - 1, and attach file output filter;
+    
+    :attach this handler to itself, store the reference to the handler and FilePath in the respective private attributes;
+endif
+
+stop
+
+@enduml

@@ -1,0 +1,21 @@
+@startuml file_filter
+
+title Activity Diagram of the File Handler Filter
+
+start
+
+:Message: logging.LogRecord<
+
+if (Message level is within allowed by\nthe logger file output range?) then (Yes)
+    if (Message is issued by this logger?) then (Yes)
+        :return True>
+    else (No)
+        :return value of the Message's propagate flag>
+    endif
+else (No)
+    :return False>
+endif
+
+stop
+
+@enduml

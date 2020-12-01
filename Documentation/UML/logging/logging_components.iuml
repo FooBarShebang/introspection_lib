@@ -1,0 +1,11 @@
+!define LOGGING_COMPONENTS
+
+!ifndef COMPONENTS
+!include ../Templates/Components.cuml
+!endif
+
+module(logging) {
+    class(DualLogger)
+    
+    class(DummyLogger)
+}

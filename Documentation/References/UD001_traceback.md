@@ -124,7 +124,7 @@ __*Initialization*__:
 * *ContextLength*: (keyword) non-negative integer, total number of lines of the source code to retrieve around and including the one, there a call was made (default is None -> the value of the class field ContextLenght)
 * *ConsoleWidth*: (keyword) non-negative integer, width to which the source code lines must be truncated, including the line's number + 2 extra characters (default is None -> the value of the class field ConsoleWidth)
 
-*Description*
+*Description*:
 
 Initialization method. Attempts to retrieve and store the traceback of the current call stack excluding the instantiation method itself. Can accept up to 3 keyword arguments: *SkipFrames*, *ContextLength*, *ConsoleWidth*.
 
@@ -149,7 +149,7 @@ __*Initialization*__:
 * *ConsoleWidth*: (keyword) non-negative integer, width to which the source code lines must be truncated, including the line's number + 2 extra characters (default is None -> the value of the class field ConsoleWidth)
 * *FromTraceback*: (keyword) types.TracebackType OR None; an instance of a traceback object from which the extract the information, if provided and proper - the SkipFrames argument is ignored (defaults to None -> actual traceback stack is analyzed)
 
-*Description*
+*Description*:
 
 Initialization method. Attempts to retrieve and store the traceback of the last raised exception as a a list of frame records for the stack between the current frame and the frame in which an exception currently being handled was raised in. Can accept up to 3 optional positional arguments, which can be passed as the keyword arguments: *SkipFrames*, *ConsoleWidth* and *ConsoleWidth*.
 

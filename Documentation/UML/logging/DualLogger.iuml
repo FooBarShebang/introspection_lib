@@ -1,0 +1,27 @@
+!define LOGGING_DUAL_LOGGER
+
+!ifndef CLASSES
+!include ../Templates/Classes.cuml
+!endif
+
+class DualLogger {
+    - static_field(_DefaultFormatter): logging.Formatter
+    - _LogFile: str OR None = None
+    - self._FileHandler: logging.FileHandler OR None = None
+    + parent: DualLogger or None
+    __
+    + __init__(Name = None, Parent = None): str OR None, DualLogger OR None -> None
+    + getChild(Name): str -> DualLogger
+    + setLevel(Level): str OR int >= 0 -> None
+    + setMinConsoleLevel(Level): str OR int >= 0 -> None
+    + setMaxConsoleLevel(Level): str OR int >= 0 -> None
+    + getConsoleRange(): None -> tuple(int >= 0, int >= 0)
+    + setLogFile(FileName = None): /str/ -> None
+    + disableFileLogging(): None -> None
+    + setMinFileLevel(Level): str OR int >= 0 -> None
+    + setMaxFileLevel(Level): str OR int >= 0 -> None
+    + getFileRange(): None -> tuple(int >= 0, int >= 0)
+    + setMinPropagateLevel(Level): str OR int >= 0 -> None
+    + setMaxPropagateLevel(Level): str OR int >= 0 -> None
+    + getPropagateRange(): None -> tuple(int >= 0, int >= 0)
+}

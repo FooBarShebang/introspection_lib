@@ -1,0 +1,21 @@
+!define LOGGING_LOGGER
+
+!ifndef CLASSES
+!include ../Templates/Classes.cuml
+!endif
+
+class Logger {
+    + name: str
+    + parent: logging.Logger OR logging.RootLogger OR None
+    + propagate: bool
+    __
+    + setLevel(level): str OR int -> None
+    + getChild(name): str -> logging.Logger
+    + debug(msg, *args, **kwargs): str/, .../ -> None
+    + info(msg, *args, **kwargs): str/, .../ -> None
+    + warning(msg, *args, **kwargs): str/, .../ -> None
+    + error(msg, *args, **kwargs): str/, .../ -> None
+    + exception(msg, *args, **kwargs): str/, .../ -> None
+    + critical(msg, *args, **kwargs): str/, .../ -> None
+    ...
+}

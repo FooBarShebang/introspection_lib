@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Functionality enhancements and usage convenience wrappers for the Python 3 Standard Library introspection functionality. E.g. call stack and exception traceback analysis, signature of the methods and functions, class composition, etc.
+Functionality enhancements and usage convenience wrappers for the Python 3 Standard Library introspection functionality. E.g. call stack and exception traceback analysis, signature of the methods and functions, class composition, etc. It provides framework of the traceback enhanced analysis custom exceptions and customized logging classes.
 
 ## Installation
 

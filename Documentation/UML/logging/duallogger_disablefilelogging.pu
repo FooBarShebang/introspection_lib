@@ -1,0 +1,17 @@
+@startuml duallogger_disablefilelogging
+
+title Activity Diagram of the Method DualLogger.disableFileLogging()
+
+start
+
+if (there is attached file handler?) then (Yes)
+    :flush and close the log file using handler's methods;
+    
+    :remove this file handler;
+    
+    :set private attributes referencing file handler and log file to None;
+endif
+
+stop
+
+@enduml

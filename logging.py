@@ -14,8 +14,8 @@ Classes:
 
 """
 
-__version__ = "1.0.0.0"
-__date__ = "27-11-2020"
+__version__ = "1.0.0.1"
+__date__ = "01-12-2020"
 __status__ = "Production"
 
 #imports
@@ -23,6 +23,7 @@ __status__ = "Production"
 #+ standard libraries
 
 import os
+import weakref
 import datetime
 import logging as base_logging
 
@@ -118,7 +119,7 @@ class LoggerFilter:
     Attributes:
         parent: introspection_lib.logging.DualLogger
     
-    Version 1.0.0.0
+    Version 1.0.0.1
     """
 
     #special methods
@@ -126,7 +127,7 @@ class LoggerFilter:
     def __init__(self, Parent: base_logging.Logger) -> None:
         """
         Initialization method. Simply stores the passed reference to a logger
-        object in the instance attribite 'parent'.
+        object in the instance attribite 'parent' as a proxy weak reference.
 
         Signature:
             introspection_lib.logging.DualLogger -> None
@@ -136,7 +137,22 @@ class LoggerFilter:
 
         Version 1.0.0.0
         """
-        self.parent = Parent
+        self.parent = weakref.proxy(Parent)
+    
+    def __del__(self) -> None:
+        """
+        Finalization method. Removes the circular referencing concerning the
+        parent logger object. Note, that this method is not strictly speaking
+        needed, since the garbage collector seems to handle the situation fine
+        without it.
+        
+        Signature:
+            None -> None
+        
+        Version 1.0.0.0
+        """
+        del self.parent
+        self.parent = None
     
     #public API
 
@@ -269,28 +285,24 @@ class DummyLogger(base_logging.Logger):
     NullHandler attached as a handler. Inherits all API from the super class
     without changes except for the ininitalization method.
 
-    Version 1.0.0.0
+    Version 1.0.0.1
     """
 
     #special methods
 
-    def __init__(self, Name: TStrNone = None, *args, **kwargs) -> None:
+    def __init__(self, Name: TStrNone = None) -> None:
         """
         Initialization method. Assigns a name, creates and attaches a single
         handler - NullHandler to the instance.
 
         Signature:
-            str OR None/, ..., *, .../ -> None
+            /str OR None/ -> None
         
         Args:
             Name: (optional) str; a name to be assigned to a logger, defaults to
                 None, in which case the class' name is used instead
-            *args: (optional) type A; any number of optional positional
-                arguments, simply ignored - for the compatibility only
-            **kwargs: (keyword) type B; any number of optional keyword
-                arguments, simply ignored - for the compatibility only
         
-        Version 1.0.0.0
+        Version 1.0.0.1
         """
         if isinstance(Name, str):
             strName = Name
@@ -308,38 +320,38 @@ class DualLogger(base_logging.Logger):
     which implements possibility of simultaneous logging into a console and one
     or more files with the minimalistic setting up at the user's side.
 
-    Inherits the API from the super class, but overwrites few public methods
-    and adds some new methods.
+    Inherits the API from the super class, re-defines getChild() and setLevel()
+    methods and adds some new methods.
 
     Methods:
         getChild(Name):
             str -> DualLogger
         setLevel(Level):
-            str OR int >= 0 -> int >= 0
+            str OR int >= 0 -> None
         setMinConsoleLevel(Level):
-            str OR int >= 0 -> int >= 0
+            str OR int >= 0 -> None
         setMaxConsoleLevel(Level):
-            str OR int >= 0 -> int >= 0
+            str OR int >= 0 -> None
         getConsoleRange():
             None -> tuple(int >= 0, int >= 0)
-        setLogFile(File = None):
+        setLogFile(FileName = None):
             /str/ -> None
         disableFileLogging():
             None -> None
         setMinFileLevel(Level):
-            str OR int >= 0 -> int >= 0
+            str OR int >= 0 -> None
         setMaxFileLevel(Level):
-            str OR int >= 0 -> int >= 0
+            str OR int >= 0 -> None
         getFileRange():
             None -> tuple(int >= 0, int >= 0)
         setMinPropagateLevel(Level):
-            str OR int >= 0 -> int >= 0
+            str OR int >= 0 -> None
         setMaxPropagateLevel(Level):
-            str OR int >= 0 -> int >= 0
+            str OR int >= 0 -> None
         getPropagateRange():
             None -> tuple(int >= 0, int >= 0)
 
-    Version 1.0.0.0
+    Version 1.0.0.1
     """
 
     #private class attributes
@@ -352,32 +364,37 @@ class DualLogger(base_logging.Logger):
 
     #special methods
 
-    def __init__(self, Name: TStrNone = None, *args, **kwargs) -> None:
+    def __init__(self, Name: TStrNone = None,
+                        Parent: Optional[base_logging.Logger] = None) -> None:
         """
         Initialization method. Assigns a name, creates and attaches a single
-        handler - NullHandler to the instance. Special keywoard argument Parent
-        can be passed referencing to another instance of DualLogger class as the
-        parent of this instance. Do not use this functionality directly - it is
+        handler - StreamHandler, but only to a 'root' instance. Special keywoard
+        argument Parent can be passed referencing to another instance of a
+        logger class as the parent of this instance, in which case a console
+        handler is not attached. Do not use this functionality directly - it is
         reserved for the implemetation of the getChild() method.
+        
+        Note that for a 'root' logger the 'parent' attribute is set to None and
+        the 'propagate' attribute - to False. For a 'child' logger the
+        'propagate' attribute is set to True, and the 'parent' holds the
+        reference to the parent logger.
 
         Signature:
-            str OR None/, DualLogger, ..., *, .../ -> None
+            /str OR None, base_logging.Logger OR None/ -> None
         
         Args:
             Name: (optional) str; a name to be assigned to a logger, defaults to
                 None, in which case the class' name is used instead
-            *args: (optional) type A; any number of optional positional
-                arguments, simply ignored - for the compatibility only
-            **kwargs: (keyword) type B; any number of optional keyword
-                arguments, simply ignored - for the compatibility only
+            Parent: (optional) logging.Logger; a reference to the 'parent'
+                logger, defaults to None, in which case the instance is created
+                as a 'root' logger
         
-        Version 1.0.0.0
+        Version 1.0.0.1
         """
         if isinstance(Name, str):
             strName = Name
         else:
             strName = self.__class__.__name__
-        Parent = kwargs.get('Parent', None)
         if isinstance(Parent, DualLogger):
             strName = '{}.{}'.format(Parent.name, strName)
             super().__init__(strName)
@@ -437,7 +454,7 @@ class DualLogger(base_logging.Logger):
         'DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL' and 'NONE'.
 
         Signature:
-            str OR int >= 0 -> int >= 0
+            str OR int >= 0 -> None
     
         Args:
             Level: str OR int >=0; severity level passed as a non-negative
@@ -460,7 +477,7 @@ class DualLogger(base_logging.Logger):
         are: 'ALL', 'DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL' and 'NONE'.
 
         Signature:
-            str OR int >= 0 -> int >= 0
+            str OR int >= 0 -> None
     
         Args:
             Level: str OR int >=0; severity level passed as a non-negative
@@ -482,7 +499,7 @@ class DualLogger(base_logging.Logger):
         are: 'ALL', 'DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL' and 'NONE'.
 
         Signature:
-            str OR int >= 0 -> int >= 0
+            str OR int >= 0 -> None
     
         Args:
             Level: str OR int >=0; severity level passed as a non-negative
@@ -513,9 +530,9 @@ class DualLogger(base_logging.Logger):
         """
         Sets the current output log file path and attaches an file handler. The
         currently used (if exists) log file is flushed and closed, unless the
-        pass is the same. If the file name (path) is not provided, the log file
+        path is the same. If the file name (path) is not provided, the log file
         is created is placed into the current working folder with the base file-
-        name as '{YYYYMMDD_HHMM}_{logger.name}.log'. The already existing log
+        name as '{YYYYMMDD_HHMMSS}_{LoggerName}.log'. The already existing log
         files are opened in the attach mode.
 
         Signature:
@@ -533,7 +550,7 @@ class DualLogger(base_logging.Logger):
         if isinstance(FileName, str):
             strFilePath = os.path.abspath(FileName)
         else:
-            strTime = datetime.datetime.now().strftime('%Y%m%d_%H%M')
+            strTime = datetime.datetime.now().strftime('%Y%m%d_%H%M%S')
             strName = '{}_{}.log'.format(strTime, self.name)
             strFilePath = os.path.abspath(strName)
         if not (self._FileHandler is None) and self._LogFile != strFilePath:
@@ -570,7 +587,7 @@ class DualLogger(base_logging.Logger):
         'CRITICAL' and 'NONE'.
 
         Signature:
-            str OR int >= 0 -> int >= 0
+            str OR int >= 0 -> None
     
         Args:
             Level: str OR int >=0; severity level passed as a non-negative
@@ -587,13 +604,13 @@ class DualLogger(base_logging.Logger):
     
     def setMaxFileLevel(self, Level: TStrInt) -> None:
         """
-        Sets the minimum severity level of the output into own log file by a
+        Sets the maximum severity level of the output into own log file by a
         non-negative integer or a string alias. The acceptable aliases
         (case-insensitive) are: 'ALL', 'DEBUG', 'INFO', 'WARNING', 'ERROR',
         'CRITICAL' and 'NONE'.
 
         Signature:
-            str OR int >= 0 -> int >= 0
+            str OR int >= 0 -> None
     
         Args:
             Level: str OR int >=0; severity level passed as a non-negative
@@ -628,7 +645,7 @@ class DualLogger(base_logging.Logger):
         'WARNING', 'ERROR', 'CRITICAL' and 'NONE'.
 
         Signature:
-            str OR int >= 0 -> int >= 0
+            str OR int >= 0 -> None
     
         Args:
             Level: str OR int >=0; severity level passed as a non-negative
@@ -651,7 +668,7 @@ class DualLogger(base_logging.Logger):
         'WARNING', 'ERROR', 'CRITICAL' and 'NONE'.
 
         Signature:
-            str OR int >= 0 -> int >= 0
+            str OR int >= 0 -> None
     
         Args:
             Level: str OR int >=0; severity level passed as a non-negative

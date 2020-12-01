@@ -16,6 +16,12 @@ library(introspection_lib) {
     !endif
     
     ExceptionTraceback -o CustomExceptions
+    
+    !ifndef LOGGING_COMPONENTS
+    !include ./logging/logging_components.iuml
+    !endif
+    
+    StackTraceback -[hidden]- DummyLogger
 }
 
 @enduml

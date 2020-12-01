@@ -1,0 +1,50 @@
+@startuml duallogger_init
+
+title Activity Diagram of Initialization of DualLogger Class
+
+start
+
+:Name: optional string, base name of the logger, default to None
+Parent: optional instance of DualLogger class, the parent logger, defaults to None<
+
+if (Name is string?) then (Yes)
+    :use Name as Basename;
+else (No)
+    :use class' name as Basename;
+endif
+
+if (Parent is instance of DualLogger?) then (Yes)
+    :combine LoggerName from Parent.name,\na dot and Basename;
+    
+    :call super class initialization with LoggerName]
+    
+    :set Parent as own parent;
+    
+    :set propagation attribute to True;
+else (No)
+    :call super class initialization with Basename]
+endif
+
+if (instance has no parent or its parent is instance of logging.RootLogger?) then (Yes)
+    :set own parent to None;
+    
+    :set propagation attribute to False;
+    
+    :create an instance of logging.StreamLogger;
+    
+    :set its threshold to ALL = logging.DEBUG - 1, attach console filter and default formater;
+    
+    :attach this handler to itself;
+else (No)
+    :set propagation attribute to True;
+endif
+
+:set own threshold level to ALL = logging.DEBUG - 1;
+
+:set all filter ranges to allow all messages, i.e. min = ALL, max = NONE = logging.CRITICAL + 1;
+
+:set private attributes refering to a log file and file handler to None;
+
+stop
+
+@enduml

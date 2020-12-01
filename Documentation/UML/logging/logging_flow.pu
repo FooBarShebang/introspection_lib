@@ -1,0 +1,47 @@
+@startuml logging_flow
+
+title Logger and Handling Process Flow
+
+|Process_flow|
+
+|Logger_flow|
+
+start
+
+if (Logger enabled for level of call?) then (No)
+    stop
+endif
+
+:Create LogRecord;
+
+if (Does any filter attached to\nlogger rejects the record) then (Yes)
+    stop
+endif
+
+repeat
+
+:Pass to\nhandlers of\ncurrent logger;
+
+|Process_flow|
+
+while (for each attached logger)
+    if (Handler enabled for\nlevel of LogRecord?) then (Yes)
+        if (Does any filter attached\nto handler rejects the\nrecord) then (No)
+            :Emit (includes formatting)>
+        endif
+    endif
+endwhile (no more loggers)
+
+|Logger_flow|
+
+if (Is propagate True\nfor current logger) then (No)
+    stop
+endif
+
+backward:Set current\nlogger to parent;
+
+repeat while (Is there a parent\nlogger?) is (Yes)
+
+stop
+
+@enduml
