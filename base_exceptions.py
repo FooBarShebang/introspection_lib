@@ -3,7 +3,9 @@
 Module introspection_lib.base_exceptions
 
 Implements custom exception classes with the build-in human-readable inspection
-of the traceback functionality.
+of the traceback functionality. Use the module's global variable
+UT_Exception_Check as an 'umbrella' term in the except clause to catch any of
+the defined custom exceptions.
 
 Functions:
     GetObjectClass(gObject):
@@ -20,7 +22,7 @@ Classes:
     UT_KeyError: custom version of KeyError
 """
 
-__version__ = "1.0.0.0"
+__version__ = "1.0.0.1"
 __date__ = "11-11-2020"
 __status__ = "Production"
 
@@ -626,3 +628,8 @@ class UT_KeyError(TracebackPlugin, KeyError):
         Message = 'Key not found {}[{}]'.format(Name, Key)
         super().__init__(Message, SkipFrames = SkipFrames,
                                     FromTraceback = FromTraceback)
+
+# hack / walkaround on try...except limitations to actual MRO check
+
+UT_Exception_Check = (UT_Exception, UT_ValueError, UT_TypeError,
+                        UT_AttributeError, UT_IndexError, UT_KeyError)

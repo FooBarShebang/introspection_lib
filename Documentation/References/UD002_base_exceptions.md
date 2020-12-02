@@ -13,6 +13,7 @@ The functional objects covered in this document are:
 * class **UT_AttributeError**
 * class **UT_IndexError**
 * class **UT_KeyError**
+* tuple **UT_Exception_Check** listing all 6 defined exceptions
 
 ## Intended Use and Functionality
 
@@ -36,9 +37,11 @@ The custom versions of the standard exceptions are their actual sub-classes (see
 
 ![Classes diagram - real inheritance](../UML/base_exceptions/classes_real.png)
 
-In addition, all defined custom exceptions are registered as *virtual* sub-classes of **UT_Exception**, thus the clause `except UT_Exception` will also interceit **UT_TypeError**, **UT_KeyError**, etc., but not any of the standard exceptions.
+In addition, all defined custom exceptions are registered as *virtual* sub-classes of **UT_Exception**.
 
 ![Classes diagram - virtual inheritance](../UML/base_exceptions/classes_virtual.png)
+
+The design is to enable use of **UT_Exception** in the *try...except* clause to catch any of the defined custom exceptions. This approach works fine with Python 2.7, where the check in the *except* clause relies upon *isinstance*() function. In Python 3 (up to v3.8), however, the *except* clause check does not use *isinstance*() check, but checks the MRO directly at low level (C-implementation). Instead of meddling with metaclasses a simple solution is added - a tuple **UT_Exception_Check**, which lists all custom exceptions defined in this module. Use this 'umbrella' to catch any custom exception.
 
 The added functionality of the custom exceptions is implemented as a read-only property *Traceback*, which returns an instance of **introspection_lib.traceback.ExceptionTraceback** class. Thus, the traceback analysis of any of the custom exception can be performed as in the example below:
 
@@ -46,7 +49,7 @@ The added functionality of the custom exceptions is implemented as a read-only p
 try:
     #do some stuff, which may lead to an exception (use custom ones!)
     ...
-except UT_Exception as err:
+except UT_Exception_Check as err:
     print(err.Traceback.Info) #complete traceback per-frame dump
     print(err.Traceback.CallChain) #list of the qualified names of the callers
     ...
@@ -119,7 +122,7 @@ try:
         Message = '{} - required a positive integer'.format(err.args[0])
         raise UT_Exception(Message, FromTraceback = err.__traceback__)
     #do some stuff
-except UT_Exception as err:
+except UT_Exception_Check as err:
     print(err.Traceback.CallChain)
 ```
 
@@ -148,7 +151,7 @@ try:
         #do something
         if something != something_else:
             raise UT_Exception('Oops! Something is wrong').with_traceback(err.__traceback__)
-except UT_Exception as err:
+except UT_Exception_Check as err:
     print(err.Traceback.CallChain)
 ```
 
@@ -202,6 +205,10 @@ Finally, the custom exceptions **TypeError**, **ValueError** and **AtrubuteError
 ![Object's class name resolution](../UML/base_exceptions/get_object_class.png)
 
 ## API Reference
+
+### Global Variables
+
+* *UT_Exception_Check* - a tuple listing all module defined custom exceptions, to be used as an 'umbrella' in the *except* clause to catch any of these exceptions.
 
 ### Functions
 

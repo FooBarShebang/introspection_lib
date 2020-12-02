@@ -71,7 +71,7 @@ def ParseFramesList(Frames: TFramesList, *,
     iLen = len(Frames)
     gtuplstResult = []
     if iLen:
-        if (isinstance(SkipFrames, int) and (0 < SkipFrames < (iLen-1))):
+        if (isinstance(SkipFrames, int) and (0 < SkipFrames <= (iLen-1))):
             iEnd = iLen - SkipFrames
         else:
             iEnd = iLen
