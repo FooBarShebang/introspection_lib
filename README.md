@@ -9,13 +9,13 @@ Functionality enhancements and usage convenience wrappers for the Python 3 Stand
 Clone the official repository into your local workspace / project folder:
 
 ```bash
-$git clone <repository_path> "your project folder"
+$git clone <repository_path> "your projects folder"/introspection_lib
 ```
 
 Check the system requirements and dependencies:
 
 ```bash
-$cd "your project folder"/introspection_lib
+$cd "your projects folder"/introspection_lib
 $python3 ./check_dependencies.py
 ```
 
@@ -24,7 +24,7 @@ $python3 ./check_dependencies.py
 Initialize the UML templates submodule
 
 ```bash
-$cd "your project folder"/introspection_lib/Documentation/UML/Templates
+$cd "your projects folder"/introspection_lib/Documentation/UML/Templates
 $git submodule init
 ```
 
