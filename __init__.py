@@ -13,7 +13,7 @@ Modules:
 """
 
 __project__ ='Python introspection framework'
-__version_info__= (0, 2, 0)
+__version_info__= (0, 3, 0)
 __version_suffix__= '-dev1'
 __version__= ''.join(['.'.join(map(str, __version_info__)), __version_suffix__])
 __date__ = '27-11-2020'

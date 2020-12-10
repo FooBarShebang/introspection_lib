@@ -177,12 +177,15 @@ class LoggerFilter:
         Version 1.0.0.0
         """
         iMin, iMax = self.parent.getConsoleRange()
-        if (Record.levelno >= iMin) and (Record.levelno <= iMax):
+        iLoggerLevel = self.parent.getEffectiveLevel()
+        if ((Record.levelno >= iMin) and (Record.levelno <= iMax)
+                                        and (Record.levelno >= iLoggerLevel)):
             Record.IsToPrint = True
         else:
             Record.IsToPrint = False
         iMin, iMax = self.parent.getPropagateRange()
-        if (Record.levelno >= iMin) and (Record.levelno <= iMax):
+        if ((Record.levelno >= iMin) and (Record.levelno <= iMax)
+                                        and (Record.levelno >= iLoggerLevel)):
             Record.IsToPropagate = True
         else:
             Record.IsToPropagate = False
@@ -270,7 +273,10 @@ class FileHandlerFilter(LoggerFilter):
         iMin, iMax = self.parent.getFileRange()
         if (Record.levelno >= iMin) and (Record.levelno <= iMax):
             if Record.name == self.parent.name:
-                bResult = True
+                if Record.levelno >= self.parent.getEffectiveLevel():
+                    bResult = True
+                else:
+                    bResult = False
             else:
                 bResult = Record.IsToPropagate
         else:

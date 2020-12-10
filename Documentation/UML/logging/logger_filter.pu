@@ -6,13 +6,13 @@ start
 
 :Message: logging.LogRecord<
 
-if (Message level is within allowed by\nthe logger console ouput range?) then (yes)
+if (Message level is within allowed by\nthe logger console ouput range AND\n>= logger's threshold level?) then (yes)
     :set console output flag of\nMessage to True;
 else (No)
     :set console output flag of\nMessage to False;
 endif
 
-if (Message level is within allowed by\nthe logger propagation range?) then (yes)
+if (Message level is within allowed by\nthe logger propagation range AND\n>= logger's threshold level?) then (yes)
     :set propagation flag of\nMessage to True;
 else (No)
     :set propagation flag of\nMessage to False;

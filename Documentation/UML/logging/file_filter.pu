@@ -8,7 +8,11 @@ start
 
 if (Message level is within allowed by\nthe logger file output range?) then (Yes)
     if (Message is issued by this logger?) then (Yes)
-        :return True>
+        if (Its level >= treshold level of the logger?) then (True)
+            :return True>
+        else (False)
+            :return False>
+        endif
     else (No)
         :return value of the Message's propagate flag>
     endif
