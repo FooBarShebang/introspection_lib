@@ -160,6 +160,8 @@ If there is already a file handler, and it is associated with the same file, thi
 
 ![DualLogger.disableFileLogging](../UML/logging/duallogger_disablefilelogging.png)
 
+It is also possible to redirect the console output into another file or stream-like object after instantiation of a **DualLogger** class using method *setConsoleStream*() with a required stream-like target object as its only argument. This method can be called on the 'root' logger or on any child, grand-child, great-grand-child, etc. in the hierarchy. In any case, the method call is recursive, until it reaches the 'root' logger, and, since only the 'root' has an actual console handler, the entire hierarchy will be affected.
+
 ### Implementation Notes
 
 Both classes **DummyLogger** and **DualLogger** sub-class the Standard Library's **logging.Logger** and have all fields and methods of a standard logger, see the Standard Library [logging module](https://docs.python.org/3/library/logging.html) documentation. However, naturally, the function *logging.getLogger*() cannot be used to create them, and some other limitations are applicable, as discussed below.
@@ -173,6 +175,8 @@ Concerning the class **DualLogger**. Instantiate this class to get a 'root' logg
 The filters attached to a logger and its handlers store the reference to this logger via **weakref.proxy** object in order to facilitate the garbage collection concerning the circlar referencing.
 
 The default formater applied to the both console and file handlers is stored in the class private attribute *_DefaultFormatter*, and the default format of the messages is `{asctime} {levelname}@{name} FROM {funcName} IN {filename} (LINE {lineno})\n{message}`, where the date-time format is `%Y-%m-%d %H:%M:%S`.
+
+The standard library **logging.StreamHandler** class has a method *setStream*() only from the Python version 3.7. For compatibility with the older versions of Python (e.g. 3.6), the method *DualLogger.setConsoleStream*() actually replaces the exisiting console handler of the root logger of the hierarchy with a new instance of **StreamHandler** instantiated with the passed stream object as its argument.
 
 ## API Reference
 
@@ -531,3 +535,17 @@ None -> tuple(int >= 0, int >= 0)
 *Description*:
 
 Returns the current min and max severity levels of a message to be propagated to a parent's file handler as a 2-tuple of non-negative integers.
+
+**setConsoleStream**(Stream)
+
+*Signature*:
+
+type A -> None
+
+*Args*:
+
+* *Stream*: type A; any stream-like object with, at least, two methods available *write*() and *flush*()
+
+*Description*:
+
+Redirects the console output into another stream-like object, which must have, at least, write() and flush() methods. Affects all loggers within a single tree, even when called from any (grand-) child, since the console handler is always attached to the root.

@@ -7,7 +7,8 @@
 class DualLogger {
     - static_field(_DefaultFormatter): logging.Formatter
     - _LogFile: str OR None = None
-    - self._FileHandler: logging.FileHandler OR None = None
+    - _FileHandler: logging.FileHandler OR None = None
+    - _ConsoleHandler: logging.StreamHandler OR None
     + parent: DualLogger or None
     __
     + __init__(Name = None, Parent = None): str OR None, DualLogger OR None -> None
@@ -24,4 +25,5 @@ class DualLogger {
     + setMinPropagateLevel(Level): str OR int >= 0 -> None
     + setMaxPropagateLevel(Level): str OR int >= 0 -> None
     + getPropagateRange(): None -> tuple(int >= 0, int >= 0)
+    + setConsoleStream(Stream): type A -> None
 }

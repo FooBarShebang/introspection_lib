@@ -14,8 +14,8 @@ Classes:
 
 """
 
-__version__ = "1.0.0.1"
-__date__ = "01-12-2020"
+__version__ = "1.0.1.0"
+__date__ = "16-12-2020"
 __status__ = "Production"
 
 #imports
@@ -356,8 +356,10 @@ class DualLogger(base_logging.Logger):
             str OR int >= 0 -> None
         getPropagateRange():
             None -> tuple(int >= 0, int >= 0)
+        setConsoleStream(Stream):
+            type A -> None
 
-    Version 1.0.0.1
+    Version 1.1.0.0
     """
 
     #private class attributes
@@ -411,14 +413,15 @@ class DualLogger(base_logging.Logger):
         if ((self.parent is None) or
                             isinstance(self.parent, base_logging.RootLogger)):
             self.parent = None
-            objTemp = base_logging.StreamHandler()
-            objTemp.setLevel(ALL)
-            objTemp.addFilter(ConsoleHandlerFilter(self))
-            objTemp.setFormatter(self._DefaultFormatter)
-            self.addHandler(objTemp)
+            self._ConsoleHandler = base_logging.StreamHandler()
+            self._ConsoleHandler.setLevel(ALL)
+            self._ConsoleHandler.addFilter(ConsoleHandlerFilter(self))
+            self._ConsoleHandler.setFormatter(self._DefaultFormatter)
+            self.addHandler(self._ConsoleHandler)
             self.propagate = False
         else:
             self.propagate = True
+            self._ConsoleHandler = None
         self.setLevel('ALL')
         self.addFilter(LoggerFilter(self))
         self.setMinConsoleLevel('ALL')
@@ -701,3 +704,30 @@ class DualLogger(base_logging.Logger):
         Version 1.0.0.0
         """
         return (self._MinPropagateLevel, self._MaxPropagateLevel)
+    
+    def setConsoleStream(self, Stream) -> None:
+        """
+        Redirects the console output into another stream-like object, which
+        must have, at least, write() and flush() methods. Affects all loggers
+        within a single tree, even when called from any (grand-) child, since
+        the console handler is always attached to the root.
+        
+        Signature:
+            type A -> None
+        
+        Args:
+            Stream: type A; any stream-like object
+        
+        Version 1.0.0.0
+        """
+        if self._ConsoleHandler is None:
+            if not (self.parent is None):
+                self.parent.setConsoleStream(Stream)
+        else:
+            self.removeHandler(self._ConsoleHandler)
+            del self._ConsoleHandler
+            self._ConsoleHandler = base_logging.StreamHandler(Stream)
+            self._ConsoleHandler.setLevel(ALL)
+            self._ConsoleHandler.addFilter(ConsoleHandlerFilter(self))
+            self._ConsoleHandler.setFormatter(self._DefaultFormatter)
+            self.addHandler(self._ConsoleHandler)
