@@ -20,8 +20,6 @@
 
 | **Requirement ID** | **Covered in test(s)** | **Verified \[YES/NO\]**) |
 | :----------------- | :--------------------- | :----------------------- |
-| **Requirement ID** | **Covered in test(s)** | **Verified \[YES/NO\]**) |
-| :----------------- | :--------------------- | :----------------------- |
 | REQ-FUN-000        | TEST-T-000             | YES                      |
 | REQ-FUN-001        | TEST-T-003             | YES                      |
 | REQ-FUN-002        | TEST-T-004             | NO                       |
