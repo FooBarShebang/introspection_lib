@@ -1,7 +1,7 @@
-!define LOGGING_LOGGER
+!$LOGGING_LOGGER = "v2"
 
-!ifndef CLASSES
-!include ../Templates/Classes.cuml
+!if %not(%variable_exists("$CLASSES"))
+    !include ../Templates/Classes2.cuml
 !endif
 
 class Logger {

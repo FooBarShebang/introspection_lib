@@ -2,23 +2,23 @@
 
 title Components Diagram of the Library introspection_lib
 
-!ifndef COMPONENTS
-!include ./Templates/Components.cuml
+!if %not(%variable_exists("$COMPONENTS"))
+    !include ./Templates/Components2.cuml
 !endif
 
-library(introspection_lib) {
-    !ifndef BASE_EXCEPTIONS_COMPONENTS
-    !include ./base_exceptions/base_exceptions_components.iuml
+$library(introspection_lib) {
+    !if $is_not_defined("$BASE_EXCEPTIONS_COMPONENTS")
+        !include ./base_exceptions/base_exceptions_components.iuml
     !endif
     
-    !ifndef TRACEBACK_COMPONENTS
-    !include ./traceback/traceback_components.iuml
+    !if $is_not_defined("TRACEBACK_COMPONENTS")
+        !include ./traceback/traceback_components.iuml
     !endif
     
     ExceptionTraceback -o CustomExceptions
     
-    !ifndef LOGGING_COMPONENTS
-    !include ./logging/logging_components.iuml
+    !if $is_not_defined("LOGGING_COMPONENTS")
+        !include ./logging/logging_components.iuml
     !endif
     
     StackTraceback -[hidden]- DummyLogger

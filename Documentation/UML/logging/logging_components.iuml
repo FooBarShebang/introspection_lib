@@ -1,11 +1,11 @@
-!define LOGGING_COMPONENTS
+!$LOGGING_COMPONENTS = "v2"
 
-!ifndef COMPONENTS
-!include ../Templates/Components.cuml
+!if %not(%variable_exists("$COMPONENTS"))
+    !include ../Templates/Components2.cuml
 !endif
 
-module(logging) {
-    class(DualLogger)
+$module(logging) {
+    $class(DualLogger)
     
-    class(DummyLogger)
+    $class(DummyLogger)
 }

@@ -1,11 +1,11 @@
-!define LOGGING_DUAL_LOGGER
+!$LOGGING_DUAL_LOGGER = "v2"
 
-!ifndef CLASSES
-!include ../Templates/Classes.cuml
+!if %not(%variable_exists("$CLASSES"))
+    !include ../Templates/Classes2.cuml
 !endif
 
 class DualLogger {
-    - static_field(_DefaultFormatter): logging.Formatter
+    - $static_field(_DefaultFormatter): logging.Formatter
     - _LogFile: str OR None = None
     - _FileHandler: logging.FileHandler OR None = None
     - _ConsoleHandler: logging.StreamHandler OR None

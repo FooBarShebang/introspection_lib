@@ -1,7 +1,7 @@
-!define BASE_EXCEPTIONS_EXCEPTION
+!$BASE_EXCEPTIONS_EXCEPTION = "v2"
 
-!ifndef CLASSES
-!include ../Templates/Classes.cuml
+!if %not(%variable_exists("$CLASSES"))
+    !include ../Templates/Classes2.cuml
 !endif
 
 class Exception <<Builtin>> {

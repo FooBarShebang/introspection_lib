@@ -1,12 +1,12 @@
-!define TRACEBACK_STACKTRACEBACK
+!$TRACEBACK_STACKTRACEBACK = "v2"
 
-!ifndef CLASSES
-!include ../Templates/Classes.cuml
+!if %not(%variable_exists("$CLASSES"))
+    !include ../Templates/Classes2.cuml
 !endif
 
 class StackTraceback {
     ..class attributes..
-    + static_field(ContextLength) : int = 3
+    + $static_field(ContextLength) : int = 3
     ..instance attributes..
     + ConsoleWidth : int = 80
     ..read-only properties..
