@@ -51,6 +51,16 @@ The verification method for a requirement is given by a single letter according 
 
 **Verification Method:** T
 
+---
+
+**Requirement ID:** REQ-FUN-003
+
+**Title:** Custom wrappers for Standard Library API for importing a module or a component of a module 'on demand'.
+
+**Description:** The library should provide functions or classes (methods) to import a module or component 'on demand'. The Standard Library *importlib* already provides a function to import a module, which should be augmented with the input arguments sanity checks and import of a single compoent from a module. See document [RE004](./RE004_dynamic_import_requirements.md).
+
+**Verification Method:** T
+
 ## Installation and acceptance requirements
 
 **Requirement ID:** REQ-IAR-000

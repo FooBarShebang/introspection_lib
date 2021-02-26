@@ -107,9 +107,25 @@ The verification method for a requirement is given by a single letter according 
 
 **Expected result:** All tests defined in the document [TE003](./TE003_logging_test_report.md) have passed.
 
-**Test steps:** TODO.
+**Test steps:** Run the 'demonstration test' modules DT001 to DT006 (see [TE003](./TE003_logging_test_report.md) for details).
 
-**Test result:** PASS /FAIL
+**Test result:** PASS
+
+---
+
+**Test Identifier:** TEST-T-005
+
+**Requirement ID(s)**: REQ-FUN-003
+
+**Verification method:** T
+
+**Test goal:** Implementation of the dynamic import API.
+
+**Expected result:** All tests defined in the document [TE004](./TE004_dynamic_import_test_report.md) have passed.
+
+**Test steps:** Run the unit-test module [Tests/UT003_dynamic_import.py](../../Tests/UT003_dynamic_import.py).
+
+**Test result:** PASS
 
 ## Traceability
 
@@ -119,7 +135,8 @@ For traceability the relation between tests and requirements is summarized in th
 | :----------------- | :--------------------- | :----------------------- |
 | REQ-FUN-000        | TEST-T-000             | YES                      |
 | REQ-FUN-001        | TEST-T-003             | YES                      |
-| REQ-FUN-002        | TEST-T-004             | NO                       |
+| REQ-FUN-002        | TEST-T-004             | YES                      |
+| REQ-FUN-003        | TEST-T-005             | YES                      |
 | REQ-IAR-000        | TEST-T-001             | YES                      |
 | REQ-IAR-001        | TEST-T-002             | YES                      |
 | REQ-IAR-002        | TEST-T-001             | YES                      |
