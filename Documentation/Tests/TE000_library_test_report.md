@@ -127,6 +127,22 @@ The verification method for a requirement is given by a single letter according 
 
 **Test result:** PASS
 
+---
+
+**Test Identifier:** TEST-T-006
+
+**Requirement ID(s)**: REQ-FUN-004
+
+**Verification method:** T
+
+**Test goal:** Implementation of the universal access by index, key or attribute.
+
+**Expected result:** All tests defined in the document [TE005](./TE005_universal_access_test_report.md) have passed.
+
+**Test steps:** Run the unit-test module [Tests/UT004_universal_access.py](../../Tests/UT004_universal_access.py).
+
+**Test result:** PASS / FAIL
+
 ## Traceability
 
 For traceability the relation between tests and requirements is summarized in the table below:
@@ -137,6 +153,7 @@ For traceability the relation between tests and requirements is summarized in th
 | REQ-FUN-001        | TEST-T-003             | YES                      |
 | REQ-FUN-002        | TEST-T-004             | YES                      |
 | REQ-FUN-003        | TEST-T-005             | YES                      |
+| REQ-FUN-004        | TEST-T-006             | NO                       |
 | REQ-IAR-000        | TEST-T-001             | YES                      |
 | REQ-IAR-001        | TEST-T-002             | YES                      |
 | REQ-IAR-002        | TEST-T-001             | YES                      |

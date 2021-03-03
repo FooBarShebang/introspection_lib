@@ -18,6 +18,7 @@
   * class **DualLogger** specific - 30x
   * class **DummyLogger** specific - 310
 * module **dynamic_import** - 4xx
+* module **universal_access** - 5xx
 
 ## Requirements vs Tests Traceability
 
@@ -27,6 +28,7 @@
 | REQ-FUN-001        | TEST-T-003                                   | YES                      |
 | REQ-FUN-002        | TEST-T-004                                   | YES                      |
 | REQ-FUN-003        | TEST-T-005                                   | YES                      |
+| REQ-FUN-004        | TEST-T-006                                   | NO                       |
 | REQ-IAR-000        | TEST-T-001                                   | YES                      |
 | REQ-IAR-001        | TEST-T-002                                   | YES                      |
 | REQ-IAR-002        | TEST-T-001                                   | YES                      |

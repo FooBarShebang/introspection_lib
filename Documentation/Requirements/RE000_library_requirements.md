@@ -61,6 +61,16 @@ The verification method for a requirement is given by a single letter according 
 
 **Verification Method:** T
 
+---
+
+**Requirement ID:** REQ-FUN-004
+
+**Title:** Unified access method for sequence, mapping and class objects.
+
+**Description:** The library should provide functions to get and set values of an sequence, mapping or class (instance) object, whith the object itself and the respective index, key or attribute name being passed as arguments. These functions should operate similar to the *getattribute*() and *setattr*() standard functions, but for the sequence and mapping type objects as well. The actual data access function or method should be selected automatically based on the type of the object and the second attribute (index, key or attribute name). An access to the direct 'end-node' element as well as nested element should be supported. See document [RE005](./RE005_universal_access_requirements.md).
+
+**Verification Method:** T
+
 ## Installation and acceptance requirements
 
 **Requirement ID:** REQ-IAR-000

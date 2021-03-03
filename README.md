@@ -47,3 +47,8 @@ This library does not depend on any other Python library / package except for th
 ## Documentation
 
 All documentation on the library is written in Markdown format, see the [index list](./Documentation/index.md).
+
+* [Requirements](./Documentation/Requirements/index.md)
+* [Design](./Documentation/Design/index.md)
+* [Tests](./Documentation/Tests/index.md)
+* [User and API References](./Documentation/References/index.md)
