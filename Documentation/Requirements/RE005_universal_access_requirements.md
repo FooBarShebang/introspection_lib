@@ -35,6 +35,16 @@ The verification method for a requirement is given by a single letter according 
 
 ---
 
+**Requirement ID:** REQ-FUN-501
+
+**Title:** Treatment of named tuples
+
+**Description:** The named tuples should be treated both as immutable sequences with index access and as immutable struct-like objects with access by attribute name.
+
+**Verification Method:** T
+
+---
+
 **Requirement ID:** REQ-FUN-510
 
 **Title:** Universal 'strict read' access to a sequence element, mapping object entry or attribute of a class or instance
@@ -57,9 +67,9 @@ The verification method for a requirement is given by a single letter according 
 
 **Requirement ID:** REQ-FUN-530
 
-**Title:** Universal 'strict write' access to a sequence element, mapping object entry or attribute of a class or instance
+**Title:** Universal 'relaxed write' access to a sequence element, mapping object entry or attribute of a class or instance
 
-**Description:** The module should provide function, that implements a universal 'strict write' access to an existed mutable sequence element (by integer index), mutable mapping object entry (by string key) or attribute of a class or instance (by string name), with both the object and the 'identifier' of the its component as well as the value to assign being passed as arguments. If such component is not found, or it is immutable an exception should be raised. Write access to a component of immutable object must result in an exception.
+**Description:** The module should provide function, that implements a universal 'strict write' access to an existed mutable sequence element (by integer index), mutable mapping object entry (by string key) or attribute of a class or instance (by string name), with both the object and the 'identifier' of the its component as well as the value to assign being passed as arguments. If such component is not found, it must be created. Write access to a component of immutable object must result in an exception.
 
 **Verification Method:** T
 
@@ -67,9 +77,9 @@ The verification method for a requirement is given by a single letter according 
 
 **Requirement ID:** REQ-FUN-540
 
-**Title:** Universal 'relaxed write' access to a sequence element, mapping object entry or attribute of a class or instance
+**Title:** Universal 'strict write' access to a sequence element, mapping object entry or attribute of a class or instance
 
-**Description:** The module should provide function, that implements a universal 'strict write' access to an existed mutable sequence element (by integer index), mutable mapping object entry (by string key) or attribute of a class or instance (by string name), with both the object and the 'identifier' of the its component as well as the value to assign being passed as arguments. If such component is not found, it must be created. Write access to a component of immutable object must result in an exception.
+**Description:** The module should provide function, that implements a universal 'strict write' access to an existed mutable sequence element (by integer index), mutable mapping object entry (by string key) or attribute of a class or instance (by string name), with both the object and the 'identifier' of the its component as well as the value to assign being passed as arguments. If such component is not found, or it is immutable an exception should be raised. Write access to a component of immutable object must result in an exception.
 
 **Verification Method:** T
 
@@ -104,8 +114,8 @@ The verification method for a requirement is given by a single letter according 
 * Any 'end-element' of a 'nested' path definition or a 'simple' path (single not nested element) is not an integer or a string
 * 'Nested' path definition contains any other types apart from an integer, a string or a (nested) sequence of stings and integers
 * Mis-match of the current level object type and the path element type:
-  * Current level object is a sequence, but the path element to be accessed is not an integer
-  * Current level object is a not a sequence, but the path element to be accessed is not a string
+  * Current level object is a sequence (but not a named tuple), but the path element to be accessed is a string
+  * Current level object is a not a sequence, but the path element to be accessed is an integer
 
 **Verification Method:** T
 

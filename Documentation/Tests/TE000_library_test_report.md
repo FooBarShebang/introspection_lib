@@ -141,7 +141,7 @@ The verification method for a requirement is given by a single letter according 
 
 **Test steps:** Run the unit-test module [Tests/UT004_universal_access.py](../../Tests/UT004_universal_access.py).
 
-**Test result:** PASS / FAIL
+**Test result:** PASS
 
 ## Traceability
 
@@ -153,7 +153,7 @@ For traceability the relation between tests and requirements is summarized in th
 | REQ-FUN-001        | TEST-T-003             | YES                      |
 | REQ-FUN-002        | TEST-T-004             | YES                      |
 | REQ-FUN-003        | TEST-T-005             | YES                      |
-| REQ-FUN-004        | TEST-T-006             | NO                       |
+| REQ-FUN-004        | TEST-T-006             | YES                      |
 | REQ-IAR-000        | TEST-T-001             | YES                      |
 | REQ-IAR-001        | TEST-T-002             | YES                      |
 | REQ-IAR-002        | TEST-T-001             | YES                      |
