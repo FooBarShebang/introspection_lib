@@ -6,8 +6,8 @@ This document describes the design, intended usage, implementation details and A
 
 The implemented functions:
 
-* **import_module**()
-* **import_from_module**()
+* *import_module*()
+* *import_from_module*()
 
 ## Intended Functionality and Use
 
