@@ -26,6 +26,8 @@
   * function *SetDataStrict*() - 540
   * function *GetElement*() - 550
   * function *SetElement*() - 560
+* module **structure_map** - 6xx
+  * common requirements for all functions - 60x
 
 ## Requirements vs Tests Traceability
 
@@ -36,6 +38,7 @@
 | REQ-FUN-002        | TEST-T-004                                                                         | YES                      |
 | REQ-FUN-003        | TEST-T-005                                                                         | YES                      |
 | REQ-FUN-004        | TEST-T-006                                                                         | YES                      |
+| REQ-FUN-005        | TEST-T-007                                                                         | NO                       |
 | REQ-IAR-000        | TEST-T-001                                                                         | YES                      |
 | REQ-IAR-001        | TEST-T-002                                                                         | YES                      |
 | REQ-IAR-002        | TEST-T-001                                                                         | YES                      |
@@ -88,6 +91,15 @@
 | REQ-AWM-501        | TEST-T-550, TEST-T-560                                                             | YES                      |
 | REQ-AWM-502        | TEST-T-530, TEST-T-540, TEST-T-560                                                 | YES                      |
 | REQ-AWM-503        | TEST-T-510, TEST-T-540, TEST-T-550, TEST-T-560                                     | YES                      |
+| REQ-FUN-600        | TEST-T-6??                                                                         | NO                       |
+| REQ-FUN-601        | TEST-T-6??                                                                         | NO                       |
+| REQ-FUN-602        | TEST-T-6??                                                                         | NO                       |
+| REQ-FUN-610        | TEST-T-6??                                                                         | NO                       |
+| REQ-FUN-611        | TEST-T-6??                                                                         | NO                       |
+| REQ-FUN-612        | TEST-T-6??                                                                         | NO                       |
+| REQ-FUN-620        | TEST-T-6??                                                                         | NO                       |
+| REQ-FUN-621        | TEST-T-6??                                                                         | NO                       |
+| REQ-AWM-622        | TEST-T-6??                                                                         | NO                       |
 
 | **Software ready for production \[YES/NO\]** | **Rationale**                 |
 | :------------------------------------------: | :---------------------------- |
