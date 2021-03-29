@@ -29,12 +29,12 @@ The verification method for a requirement is given by a single letter according 
 
 **Title:** Creation of a map of a ((nested) structured) object
 
-**Description:** The module should provide functionality to traverse an arbitrary Python object: from a scalar to a nested strucutured type (container or mapping type) to a nested C-struct like class instances - and produce a map of the object structure including the values of its end-nodes. The created map should be in the JSON-encoding ready format stored:
+**Description:** The module should provide functionality to traverse an arbitrary Python object: from a scalar to a nested structured type (container or mapping type) to a nested C-struct like class instances - and produce a map of the object structure including the values of its end-nodes. The created map should be in the JSON-encoding ready format stored:
 
 * Scalar types: integer, floating point, strings, boolean, None - should be presented 'as is'
-* Any sequence type, except for the named tuples, should be represented by a list
-* Any mapping type, named tuples and generic class instances should be represented by ordered dictionaries, preserving the keys order (if the keys are ordered in the source object)
-* Any callable types (except for properties) should be ignored
+* Any sequence type, except for the named tuples, should be represented by a list, preserving the order and values of the elements, except for those, which are of an unacceptable data type, which should be replaced by a special string value
+* Any mapping type, named tuples and generic class instances should be represented by ordered dictionaries, preserving the keys order (if the keys are ordered in the source object) and the bound values, except for keys refering to an unacceptable data type, which values should be replaced by a special string value
+* Any nested in sequences or mapping types callable types values (except for properties) or actual data type values (as **int**, not 1) should be replaced by a special value "!@#notJSON", whereas these type values passed as the argument (top level) is an error
 * These rules are applied recursively to the nested elements
 
 See [DE002](../Design/DE002_structure_map.md) document.
@@ -57,7 +57,7 @@ See [DE002](../Design/DE002_structure_map.md) document.
 
 **Title:** Mapping structure of class instances
 
-**Description:** Only properties and the attributes storing non-callable values (not methods) should be considered. Attributes with the names starting with, at least, one underscore should be ignored ('private', magic and name mangling attributes). See [DE002](../Design/DE002_structure_map.md) document.
+**Description:** Only properties and the attributes storing non-callable values (not methods) and not the built-in data types should be considered. Attributes with the names starting with, at least, one underscore should be ignored ('private', magic and name mangling attributes). See [DE002](../Design/DE002_structure_map.md) document.
 
 **Verification Method:** T
 
@@ -67,7 +67,7 @@ See [DE002](../Design/DE002_structure_map.md) document.
 
 **Title:** Read-mapping of sequences
 
-**Description:** The structure of any mutable or immutable sequence, except for the named tuples, should be represented by a list containing only JSON-encoding ready elements (recursive application of the rules) and preserving the original order of the elements. See [DE002](../Design/DE002_structure_map.md) document.
+**Description:** The structure of any mutable or immutable sequence, except for the named tuples, should be represented by a list containing only JSON-encoding ready elements (recursive application of the rules) and preserving the original order of the elements. The end-nodes storing references to callable objects (but not nested data storage classess) or actual data types (not values) should be replaced by a special value  "!@#notJSON". See [DE002](../Design/DE002_structure_map.md) document.
 
 **Verification Method:** T
 
@@ -77,7 +77,7 @@ See [DE002](../Design/DE002_structure_map.md) document.
 
 **Title:** Read-mapping of mapping types and named tuples
 
-**Description:** The structure of any mutable or immutable sequence and named tuple should be represented by an ordered dictionary containing only JSON-encoding ready elements (recursive application of the rules) and preserving the original order of the entries, if the original object is ordered. See [DE002](../Design/DE002_structure_map.md) document.
+**Description:** The structure of any mutable or immutable sequence and named tuple should be represented by an ordered dictionary containing only JSON-encoding ready elements (recursive application of the rules) and preserving the original order of the entries, if the original object is ordered. The end-nodes (values of the keys) being references to callable objects (but not nested data storage classess) or actual data types (not values) should be ignored. See [DE002](../Design/DE002_structure_map.md) document.
 
 **Verification Method:** T
 
@@ -90,8 +90,10 @@ See [DE002](../Design/DE002_structure_map.md) document.
 **Description:** The structure of any class instance should be represented by an ordered dictionary containing only JSON-encoding ready elements (recursive application of the rules), with the following limitations:
 
 * The name of an attribute cannot begin with an underscore
-* An attribute can be either a property with the getter method defined, or it can store any scalar value, any sequence, mapping type or an instance of a class
-* Other callable attributes except for properties, i.e. methods or stored references to functions should be ignored
+* An attribute can be either a property with the getter method defined and returning a scalar value, sequence or dictionary; or it can store any scalar value, any sequence, mapping type or an instance of a class
+* Other callable attributes except for properties, i.e. methods or stored references to functions, should be ignored
+* Dat attributes (fields) storing the references to the built-in data types (classes, not instances) should be ignored
+* Attributes referencing data types (not values) should be ignored
 * The standard attributes resolution scheme is applied, considering MRO and 'shadowing' of the names
   * Instance attributes, stored in the local slots or internal dictionary
   * Class attributes defined in this class
@@ -109,7 +111,7 @@ See [DE002](../Design/DE002_structure_map.md) document.
 
 **Description:** The structure of any mutable or immutable sequence, except for the named tuples, should be represented by a list containing only JSON-encoding ready elements (recursive application of the rules) and preserving the original order of the elements. Additional limitations are applied to the immutable sequences:
 
-* Immutable sequences containing only scalar elements or nested immutable sequences, immutbale mapping types or class instances without write-accessible end-nodes should be represented by an empty list
+* Immutable sequences containing only scalar elements or nested immutable sequences, immutable mapping types or class instances without write-accessible end-nodes, or callables or data types should be represented by an empty list
 * Immutable sequences containing, at least, one nested structured element with write-accessible end-node should be represented by a list of the same length as the initial sequence with all immutable elements being replaced by a special value "!@#immutable"
 
 See [DE002](../Design/DE002_structure_map.md) document.
@@ -122,9 +124,9 @@ See [DE002](../Design/DE002_structure_map.md) document.
 
 **Title:** Write-mapping of mapping types and named tuples
 
-**Description:** The structure of any mutable or immutable sequence and named tuple should be represented by an ordered dictionary containing only JSON-encoding ready elements (recursive application of the rules) and preserving the original order of the entries, if the original object is ordered.
+**Description:** The structure of any mutable or immutable sequence and named tuple should be represented by an ordered dictionary containing only JSON-encoding ready elements (recursive application of the rules) and preserving the original order of the entries, if the original object is ordered. Additional limitations are applied to the immutable mappings and named tuples:
 
-* Immutable mapping types and named tuples containing only scalar elements or nested immutable sequences, immutbale mapping types or class instances without write-accessible end-nodes should be represented by an empty ordered dictionary
+* Immutable mapping types and named tuples containing only scalar elements or nested immutable sequences, immutable mapping types or class instances without write-accessible end-nodes should be represented by an empty ordered dictionary
 * Immutable mapping types and named tuples containing, at least, one nested structured element with write-accessible end-node should be represented by an ordered dictionary with the same keys as the original object with all immutable values being replaced by a special value "!@#immutable"
 
 See [DE002](../Design/DE002_structure_map.md) document.
@@ -141,10 +143,32 @@ See [DE002](../Design/DE002_structure_map.md) document.
 
 * The name of an attribute cannot begin with an underscore
 * An attribute can be either a property with the setter method defined, or it can store any scalar value, any sequence, mapping type or an instance of a class
-* Other callable attributes except for properties, i.e. methods or stored references to functions should be ignored
+* Other callable attributes except for properties, i.e. methods or stored references to functions or the built-in data types (classes, not instnaces) should be ignored
 * The modified attributes resolution scheme is applied
   * Instance attributes, stored in the local slots or internal dictionary
   * Setter properties defined in this class or inherited from the super classes, considering MRO and 'shadowing' of the names
+* If a property has only the setter method, but no getter method, its value should be represented by None
+
+See [DE002](../Design/DE002_structure_map.md) document.
+
+**Verification Method:** T
+
+---
+
+## Alarm, Warnings, Operator Messages
+
+**Requirement ID:** REQ-AWM-600
+
+**Title:** Improper input for read- and write- structure mapping functions / methods.
+
+**Description:** A sub-class of **TypeError** standard exception should be raised if the passed object to be mapped is
+
+* Anything but a scalar (int, float, bool, string, None), a mapping type, a sequence type or a generic data storage class (C-struct like), i.e.:
+  * Any buit-in or user-defined function
+  * Method of a class or class instance
+  * Iterators, generators, etc. - callables, but not data storage classes
+  * A type, not a value (e.g. **int** instead of 1, as a class and not an instance)
+* A dictionary (top level or nested) containing not a string key
 
 See [DE002](../Design/DE002_structure_map.md) document.
 

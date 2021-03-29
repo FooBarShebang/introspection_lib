@@ -91,15 +91,16 @@
 | REQ-AWM-501        | TEST-T-550, TEST-T-560                                                             | YES                      |
 | REQ-AWM-502        | TEST-T-530, TEST-T-540, TEST-T-560                                                 | YES                      |
 | REQ-AWM-503        | TEST-T-510, TEST-T-540, TEST-T-550, TEST-T-560                                     | YES                      |
-| REQ-FUN-600        | TEST-T-6??                                                                         | NO                       |
-| REQ-FUN-601        | TEST-T-6??                                                                         | NO                       |
-| REQ-FUN-602        | TEST-T-6??                                                                         | NO                       |
-| REQ-FUN-610        | TEST-T-6??                                                                         | NO                       |
-| REQ-FUN-611        | TEST-T-6??                                                                         | NO                       |
-| REQ-FUN-612        | TEST-T-6??                                                                         | NO                       |
-| REQ-FUN-620        | TEST-T-6??                                                                         | NO                       |
-| REQ-FUN-621        | TEST-T-6??                                                                         | NO                       |
-| REQ-AWM-622        | TEST-T-6??                                                                         | NO                       |
+| REQ-FUN-600        | TEST-T-610, TEST-T-620                                                             | NO                       |
+| REQ-FUN-601        | TEST-T-610, TEST-T-620                                                             | NO                       |
+| REQ-FUN-602        | TEST-T-610, TEST-T-620                                                             | NO                       |
+| REQ-FUN-610        | TEST-T-610                                                                         | NO                       |
+| REQ-FUN-611        | TEST-T-610                                                                         | NO                       |
+| REQ-FUN-612        | TEST-T-610                                                                         | NO                       |
+| REQ-FUN-620        | TEST-T-620                                                                         | NO                       |
+| REQ-FUN-621        | TEST-T-620                                                                         | NO                       |
+| REQ-FUN-622        | TEST-T-620                                                                         | NO                       |
+| REQ-AWM-600        | TEST-T-600                                                                         | NO                       |
 
 | **Software ready for production \[YES/NO\]** | **Rationale**                 |
 | :------------------------------------------: | :---------------------------- |
