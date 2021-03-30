@@ -2,7 +2,7 @@
 
 ## Scope
 
-This document describes the intended usage, design and implementation of the functionality implemented in the module **traceback** of the library **introspection_lib**. The API reference is also provided.
+This document describes the intended usage, design and implementation of the functionality implemented in the module **my_traceback** of the library **introspection_lib**. The API reference is also provided.
 
 The functional objects covered in this document are:
 

@@ -27,3 +27,7 @@ Bug fix:
 
 * Added *dynamic_import* module with the tests and documentation
 * Updated the existing documentation
+
+## 2021-03-30
+
+Renamed modules *traceback* and *logging* to *my_traceback* and *my_logging* respectively, otherwise the packaging doesn't work.

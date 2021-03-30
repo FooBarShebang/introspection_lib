@@ -3,3 +3,7 @@
 __pycache__/
 #ignore the created .log files
 *.log
+#ignore builds
+build/
+dist/
+*.egg-info/

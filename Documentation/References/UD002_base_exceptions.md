@@ -29,9 +29,9 @@ except TypeError as err:
     ...
 ```
 
-For instance, the module **introspection_lib.traceback** provides class **ExceptionTraceback**, which can be instantiated from such a traceback object, and will generate the machine- and human-readable call chain as well as the extended human-readable traceback per-frame dump.
+For instance, the module **introspection_lib.my_traceback** provides class **ExceptionTraceback**, which can be instantiated from such a traceback object, and will generate the machine- and human-readable call chain as well as the extended human-readable traceback per-frame dump.
 
-The purpose of this module is to provide a framework of the custom exceptions, which extend the standard classes **Exception**, **TypeError**, **ValueError**, **AttributeError**, **IndexError** and **KeyError** by adding the functionality provided by the **introspection_lib.traceback.ExceptionTraceback** class.
+The purpose of this module is to provide a framework of the custom exceptions, which extend the standard classes **Exception**, **TypeError**, **ValueError**, **AttributeError**, **IndexError** and **KeyError** by adding the functionality provided by the **introspection_lib.my_traceback.ExceptionTraceback** class.
 
 The custom versions of the standard exceptions are their actual sub-classes (see diagram below), so the clause `except TypeError` will intercept both the **TypeError** and **UT_TypeError**, whereas the clause `except UT_TypeError` will intercept only **UT_TypeError**, but not any other exeption in the diagram below.
 
@@ -43,7 +43,7 @@ In addition, all defined custom exceptions are registered as *virtual* sub-class
 
 The design is to enable use of **UT_Exception** in the *try...except* clause to catch any of the defined custom exceptions. This approach works fine with Python 2.7, where the check in the *except* clause relies upon *isinstance*() function. In Python 3 (up to v3.8), however, the *except* clause check does not use *isinstance*() check, but checks the MRO directly at low level (C-implementation). Instead of meddling with metaclasses a simple solution is added - a tuple **UT_Exception_Check**, which lists all custom exceptions defined in this module. Use this 'umbrella' to catch any custom exception.
 
-The added functionality of the custom exceptions is implemented as a read-only property *Traceback*, which returns an instance of **introspection_lib.traceback.ExceptionTraceback** class. Thus, the traceback analysis of any of the custom exception can be performed as in the example below:
+The added functionality of the custom exceptions is implemented as a read-only property *Traceback*, which returns an instance of **introspection_lib.my_traceback.ExceptionTraceback** class. Thus, the traceback analysis of any of the custom exception can be performed as in the example below:
 
 ```python
 try:

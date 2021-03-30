@@ -1,4 +1,4 @@
-# Test Report on the Module introspection_lib.traceback
+# Test Report on the Module introspection_lib.my_traceback
 
 ## Conventions
 

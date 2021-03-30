@@ -3,7 +3,7 @@
 ## Relation between modules, classes and the requirements and tests indexing
 
 * global requirements - 00x
-* module **traceback** - 1xx
+* module **my_traceback** - 1xx
   * class *StackTraceback* - 10x
   * class *ExceptionTraceback* - 11x
 * module **base_exceptions** - 2(0|1|2)x
@@ -14,7 +14,7 @@
   * class *UT_AttributeError* specific - 240
   * class *UT_IndexError* specific - 250
   * class *UT_KeyError* specific - 260
-* module **logging** - 3xx
+* module **my_logging** - 3xx
   * class **DualLogger** specific - 30x
   * class **DummyLogger** specific - 310
 * module **dynamic_import** - 4xx

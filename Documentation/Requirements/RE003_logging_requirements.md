@@ -1,4 +1,4 @@
-# Requirements for the Module introspection_lib.logging
+# Requirements for the Module introspection_lib.my_logging
 
 ## Conventions
 

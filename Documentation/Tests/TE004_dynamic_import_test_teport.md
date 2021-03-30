@@ -1,4 +1,4 @@
-# TE004 Test Report on the Module dynamic_import
+# TE004 Test Report on the Module introspection_lib.dynamic_import
 
 ## Conventions
 

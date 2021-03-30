@@ -1,4 +1,4 @@
-# RE004 Requirements for the Module universal_access
+# RE004 Requirements for the Module introspection_lib.universal_access
 
 ## Conventions
 

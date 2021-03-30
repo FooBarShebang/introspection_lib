@@ -1,4 +1,4 @@
-# TE004 Test Report on the Module universal_access
+# TE004 Test Report on the Module introspection_lib.universal_access
 
 ## Conventions
 

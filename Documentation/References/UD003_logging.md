@@ -1,8 +1,8 @@
-# Module introspection_lib.traceback Reference
+# Module introspection_lib.my_logging Reference
 
 ## Scope
 
-This document describes the intended usage, design and implementation of the functionality implemented in the module **logging** of the library **introspection_lib**. The API reference is also provided.
+This document describes the intended usage, design and implementation of the functionality implemented in the module **my_logging** of the library **introspection_lib**. The API reference is also provided.
 
 The functional objects covered in this document are:
 
@@ -36,7 +36,7 @@ A practical example:
 The functionality of the **DualLogger** class defined in this module can be use as in the listing below in order to implement such a process:
 
 ```python
-from introspection_lib.logging import DualLogger
+from introspection_lib.my_logging import DualLogger
 
 def sub_process(Logger):
     #do some processing

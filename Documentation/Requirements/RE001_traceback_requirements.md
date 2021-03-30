@@ -1,4 +1,4 @@
-# Requirements for the Module introspection_lib.traceback
+# Requirements for the Module introspection_lib.my_traceback
 
 ## Conventions
 
