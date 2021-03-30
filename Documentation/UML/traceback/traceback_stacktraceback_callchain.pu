@@ -1,6 +1,6 @@
 @startuml traceback_stacktraceback_callchain
 
-title Activity Diagram of the Property traceback.StackTraceback.CallChain
+title Activity Diagram of the Property StackTraceback.CallChain
 
 start
 

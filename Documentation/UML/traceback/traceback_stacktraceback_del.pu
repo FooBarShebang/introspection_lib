@@ -1,6 +1,6 @@
 @startuml traceback_stacktraceback_del
 
-title Activity Diagram of the Method traceback.StackTraceback._ _del_ _()
+title Activity Diagram of the Method StackTraceback._ _del_ _()
 
 start
 

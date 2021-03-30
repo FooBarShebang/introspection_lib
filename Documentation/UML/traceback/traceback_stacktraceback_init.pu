@@ -1,6 +1,6 @@
 @startuml traceback_stacktraceback_init
 
-title Activity Diagram of the Method traceback.StackTraceback._ _init_ _()
+title Activity Diagram of the Method StackTraceback._ _init_ _()
 
 start
 
