@@ -47,7 +47,7 @@ ROOT_FOLDER = os.path.dirname(LIB_FOLDER)
 if not (ROOT_FOLDER in sys.path):
     sys.path.append(ROOT_FOLDER)
 
-from introspection_lib.traceback import ExceptionTraceback
+from introspection_lib.my_traceback import ExceptionTraceback
 
 #types
 

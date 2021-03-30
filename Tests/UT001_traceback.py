@@ -2,7 +2,7 @@
 """
 Module introspection_lib.Tests.UT001_traceback
 
-Implements unit testing of the module introspection_lib.traceback.
+Implements unit testing of the module introspection_lib.my_traceback.
 """
 
 __version__ = "1.0.1.0"
@@ -25,7 +25,7 @@ ROOT_FOLDER = os.path.dirname(os.path.dirname(
 if not (ROOT_FOLDER) in sys.path:
     sys.path.append(ROOT_FOLDER)
 
-import introspection_lib.traceback as testmodule
+import introspection_lib.my_traceback as testmodule
 
 #helper functions
 
@@ -56,7 +56,7 @@ def outer():
 
 class Test_StackTraceback(unittest.TestCase):
     """
-    Test cases for the class introspection_lib.traceback.StackTraceback
+    Test cases for the class introspection_lib.my_traceback.StackTraceback
     
     Implements tests: TEST-T-100 and TEST-T-101. Covers the requirements
     REQ-FUN-100, REQ-FUN-101 and REQ-FUN-102.
@@ -189,7 +189,7 @@ class Test_StackTraceback(unittest.TestCase):
 
 class Test_ExceptionTraceback(Test_StackTraceback):
     """
-    Test cases for the class introspection_lib.traceback.ExceptionTraceback.
+    Test cases for the class introspection_lib.my_traceback.ExceptionTraceback.
     Extends the unit test class Test_StackTraceback.
     
     Implements tests: TEST-T-110 and TEST-T-111. Covers the requirements
@@ -304,6 +304,7 @@ TestSuite = unittest.TestSuite()
 TestSuite.addTests([TestSuite1, TestSuite2])
 
 if __name__ == "__main__":
-    sys.stdout.write("Conducting introspection_lib.traceback module tests...\n")
+    sys.stdout.write(
+                "Conducting introspection_lib.my_traceback module tests...\n")
     sys.stdout.flush()
     unittest.TextTestRunner(verbosity = 2).run(TestSuite)

@@ -1,6 +1,6 @@
 @startuml traceback_stacktraceback_info
 
-title Activity Diagram of the Property traceback.StackTraceback.Info
+title Activity Diagram of the Property StackTraceback.Info
 
 start
 

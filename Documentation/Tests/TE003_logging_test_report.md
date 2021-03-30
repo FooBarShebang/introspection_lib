@@ -1,4 +1,4 @@
-# Test Report on the Module introspection_lib.logging
+# Test Report on the Module introspection_lib.my_logging
 
 ## Conventions
 

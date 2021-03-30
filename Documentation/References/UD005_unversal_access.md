@@ -1,4 +1,4 @@
-# UD004 Reference on the Module introspection_lib.dynamic_import
+# UD004 Reference on the Module introspection_lib.universal_access
 
 ## Scope
 

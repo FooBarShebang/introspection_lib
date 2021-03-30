@@ -4,7 +4,7 @@
     !include ../Templates/Components2.cuml
 !endif
 
-$module(traceback) {
+$module(my_traceback) {
     $function(ParseFramesList)
 
     $class(StackTraceback)

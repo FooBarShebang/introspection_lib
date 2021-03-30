@@ -1,4 +1,4 @@
-# RE004 Requirements for the Module dynamic_import
+# RE004 Requirements for the Module introspection_lib.dynamic_import
 
 ## Conventions
 

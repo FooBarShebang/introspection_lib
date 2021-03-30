@@ -2,7 +2,7 @@
 """
 Module introspection_lib.Tests.DT001_logging_files
 
-Implements demonstration testing of the module introspection_lib.logging.
+Implements demonstration testing of the module introspection_lib.my_logging.
 Specifically, rotation of log files and enabling / disabling logging into a
 file.
 
@@ -29,7 +29,7 @@ ROOT_FOLDER = os.path.dirname(os.path.dirname(
 if not (ROOT_FOLDER) in sys.path:
     sys.path.append(ROOT_FOLDER)
 
-from introspection_lib.logging import DualLogger
+from introspection_lib.my_logging import DualLogger
 
 #testing
 

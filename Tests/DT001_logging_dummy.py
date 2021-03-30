@@ -2,7 +2,7 @@
 """
 Module introspection_lib.Tests.DT001_logging_dummy
 
-Implements demonstration testing of the module introspection_lib.logging.
+Implements demonstration testing of the module introspection_lib.my_logging.
 Specifically, the 'dummy' logger's functionality.
 
 Test ID: TEST-D-310. Covers requirement REQ-FUN-310.
@@ -28,7 +28,7 @@ ROOT_FOLDER = os.path.dirname(os.path.dirname(
 if not (ROOT_FOLDER) in sys.path:
     sys.path.append(ROOT_FOLDER)
 
-from introspection_lib.logging import DummyLogger
+from introspection_lib.my_logging import DummyLogger
 
 #actual tests
 

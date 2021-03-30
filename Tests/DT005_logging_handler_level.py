@@ -2,7 +2,7 @@
 """
 Module introspection_lib.Tests.DT005_logging_handler_level
 
-Implements demonstration testing of the module introspection_lib.logging.
+Implements demonstration testing of the module introspection_lib.my_logging.
 Specifically, the default functionality and message propagation with only
 filtering by the handlers of the dual logging class.
 
@@ -29,7 +29,7 @@ ROOT_FOLDER = os.path.dirname(os.path.dirname(
 if not (ROOT_FOLDER) in sys.path:
     sys.path.append(ROOT_FOLDER)
 
-from introspection_lib.logging import DualLogger
+from introspection_lib.my_logging import DualLogger
 
 #help functions
 

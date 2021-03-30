@@ -28,7 +28,7 @@ if not (ROOT_FOLDER) in sys.path:
 
 import introspection_lib.base_exceptions as testmodule
 
-from introspection_lib.traceback import ExceptionTraceback
+from introspection_lib.my_traceback import ExceptionTraceback
 
 #helper functions
 

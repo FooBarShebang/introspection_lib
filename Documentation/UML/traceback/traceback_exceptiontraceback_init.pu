@@ -1,6 +1,6 @@
 @startuml traceback_exceptiontraceback_init
 
-title Activity Diagram of the Method traceback.ExceptionTraceback._ _init_ _()
+title Activity Diagram of the Method ExceptionTraceback._ _init_ _()
 
 start
 

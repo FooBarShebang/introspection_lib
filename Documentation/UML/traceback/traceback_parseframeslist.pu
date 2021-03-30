@@ -1,6 +1,6 @@
 @startuml traceback_parseframeslist
 
-title Activity Diagram of the function traceback.ParseFramesList()
+title Activity Diagram of the function ParseFramesList()
 
 start
 :<b>Frames</b>: list of instances of inspection.FrameInfo
