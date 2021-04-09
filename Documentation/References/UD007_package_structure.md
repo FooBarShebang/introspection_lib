@@ -45,9 +45,15 @@ The clients of the module are supposed to work mostly with the implemented class
 
 The function *IsPyFile*() checks if the passed argument is the path to an existing Python source file, not a symlink. Thus, the argument must be as string - otherwise **UT_TypeError** exception is raised; the file must exist, it must have the '.py' extension, and it must be not a symlink.
 
+![IsPyFile()](../UML/package_structure/check_if_source_file.png)
+
 The function *IsPyPackage*() checks if the passed argument is the path to an existing folder, not a symlink, which is considered to be a Python package. Thus, the argument must be as string - otherwise **UT_TypeError** exception is raised; the folder must exist, it must have the '\_\_init\_\_.py' file within, and it must be not a symlink.
 
+![IsPyPackage()](../UML/package_structure/check_if_package.png)
+
 The function *SelectPySourceFiles*() generates a list of the base filenames of all actual Python source files (ignoring the symlinks) found within a specified folder, which also should not be a symlink. The returned list is empty if there no actual Python source files within the folder, or the passed path is symlink itself. The function does not look inside the sub-folders, only within the specified folder. The argument must be as string - otherwise **UT_TypeError** exception is raised.
+
+![SelectPySourceFiles()](../UML/package_structure/select_source_files.png)
 
 The function *GetQualifiedName*() attempts to create a fully qualified import name for a module or a (sub-) package. Basically, if it finds a Python source file or a Python package located at the passed path, the function checks if the parent folder to this file or folder is a Python package. Thus, it climbs up the file structure hierarchy until it reaches the folder, which is not a Python package, or the root of the tree. The *base filename* of a Python source file without the '.py' extension is used as the *module* name, and the base name of a folder is used as the respective (sub-) package name. Depending on the type and value of the argument the returned value is constructed following the rules below:
 
@@ -61,7 +67,11 @@ The function *GetQualifiedName*() attempts to create a fully qualified import na
 * Path to Python module, wich is a part of a package -> string *package/.subpackage/.module* import name with a variable depth of inclusion
 * Path to Python package, wich is a part of another package -> string *package/.subpackage/.subpackage* import name with a variable depth of inclusion
 
+![GetQualifiedName()](../UML/package_structure/get_qualified_name.png)
+
 The function *ResolveRelativeImport*() is designed for the resolution of the relative imports into absolute import names relative to the qualified name of the module, where these imports are made. It requires two arguments: a path to a Python module, and the absolute or relative import name. The both arguments must be strings, otherwise **UT_TypeError** exception is raised. If the passed import name is absolute - i.e. it doesn't start with any number of dots '.', the file path is ignored and the passed absolute import name is returned. If the passed import name is relative - i.e. it starts with one or more consecutive dots, the passed file path must lead to an existing actual Python source file - otherwise **UT_ValueError** is raised. The fully qualified name of the module is resolved (see *GetQualifiedName*()) by the passed file path. The number of leading dots in the import name is counted, and the corresponding number of the tailing elements in the module's qualified name are removed. The import name is stripped of the leading dots and the remaining part is attached via dot to the tail-stripped module's qualified name. Note, that the relative import cannot point outside the 'root' package of the respective module - otherwise **UT_ValueError** is raised.
+
+![ResolveRelativeImport()](../UML/package_structure/resolve_relative_import.png)
 
 ## API Reference
 

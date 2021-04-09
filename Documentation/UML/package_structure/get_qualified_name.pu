@@ -1,0 +1,11 @@
+@startuml get_qualified_name
+
+title Activity Diagram of the function GetQualifiedName()
+
+start
+
+
+
+stop
+
+@enduml
