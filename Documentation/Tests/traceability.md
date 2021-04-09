@@ -15,8 +15,8 @@
   * class *UT_IndexError* specific - 250
   * class *UT_KeyError* specific - 260
 * module **my_logging** - 3xx
-  * class **DualLogger** specific - 30x
-  * class **DummyLogger** specific - 310
+  * class *DualLogger* specific - 30x
+  * class *DummyLogger* specific - 310
 * module **dynamic_import** - 4xx
 * module **universal_access** - 5xx
   * common requirements for all functions, including *FlattenPath*() - 50x
@@ -28,6 +28,12 @@
   * function *SetElement*() - 560
 * module **structure_map** - 6xx
   * common requirements for all functions - 60x
+* module **package_structure** - 7xx
+  * common requirements for all functions - 70x
+  * function *IsPyFile*() - 71x
+  * function *IsPyPackage*() - 72x
+  * function *SelectPySourceFiles*() - 73x
+  * function *GetQualifiedName*() - 74x
 
 ## Requirements vs Tests Traceability
 
@@ -39,6 +45,7 @@
 | REQ-FUN-003        | TEST-T-005                                                                         | YES                      |
 | REQ-FUN-004        | TEST-T-006                                                                         | YES                      |
 | REQ-FUN-005        | TEST-T-007                                                                         | NO                       |
+| REQ-FUN-006        | TEST-T-008                                                                         | NO                       |
 | REQ-IAR-000        | TEST-T-001                                                                         | YES                      |
 | REQ-IAR-001        | TEST-T-002                                                                         | YES                      |
 | REQ-IAR-002        | TEST-T-001                                                                         | YES                      |
@@ -101,6 +108,14 @@
 | REQ-FUN-621        | TEST-T-620                                                                         | NO                       |
 | REQ-FUN-622        | TEST-T-620                                                                         | NO                       |
 | REQ-AWM-600        | TEST-T-600                                                                         | NO                       |
+| REQ-FUN-700        | TEST-A-700                                                                         | NO                       |
+| REQ-FUN-710        | TEST-T-710                                                                         | YES                      |
+| REQ-FUN-720        | TEST-T-720                                                                         | YES                      |
+| REQ-FUN-730        | TEST-T-730                                                                         | YES                      |
+| REQ-FUN-740        | TEST-T-740                                                                         | YES                      |
+| REQ-FUN-750        | TEST-T-750                                                                         | YES                      |
+| REQ-AWM-700        | All TEST-T-7??                                                                     | NO                       |
+| REQ-AWM-701        | TEST-T-750                                                                         | NO                       |
 
 | **Software ready for production \[YES/NO\]** | **Rationale**                 |
 | :------------------------------------------: | :---------------------------- |

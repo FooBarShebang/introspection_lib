@@ -81,9 +81,30 @@ The verification method for a requirement is given by a single letter according 
 
 * Construct JSON-encoding ready structure of an object concerning all (nested) element, which can be accessed for reading
 * Construct JSON-encoding ready structure of an object concerning all (nested) element, which can be accessed for writing
-* Perform data mapping from one (nested) strucutured object onto another one (nested) strucutured object
+* Perform data mapping from one (nested) structured object onto another one (nested) strucutured object
 
 See documents [DE002](../Design/DE002_structure_map.md) and [RE006](./RE006_structure_map_requirements.md).
+
+**Verification Method:** T
+
+---
+
+**Requirement ID:** REQ-FUN-006
+
+**Title:** Static inspection of dependencies.
+
+**Description:** The library should provide functions or methods to:
+
+* Construct a list of all unique 'top level' dependencies (stand alone module or root packages) directly imported by a module / script or all modules / scripts found in all sub-folders of a folder, with each (sub-) folder not necessarily being a package, whilst ignoring links.
+* Construct a list of all unique dependencies (modules or (sub-) packages) directly imported by a module / script.
+* Construct a dictionary of all dependencies (modules or (sub-) packages) directly imported by each module / script found in all sub-folders of a folder, with each (sub-) folder not necessarily being a package, whilst ignoring links. The paths to the modules relative to the 'root' folder should be the keys, and the values - lists of unique dependencies specific for that module / script.
+* Construct a dictionary mapping the import names / aliases (visible in the local namespace of a module) to their fully qualified (dot notation) names, including the parent module and all parent packages.
+* Construct a nested dictionary mapping the paths to the modules (relative to the 'root' folder) to the dictionaries mapping the import names / aliases (visible in the local namespace of each module) to their fully qualified (dot notation) names for all modules / scripts found in all sub-folders of a folder, with each (sub-) folder not necessarily being a package, whilst ignoring links.
+* Determine if a 'top level' module or package is a system one, or it is already installed via pip, or it is located in some non-standard folder and is installed by other means, or it cannot be currently found.
+
+The analysis should be completely static, no imports except for the system / standard modules are allowed. The determination if an import name / alias refers to a package, a module or a component within module should be based solely on the analysis of the file structure of the known *sys.path* entries. Relative imports should be resolved into the absolute ones.
+
+See documents [DE003](../Design/DE003_package_structure.md) and [RE007](./RE007_package_structure_requirements.md).
 
 **Verification Method:** T
 

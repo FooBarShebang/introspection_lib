@@ -7,3 +7,4 @@
 * Module *dynamic_import* - [RE004](./RE004_dynamic_import_requirements.md)
 * Module *universal_access* - [RE005](./RE005_universal_access_requirements.md)
 * Module *structure_map* - [RE006](./RE006_structure_map_requirements.md)
+* Module *package_structure* - [RE007](./RE007_package_structure_requirements.md)
