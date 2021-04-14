@@ -172,6 +172,58 @@ Implement the unit test cases in the [UT006_package_structure](../../Tests/UT006
 * Pass different values of non-string types as the first, the second or both arguments. An instance of (sub-class of) **TypeError** should be raised each time.
 * Delete the created symlinks, the temporary files and folders.
 
+**Test result:** PASS
+
+---
+
+**Test Identifier:** TEST-T-760
+
+**Requirement ID(s)**: REQ-FUN-760, REQ-FUN-761, REQ-AWM-700 and REQ-AWM-701
+
+**Verification method:** T
+
+**Test goal:** Proper implementation of the package structure analyzer.
+
+**Expected result:** There is a class in the module, which implements the required functinality according to the DE003 design document. The path to the a Python package is passed into the initialization method of this class, then the dependencies list and the import names look-up table are available as the returned values of its methods or properties. By default, the modules and sub-folders related to the **setuptools** packaging are ignored, whereas all other Python modules are analyzed, even if they are placed into the sub-folders, which are not Python packages. The dependencies and import names are resolved using static analysis only, neither the modules being analyzed nor their dependencies are imported during the analysis. The obtained results: dependencies list and the import names mapping dictionary are formed conforming the rules and example in DE003 design document. The non-string argument passed into the intialization method results in an exception of sub-class of **TypeError**. Passed string not being a path to a Python package results in an exception of sub-class of **ValueError**.
+
+**Test steps:**
+
+* Create the file structure described in the *Example* section of DE003 document.
+* Create the content of the Python source files as given in the *Example* section of DE003 document - make sure to add 'raise ImportError' line into each file, as a mean to check that the import of that module doesn't occur during the analysis / test.
+* Try to instantiate the **PackageStructure** class in the module being tested with a number of different non-string arguments - check that an exception of sub-class of **TypeError** is raised each time.
+* Try to instantiate the **PackageStructure** class in the module being tested with an empty string, an arbitrary string not being a path to a Python package but a module or simple folder, an arbitrary string not being a proper file or folder path at all - check that an exception of sub-class of **ValueError** is raised each time.
+* Initiate the **PackageStructure** class in the module being tested with the paths to the *test_package*, *test_package/sub1*, *test_package/sub1/subsub* and *test_package/sub2* folders - check that the package names, list of source files, list of dependencies and the import names mapping dictionary are formed properly. Also check the generated list of the packaging sub-packages and compare it with the expectations.
+* Delete the created files and folders
+
+**Test result:** PASS
+
+---
+
+**Test Identifier:** TEST-T-761
+
+**Requirement ID(s)**: REQ-FUN-762, REQ-AWM-700
+
+**Verification method:** T
+
+**Test goal:** Dynamic adjustment of the filtering options of the package structure analyzer.
+
+**Expected result:** The list of source files, list of dependencies and the import names mapping dictionary are modified as expected with the modification of the filtering patterns sets.
+
+**Test steps:**
+
+* Create the file structure described in the *Example* section of DE003 document.
+* Create the content of the Python source files as given in the *Example* section of DE003 document - make sure to add 'raise ImportError' line into each file, as a mean to check that the import of that module doesn't occur during the analysis / test.
+* Initiate the **PackageStructure** class in the module being tested with the paths to the *test_package* - check that the list of source files, list of dependencies and the import names mapping dictionary are conform with the DE003 example.
+* Add '*a.py' pattern to the files filtering. Check that only files with the '\_\_init\_\_.py' base file names remain in the mapping table and the list of modules, whereas the list of dependencies is reduced to `['pip']`
+* Delete 'setup.py' pattern from the files filtering. Check that the corresponding entries are added into the list of modules and mapping table, whereas the list of dependencies is `['pip', 'setuptools']` (not in order comparison!).
+* Add '*subsub' pattern into the folders filtering. Check that the 'sub1/subsub/\_\_init\_\_.py' entries are removed from the list of modules and mapping table, whereas the list of dependencies is `['setuptools']`.
+* Delete 'dist' folder filtering pattern. Check that the 'dist/dist_a.py' entires are added to the list of modules and mapping table, whereas the list of dependencies is `['setuptools', 'package3']` (not in order!).
+* Set both files and folders filtering patterns to an empty list. Check that the results is the same as in the DE003 example (w/o filtering).
+* Set the files filtering to `['setup.py']` and folders filtering - to `['*build*','*dist*', '*egg*']`. Check that the list of source files, list of dependencies and the import names mapping dictionary are conform with the DE003 example (with filtering), i.e. to the intial condition.
+* Delete the created files and folders
+
+**Test result:** PASS
+
 ## Tests definition (Analysis)
 
 **Test Identifier:** TEST-A-700
@@ -186,23 +238,27 @@ Implement the unit test cases in the [UT006_package_structure](../../Tests/UT006
 
 **Test steps:** Execute the unit test module [UT006_package_structure](../../Tests/UT006_package_structure.py), and perform all defined test cases.
 
-**Test result:** PASS/FAIL
+**Test result:** PASS
 
 ## Traceability
 
 For traceability the relation between tests and requirements is summarized in the table below:
 
-| **Requirement ID** | **Covered in test(s)**                                                             | **Verified \[YES/NO\]**) |
-| :----------------- | :--------------------------------------------------------------------------------- | :----------------------- |
-| REQ-FUN-700        | TEST-A-700                                                                         | NO                       |
-| REQ-FUN-710        | TEST-T-710                                                                         | YES                      |
-| REQ-FUN-720        | TEST-T-720                                                                         | YES                      |
-| REQ-FUN-730        | TEST-T-730                                                                         | YES                      |
-| REQ-FUN-740        | TEST-T-740                                                                         | YES                      |
-| REQ-FUN-750        | TEST-T-750                                                                         | YES                      |
-| REQ-AWM-700        | All TEST-T-7??                                                                     | NO                       |
-| REQ-AWM-701        | TEST-T-750                                                                         | NO                       |
+| **Requirement ID** | **Covered in test(s)**     | **Verified \[YES/NO\]**) |
+| :----------------- | :------------------------- | :----------------------- |
+| REQ-FUN-700        | TEST-A-700                 | YES                      |
+| REQ-FUN-710        | TEST-T-710                 | YES                      |
+| REQ-FUN-720        | TEST-T-720                 | YES                      |
+| REQ-FUN-730        | TEST-T-730                 | YES                      |
+| REQ-FUN-740        | TEST-T-740                 | YES                      |
+| REQ-FUN-750        | TEST-T-750                 | YES                      |
+| REQ-FUN-760        | TEST-T-760                 | YES                      |
+| REQ-FUN-761        | TEST-T-760                 | YES                      |
+| REQ-FUN-762        | TEST-T-761                 | YES                      |
+| REQ-FUN-763        | TEST-T-760                 | YES                      |
+| REQ-AWM-700        | All TEST-T-7x0, TEST-T-761 | YES                      |
+| REQ-AWM-701        | TEST-T-750, TEST-T-760     | YES                      |
 
 | **Software ready for production \[YES/NO\]** | **Rationale**                 |
 | :------------------------------------------: | :---------------------------- |
-| NO                                           | Under development             |
+| YES                                          | All tests are passed          |

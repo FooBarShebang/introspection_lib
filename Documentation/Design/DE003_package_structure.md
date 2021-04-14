@@ -110,3 +110,315 @@ from ..sub2.b import get_it
 Each consecutive leading dot in the name means jumping one level up in the package hierarchical structure tree starting from the position of the module, where the import is made.
 
 There is also functional call interface for the imports provided by the Standard Library - *importlib*, however it is considered to be a bad programming practise to use it instead of the import statements outside the situations requiring *dynamic* import. With the *dynamic* import one or another module is imported on demand, depending on the user actions or data input. Such functional call imports are not taken into account in the static code analysis.
+
+## Folders and files filtering rules
+
+The filtering is based on the Unix shell-style wildcards (see [Python fnmatch](https://docs.python.org/3/library/fnmatch.html)), i.e.
+
+* \* - matches everything, any number of any characters, including an empty sub-string
+* ? - matches any single character
+* \[seq\] - matches any character in *seq*
+* \[!seq\] - matches any character not in *seq*
+
+The path to the folder being analyzed is used as a common prefix for the paths to all its included sub-folders and files, which is removed from those paths during the analysis. Basically, the paths *relative* to that 'parent' folder are used, but without the leading './' ('.\\' on Windows) modifier.
+
+The folders matching patterns are applied to those relative paths, but only if the corresponding path refers to a sub-folder. The files matching patterns are applied to the base filenames part of the paths referring to the Python modules.
+
+The folders matching patterns may contain the path separators using either POSIX or Windows convention, which will be automatically adjusted to the convention of the OS, under which the code is executed.
+
+The patterns to be included by default are:
+
+* Files:
+  * `setup.py`
+* Folders:
+  * `build`
+  * `build/*`
+  * `*/build`
+  * `*/build/*`
+  * `dist`
+  * `dist/*`
+  * `*/dist`
+  * `*/dist/*`
+  * `*egg-info*`
+  * `*dist-info*`
+
+These defaults should prevent inclusion of the **setuptools** packaging process related files and folders.
+
+## Detection of the dependencies origin and location
+
+The location of a 'top level' package or module can be obtained using Standard Library function *importlib.util.find_spec*(). If such module or package cannot be found in any of the folders registered in the Python system variable *sys.path* this function returns **None** value. If such module / package is located, the returned value is an instance of the class **importlib.machinery.ModuleSpec**, which will have *origin* attribute storing the path to the module or the `__init__.py` of the package. Furthermore, in the case of a package another attribute *submodule_search_locations* will hold a list of strings - paths to the folders, where the sub-packages and sub-modules are located; whereas in the case of the module found at the top level this attribute holds **None** value.
+
+Normally, the 3rd party packages / modules installed via the *pip* package manager should be placed into a folder with the following path `{prefix}/lib/python{X}.{Y}/site-packages`, where `{prefix}` is either the standard sytem- or user-installation search prefix (see *sys.base_prefix* system variable), or the virtual environment path prefix (see *sys.prefix* system variable). If a virtual enviroment is not initialized, both *sys.base_prefix* and *sys.prefix* hold the same value. `{X}` is the Python 'major' version number, and `{Y}` - minor version number (e.g. 3.6 or 3.9, etc.). However, in some cases, e.g. Debian derivative Linux distributions - the *pip* package manager is usually installed from *apt* repository, as well as a number of other Python packages. For such packages the path should include 'dist-packages' part instead of 'site-packages'.
+
+The Standard Library packages / modules can be distinguished by the combination of two properties of their path: a) it starts with the common Python prefix (*sys.prefix* or *sys.base_prefix*), and b) it does not contain sub-strings 'site-packages' or 'dist-packages'.
+
+The modules / packages paths containing 'site-packages' are, most probably, installed via the *pip* manager, whereas paths containing 'dist-packages' sub-string may be installed via *pip*. The corresponding 'parent' folders should be analyzed further; for every *pip* installed package / module there should be an 'egg-info' or 'dist-info' subfolder. The exact name of the corresponding distribution info folder is not known *a priory*, but it may be found using static analysis of the content of the 'parent' folder.
+
+Packages / modules with the paths not containing 'site-packages' or 'dist-packages' sub-string, nor starting with the common Python prefix (*sys.prefix* or *sys.base_prefix*) are, most probably, 3rd party packages not installed properly, but manually added to the *sys.path*.
+
+## Example
+
+Consider the following example (can be used for testing). There is a folder *Project_folder*, which is not a Python package itself, but it contains several Python packages, with *test_package* amongst them.
+
+![Test package structure](../UML/package_structure/test_package.png)
+
+Considering the file structure of the folder *test_package* the tables below list relative paths to all Python files (ignoring the default filtering settings) and the fully qualified package names for all sub-folders, when applicable.
+
+| (Sub-) folder relative path | Package name             |
+| --------------------------- | ------------------------ |
+| ./                          | test_package             |
+| ./sub1                      | test_package.sub1        |
+| ./sub1/subsub               | test_package.sub1.subsub |
+| ./sub2                      | test_package.sub2        |
+| ./tests                     | **Not a package**        |
+| ./build                     | **Not a package**        |
+| ./build/lib64               | **Not a package**        |
+| ./dist                      | **Not a package**        |
+| ./test_package.egg-info     | **Not a package**        |
+
+| List of reduced paths to the Python modules |
+| ------------------------------------------- |
+| \_\_init.py\_\_                             |
+| `a.py`                                      |
+| `setup.py`                                  |
+| sub1/\_\_init.py\_\_                        |
+| sub1/sub1_a.py                              |
+| sub1/subsub/\_\_init.py\_\_                 |
+| sub1/subsub/subsub_a.py                     |
+| sub2/\_\_init.py\_\_                        |
+| sub2/sub2_a.py                              |
+| tests/test_a.py                             |
+| build/build_a.py                            |
+| build/lib64/lib_a.py                        |
+| dist/dist_b.py                              |
+| test_package.egg-info/egg_a.py              |
+
+However, with the default filtering applied this list is reduced to
+
+| List of reduced paths to the Python modules |
+| ------------------------------------------- |
+| \_\_init.py\_\_                             |
+| `a.py`                                      |
+| sub1/\_\_init.py\_\_                        |
+| sub1/sub1_a.py                              |
+| sub1/subsub/\_\_init.py\_\_                 |
+| sub1/subsub/subsub_a.py                     |
+| sub2/\_\_init.py\_\_                        |
+| sub2/sub2_a.py                              |
+| tests/test_a.py                             |
+
+This example is only for illustration of the dependencies and import names resolution, thus the code sniplets below are not intended to be executed or imported.
+
+`__init__.py`
+
+```python
+import os, sys as my_sys
+
+raise ImportError
+```
+
+`a.py`
+
+```python
+import os.path as os_path
+import some_package
+
+from sys import path
+
+raise ImportError
+```
+
+`setup.py`
+
+```python
+import setuptools
+
+raise ImportError
+```
+
+`sub1/__init__.py`
+
+```python
+import os.path
+
+raise ImportError
+```
+
+`sub1/sub1_a.py`
+
+```python
+import some_package.sub
+
+from os.path import join as my_join, isdir
+
+from ..a import something # -> test_package.a.something
+
+from ...introspection_lib.package_structure import something_else
+# error, should be ignored
+
+raise ImportError
+```
+
+`sub1/subsub/__init__.py`
+
+```python
+import pip
+
+raise ImportError
+```
+
+`sub1/subsub/subsub_a.py`
+
+```python
+from ...sub2 import sub2_a #-> test_package.sub2.sub2_a
+
+raise ImportError
+```
+
+`sub2/__init__.py`
+
+```python
+raise ImportError
+```
+
+`sub2/sub2_a.py`
+
+```python
+from ..sub1.sub1_a import something # -> test_package.sub1.sub1_a.something
+```
+
+`tests/test_a.py`
+
+```python
+import unittest
+
+raise ImportError
+```
+
+`build/build_a.py`
+
+```python
+import package1
+
+raise ImportError
+```
+
+`build/lib64/lib_a.py`
+
+```python
+import package2
+
+raise ImportError
+```
+
+`dist/dist_b.py`
+
+```python
+import package3
+
+raise ImportError
+```
+
+`test_package.egg_info/egg_a.py`
+
+```python
+raise ImportError
+```
+
+Thus, ignoring the filtering, the import names look-up table is:
+
+```python
+{
+  '__init__.py' : {
+    'os' : 'os',
+    'my_sys' : 'sys'
+  },
+  'a.py' : {
+    'os_path' : 'os.path',
+    'some_package' : 'some_package'
+  },
+  'setup.py' : {
+    'setuptools' : 'setuptools'
+  },
+  'sub1/__init__.py' : {
+    'os.path' : 'os.path'
+  },
+  'sub1/sub1_a.py' : {
+    'some_package.sub' : 'some_package.sub',
+    'my_join' : 'os.path.join',
+    'isdir' : 'os.path.isdir',
+    'something' : 'test_package.a.something'
+  },
+  'sub1/subsub/__init__.py' : {
+    'pip' : 'pip'
+  },
+  'sub1/subsub/subsub_a.py' : {
+    'sub2_a' : 'test_package.sub2.sub2_a' 
+  },
+  'sub2/sub2_a.py' : {
+    'something' : 'test_package.sub1.sub1_a.something'
+  },
+  'tests/test_a.py' : {
+    'unittest' : 'unittest'
+  },
+  'build/build_a.py' : {
+    'package1' : 'package1'
+  },
+  'build/lib64/lib_a.py' : {
+    'package2' : 'package2'
+  },
+  'dist/dist_b.py' : {
+    'package3' : 'package3'
+  }
+}
+```
+
+And the list of dependencies (not in order) is:
+
+```python
+['some_package', 'setuptools', 'pip', 'package1', 'package2', 'package3']
+```
+
+because, *os*, *sys* and *unittest* are parts of the Standard Library, *test_package* is the folder being analysed (thus ignored), and the relative import path pointing to the *introspection_lib* is improper in the context of the example files structure.
+
+With the default filtering the list of the dependencies is reduced to:
+
+```python
+['some_package', 'pip']
+```
+
+And the import names look-up table is:
+
+```python
+{
+  '__init__.py' : {
+    'os' : 'os',
+    'my_sys' : 'sys'
+  },
+  'a.py' : {
+    'os_path' : 'os.path',
+    'some_package' : 'some_package'
+  },
+  'sub1/__init__.py' : {
+    'os.path' : 'os.path'
+  },
+  'sub1/sub1_a.py' : {
+    'some_package.sub' : 'some_package.sub',
+    'my_join' : 'os.path.join',
+    'isdir' : 'os.path.isdir',
+    'something' : 'test_package.a.something'
+  },
+  'sub1/subsub/__init__.py' : {
+    'pip' : 'pip'
+  },
+  'sub1/subsub/subsub_a.py' : {
+    'sub2_a' : 'test_package.sub2.sub2_a' 
+  },
+  'sub2/sub2_a.py' : {
+    'something' : 'test_package.sub1.sub1_a.something'
+  },
+  'tests/test_a.py' : {
+    'unittest' : 'unittest'
+  }
+}
+```

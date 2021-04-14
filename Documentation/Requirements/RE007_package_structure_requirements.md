@@ -83,6 +83,46 @@ The verification method for a requirement is given by a single letter according 
 
 **Verification Method:** T
 
+---
+
+**Requirement ID:** REQ-FUN-760
+
+**Title:** Package dependencies analysis.
+
+**Description:** The module should provide a class, which is instantiated with a path to a Python package; and which can automatically find all Python source files within all its sub-folder, even if those subfolders are not sub-packages - and all 'top level' dependencies found in the import statements in those source files (see DE003 document). By default, all modules and sub-folders related to the packaging using **setuptools** should be ignored. Non-string argument passed is considred to be a *type error*, whereas not a path to a package string - *value error*.
+
+**Verification Method:** T
+
+---
+
+**Requirement ID:** REQ-FUN-761
+
+**Title:** Package structure analysis - import names.
+
+**Description:** This class should also produce a look-up table of the correspondence of the local (per module) import names to the fully qualified names of the imported object, supporting the relative import.
+
+**Verification Method:** T
+
+---
+
+**Requirement ID:** REQ-FUN-762
+
+**Title:** Package structure analysis - filtering.
+
+**Description:** This class should also provide methods to modify the sub-folders and Python modules base filenames filters: extend, reduce or replace the filter patterns using Unix shell-style wildcards or exact match strings. The modification of the filter should has immeditate effect on the dependencies and import names analysis.
+
+**Verification Method:** T
+
+---
+
+**Requirement ID:** REQ-FUN-763
+
+**Title:** Package structure analysis - names of the packaging sub-packages.
+
+**Description:** This class should also provide method to generate a list of all sub-packages to be included into the distribution, assuming that the package itself is to be made into 'top level', even if it is a sub-package of another one.
+
+**Verification Method:** T
+
 ## Alarms, warnings and operator messages
 
 **Requirement ID:** REQ-AWM-700

@@ -11,7 +11,6 @@ Classes:
     LoggerFilter: helper class - logger level filter
     ConsoleHandlerFilter: helper class - console handler
     FileHandlerFilter: helper class - file logging handler
-
 """
 
 __version__ = "1.0.1.0"

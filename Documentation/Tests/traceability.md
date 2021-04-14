@@ -6,7 +6,7 @@
 * module **my_traceback** - 1xx
   * class *StackTraceback* - 10x
   * class *ExceptionTraceback* - 11x
-* module **base_exceptions** - 2(0|1|2)x
+* module **base_exceptions** - 2xx
   * common requirements for all classes - 20x
   * class *UT_Exception* specific - 210
   * class *UT_TypeError* specific - 220
@@ -30,10 +30,12 @@
   * common requirements for all functions - 60x
 * module **package_structure** - 7xx
   * common requirements for all functions - 70x
-  * function *IsPyFile*() - 71x
-  * function *IsPyPackage*() - 72x
-  * function *SelectPySourceFiles*() - 73x
-  * function *GetQualifiedName*() - 74x
+  * function *IsPyFile*() - 710
+  * function *IsPyPackage*() - 720
+  * function *SelectPySourceFiles*() - 730
+  * function *GetQualifiedName*() - 740
+  * function ResolveRelativeImport() - 750
+  * class **PackageStructure** - 76x
 
 ## Requirements vs Tests Traceability
 
@@ -45,7 +47,7 @@
 | REQ-FUN-003        | TEST-T-005                                                                         | YES                      |
 | REQ-FUN-004        | TEST-T-006                                                                         | YES                      |
 | REQ-FUN-005        | TEST-T-007                                                                         | NO                       |
-| REQ-FUN-006        | TEST-T-008                                                                         | NO                       |
+| REQ-FUN-006        | TEST-T-008                                                                         | YES                      |
 | REQ-IAR-000        | TEST-T-001                                                                         | YES                      |
 | REQ-IAR-001        | TEST-T-002                                                                         | YES                      |
 | REQ-IAR-002        | TEST-T-001                                                                         | YES                      |
@@ -108,14 +110,17 @@
 | REQ-FUN-621        | TEST-T-620                                                                         | NO                       |
 | REQ-FUN-622        | TEST-T-620                                                                         | NO                       |
 | REQ-AWM-600        | TEST-T-600                                                                         | NO                       |
-| REQ-FUN-700        | TEST-A-700                                                                         | NO                       |
 | REQ-FUN-710        | TEST-T-710                                                                         | YES                      |
 | REQ-FUN-720        | TEST-T-720                                                                         | YES                      |
 | REQ-FUN-730        | TEST-T-730                                                                         | YES                      |
 | REQ-FUN-740        | TEST-T-740                                                                         | YES                      |
 | REQ-FUN-750        | TEST-T-750                                                                         | YES                      |
-| REQ-AWM-700        | All TEST-T-7??                                                                     | NO                       |
-| REQ-AWM-701        | TEST-T-750                                                                         | NO                       |
+| REQ-FUN-760        | TEST-T-760                                                                         | YES                      |
+| REQ-FUN-761        | TEST-T-760                                                                         | YES                      |
+| REQ-FUN-762        | TEST-T-761                                                                         | YES                      |
+| REQ-FUN-763        | TEST-T-760                                                                         | YES                      |
+| REQ-AWM-700        | All TEST-T-7x0, TEST-T-761                                                         | YES                      |
+| REQ-AWM-701        | TEST-T-750, TEST-T-760                                                             | YES                      |
 
 | **Software ready for production \[YES/NO\]** | **Rationale**                 |
 | :------------------------------------------: | :---------------------------- |

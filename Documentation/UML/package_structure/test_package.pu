@@ -1,0 +1,39 @@
+@startuml test_package
+
+@startsalt
+{
+    {T
+    + <&folder> Projects_folder
+    ++ <&box> test_package
+    +++ <&box> sub1
+    ++++ <&box> subsub
+    +++++ <&code> _ _init_ _.py
+    +++++ <&code> subsub_a.py
+    ++++ <&code> _ _init_ _.py
+    ++++ <&code> sub1_a.py
+    +++ <&box> sub2
+    ++++ <&code> _ _init_ _.py
+    ++++ <&code> sub2_a.py
+    +++ <&folder> tests
+    ++++ <&code> test_a.py
+    +++ <&folder> build
+    ++++ <&folder> lib64
+    +++++ <&code> lib_a.py
+    ++++ <&code> build_a.py
+    +++ <&folder> dist
+    ++++ <&code> dist_b.py
+    +++ <&folder> test_package.egg-info
+    ++++ <&code> egg_a.py
+    +++ <&code> _ _init_ _.py
+    +++ <&code> a.py
+    +++ <&code> setup.py
+    ++ <&box> introspection_lib
+    +++ ...
+    +++ <&code> package_structure.py
+    +++ ...
+    ++ ...
+    }
+}
+@endsalt
+
+@enduml
