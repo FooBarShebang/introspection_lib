@@ -50,6 +50,12 @@ if not (ROOT_FOLDER in sys.path):
 
 from introspection_lib.base_exceptions import UT_TypeError, UT_ValueError
 
+#globals
+
+METADATA_KEYS = [ '__version_info__', '__version_suffix__', '__version__',
+    '__author__', '__date__', '__status__', '__maintainer__', '__license__',
+    '__copyright__', '__project__']
+
 #functions
 
 def IsPyFile(strFile: str) -> bool:
@@ -242,6 +248,8 @@ class PackageStructure:
             patterns
         FoldersFilers: (read-only) list(str); Unix shell sub-folders names
             filtering patterns
+        Metadata: (read-only) dict(str -> dict(str -> int OR str)); metadata
+            found for the package
     
     Methods:
         getModules():
@@ -302,6 +310,7 @@ class PackageStructure:
             raise UT_ValueError('Empty string', 'path to a Python package',
                                                                 SkipFrames= 1)
         self._strPackage = GetQualifiedName(self.Path)
+        self._dictMeta = None
         self._resetCache()
         self._strlstFilesFilters = ['setup.py']
         self._strlstFoldersFilters = ['build', 'build/*', '*/build',
@@ -446,6 +455,34 @@ class PackageStructure:
         """
         return list(self._strlstFoldersFilters)
     
+    @property
+    def Metadata(self) -> Dict[str, Dict[str, Union[str, int]]]:
+        """
+        Read-only property. The found metadata of the package.
+
+        Signature:
+            None -> dict(str -> dict(str -> str OR int))
+        
+        Version 1.0.0.0
+        """
+        if self._dictMeta is None:
+            self._dictMeta = dict()
+            strPath = os.path.join(self.Path, '__init__.py')
+            with open(strPath, 'rt') as fFile:
+                for iIndex, strLine in enumerate(fFile.readlines()):
+                    bCond1 = strLine.startswith('__')
+                    bCond2 = '=' in strLine
+                    if bCond1 and bCond2:
+                        lstTemp = strLine.rstrip().split('=')
+                        strName = lstTemp[0].strip()
+                        if len(lstTemp) >= 2:
+                            strValue = '='.join(lstTemp[1:]).strip()
+                            if strName in METADATA_KEYS:
+                                self._dictMeta[strName] = {
+                                    'line' : iIndex,
+                                    'value' : strValue}
+        return dict(self._dictMeta)
+    
     #+ public methods
 
     def getModules(self) -> List[str]:
@@ -587,10 +624,10 @@ class PackageStructure:
             None -> dict(str -> dict(str -> str))
         
         Returns:
-            None -> dict(str -> dict(str -> str)): per module mapping of the
-                local (namespace) names (as aliases) to the fully qualified
-                name of the imported component; the top level keys are the
-                relative paths to the module
+            dict(str -> dict(str -> str)): per module mapping of the local
+                (namespace) names (as aliases) to the fully qualified names of
+                the imported components; the top level keys are the relative
+                paths to the respective modules
         
         Version 1.0.0.0
         """
@@ -692,11 +729,7 @@ class PackageStructure:
         
         Args:
             Patterns: seq(str); Unix shell wildcard-enabled match patterns
-        
-        Returns:
-            bool: True if the pattern is added, False - if it is not added (was
-                present already)
-        
+
         Raises:
             UT_TypeError: passed argument is not a sequence of strings
         

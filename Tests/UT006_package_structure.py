@@ -575,8 +575,20 @@ class Test_PackageStructure(unittest.TestCase):
         os.makedirs(strPath)
         strPath = os.path.join(ROOT_FOLDER, 'test_package', '__init__.py')
         with open(strPath, 'wt') as fFile:
+            fFile.write("__project__ = 'test'\n")
+            fFile.write("__version_info__ = (0.1.2)\n")
+            fFile.write("__version_suffix__ = '-dev1'\n")
+            fFile.write("__version__ = '.'.join(map(str, __version_info__))\n")
+            fFile.write("__author__ = 'anton'\n")
+            fFile.write("_author__ = 'john'\n")
+            fFile.write("__date__ = 'jan 01'\n")
+            fFile.write("__status__ = 'whatever'\n")
+            fFile.write("__maintainer__ = 'whoever'\n")
+            fFile.write("__license__ = 'LSD'\n")
+            fFile.write("__copyright__ = 'what?'\n")
             fFile.write('import os, sys as my_sys\n')
-            fFile.write('raise ImportError')
+            fFile.write('raise ImportError\n')
+            fFile.write("def a():\n    __author__ = 'john'")
         strPath = os.path.join(ROOT_FOLDER, 'test_package', 'a.py')
         with open(strPath, 'wt') as fFile:
             fFile.write('import os.path as os_path\n')
@@ -590,6 +602,7 @@ class Test_PackageStructure(unittest.TestCase):
         strPath = os.path.join(ROOT_FOLDER, 'test_package', 'sub1',
                                                                 '__init__.py')
         with open(strPath, 'wt') as fFile:
+            fFile.write("__version__ = '0.1.1'\n")
             fFile.write('import os.path\n')
             fFile.write('raise ImportError')
         strPath = os.path.join(ROOT_FOLDER, 'test_package', 'sub1', 'sub1_a.py')
@@ -602,6 +615,7 @@ class Test_PackageStructure(unittest.TestCase):
         strPath = os.path.join(ROOT_FOLDER, 'test_package', 'sub1', 'subsub',
                                                                 '__init__.py')
         with open(strPath, 'wt') as fFile:
+            fFile.write("__whatever__ = ''\n")
             fFile.write('import pip\n')
             fFile.write('raise ImportError')
         strPath = os.path.join(ROOT_FOLDER, 'test_package', 'sub1', 'subsub',
@@ -784,6 +798,52 @@ class Test_PackageStructure(unittest.TestCase):
         self.assertDictEqual(gTest, self.DefMapping)
         gTest = objTest.getPackagingNames()
         self.assertCountEqual(gTest, self.DefPackages)
+        dictTest = {
+            '__project__' : {
+                'line' : 0,
+                'value' : "'test'"
+            },
+            '__version_info__' : {
+                'line' : 1,
+                'value' : '(0.1.2)'
+            },
+            '__version_suffix__' : {
+                'line' : 2,
+                'value' : "'-dev1'"
+            },
+            '__version__' : {
+                'line' : 3,
+                'value' : "'.'.join(map(str, __version_info__))"
+            },
+            '__author__' : {
+                'line' : 4,
+                'value' : "'anton'"
+            },
+            '__date__' : {
+                'line' : 6,
+                'value' : "'jan 01'"
+            },
+            '__status__' : {
+                'line' : 7,
+                'value' : "'whatever'"
+            },
+            '__maintainer__' : {
+                'line' : 8,
+                'value' :  "'whoever'"
+            },
+            '__license__' : {
+                'line' : 9,
+                'value' :  "'LSD'"
+            },
+            '__copyright__' : {
+                'line' : 10,
+                'value' :  "'what?'"
+            }
+        }
+        gTest = objTest.Metadata
+        self.assertCountEqual(list(gTest.keys()), list(dictTest.keys()))
+        for strKey in dictTest.keys():
+            self.assertDictEqual(gTest[strKey], dictTest[strKey])
         del objTest
         strPath = os.path.join(ROOT_FOLDER, 'test_package', 'sub1')
         objTest = self.TestClass(strPath)
@@ -806,6 +866,11 @@ class Test_PackageStructure(unittest.TestCase):
                                         }})
         gTest = objTest.getPackagingNames()
         self.assertCountEqual(gTest, ['sub1', 'sub1.subsub'])
+        gTest = objTest.Metadata
+        self.assertIsInstance(gTest, dict)
+        self.assertCountEqual(list(gTest.keys()), ['__version__'])
+        self.assertDictEqual(gTest['__version__'], {'line' : 0,
+                                                    'value' : "'0.1.1'"})
         del objTest
         strPath = os.path.join(ROOT_FOLDER, 'test_package', 'sub1', 'subsub')
         objTest = self.TestClass(strPath)
@@ -820,6 +885,8 @@ class Test_PackageStructure(unittest.TestCase):
                                     '__init__.py' : {'pip' : 'pip'}})
         gTest = objTest.getPackagingNames()
         self.assertCountEqual(gTest, ['subsub'])
+        gTest = objTest.Metadata
+        self.assertDictEqual(gTest, dict())
         del objTest
         strPath = os.path.join(ROOT_FOLDER, 'test_package', 'sub2')
         objTest = self.TestClass(strPath)
@@ -833,6 +900,8 @@ class Test_PackageStructure(unittest.TestCase):
                         {'something' : 'test_package.sub1.sub1_a.something'}})
         gTest = objTest.getPackagingNames()
         self.assertCountEqual(gTest, ['sub2'])
+        gTest = objTest.Metadata
+        self.assertDictEqual(gTest, dict())
         del objTest
 
     def test_init_TypeError(self):

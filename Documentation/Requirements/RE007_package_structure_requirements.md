@@ -123,6 +123,22 @@ The verification method for a requirement is given by a single letter according 
 
 **Verification Method:** T
 
+---
+
+**Requirement ID:** REQ-FUN-764
+
+**Title:** Package structure analysis - package metadata.
+
+**Description:** This class should also provide method to generate a dictionary of the package metadata keywords, found in the '\_\_init\_\_.py' file in the 'root' of the package, mapped to the their values and the source code line number. The metadata lines must confirm the following rules, otherwise the line will be ignored:
+
+* There is no indent in the line
+* The entire definition fits a single line
+* The metadata definition is `name = value`, where
+  * `name` must be a dundler, i.e. it starts and ends with double underscores ('\_\_')
+  * the middle part of the name is one of the following sub-strings: project, version\_info, version\_suffix, version, date, status, author, maintainer, licence, copyright
+
+**Verification Method:** T
+
 ## Alarms, warnings and operator messages
 
 **Requirement ID:** REQ-AWM-700

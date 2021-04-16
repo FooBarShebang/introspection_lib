@@ -1,0 +1,42 @@
+!$PACKAGE_STRUCTURE_PACKAGE_STRUCTURE = "v2"
+
+!if %not(%variable_exists("$CLASSES"))
+    !include ../Templates/Classes2.cuml
+!endif
+
+class PackageStructure {
+    ..private instance attributes..
+    - _strPath: str
+    - _strPackage: str
+    {field} - _strlstFilesFilters: list(str)
+    {field} - _strlstFoldersFilters: list(str)
+    {field} - _dictMeta : dict(str -> dict(str -> int OR str)) OR None
+    {field} - _strlstModules : list(str) OR None
+    {field} - _strlstDependences: list(str) OR None
+    {field} - _dictImports: dict(str -> dict(str -> str)) OR None
+    ..read-only properties..
+    # Path: str
+    # Package: str
+    {field} # FilesFilers: list(str)
+    {field} # FoldersFilters: list(str)
+    {field} # Metadata: dict(str -> dict(str -> str))
+    __
+    ..magic methods..
+    __init__(Path): str -> None
+    __str__(): None -> str
+    ..private instance methods..
+    - _resetCache(): None -> None
+    - _isAcceptableFile(strFile): str -> bool
+    - _isAcceptableFolder(strFolder): str -> bool
+    ..public instance methods..
+    + getModules(): None -> list(str)
+    + getDependencies(): None -> list(str)
+    + getImportNames(): None -> dict(str -> dict(str -> str))
+    + getPackagingNames(): None -> list(str)
+    + addFilesFilter(Pattern): str -> bool
+    + removeFilesFilter(Pattern): str -> bool
+    + setFilesFilters(Patterns): seq(str) -> None
+    + addFoldersFilter(Pattern): str -> bool
+    + removeFoldersFilter(Pattern): str -> bool
+    + setFoldersFilters(Patterns): seq(str) -> None
+} 

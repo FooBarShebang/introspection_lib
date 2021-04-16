@@ -178,13 +178,13 @@ Implement the unit test cases in the [UT006_package_structure](../../Tests/UT006
 
 **Test Identifier:** TEST-T-760
 
-**Requirement ID(s)**: REQ-FUN-760, REQ-FUN-761, REQ-AWM-700 and REQ-AWM-701
+**Requirement ID(s)**: REQ-FUN-760, REQ-FUN-761, REQ-FUN-763, REQ-FUN-764, REQ-AWM-700 and REQ-AWM-701
 
 **Verification method:** T
 
 **Test goal:** Proper implementation of the package structure analyzer.
 
-**Expected result:** There is a class in the module, which implements the required functinality according to the DE003 design document. The path to the a Python package is passed into the initialization method of this class, then the dependencies list and the import names look-up table are available as the returned values of its methods or properties. By default, the modules and sub-folders related to the **setuptools** packaging are ignored, whereas all other Python modules are analyzed, even if they are placed into the sub-folders, which are not Python packages. The dependencies and import names are resolved using static analysis only, neither the modules being analyzed nor their dependencies are imported during the analysis. The obtained results: dependencies list and the import names mapping dictionary are formed conforming the rules and example in DE003 design document. The non-string argument passed into the intialization method results in an exception of sub-class of **TypeError**. Passed string not being a path to a Python package results in an exception of sub-class of **ValueError**.
+**Expected result:** There is a class in the module, which implements the required functinality according to the DE003 design document. The path to the a Python package is passed into the initialization method of this class, then the dependencies list and the import names look-up table are available as the returned values of its methods or properties. The package metadata and the 'packaging' names (of the source code containing sub-folders) should aslo be obtainable via properties of methods. By default, the modules and sub-folders related to the **setuptools** packaging are ignored, whereas all other Python modules are analyzed, even if they are placed into the sub-folders, which are not Python packages. The dependencies and import names are resolved using static analysis only, neither the modules being analyzed nor their dependencies are imported during the analysis. The obtained results: dependencies list and the import names mapping dictionary are formed conforming the rules and example in DE003 design document. The non-string argument passed into the intialization method results in an exception of sub-class of **TypeError**. Passed string not being a path to a Python package results in an exception of sub-class of **ValueError**.
 
 **Test steps:**
 
@@ -192,7 +192,7 @@ Implement the unit test cases in the [UT006_package_structure](../../Tests/UT006
 * Create the content of the Python source files as given in the *Example* section of DE003 document - make sure to add 'raise ImportError' line into each file, as a mean to check that the import of that module doesn't occur during the analysis / test.
 * Try to instantiate the **PackageStructure** class in the module being tested with a number of different non-string arguments - check that an exception of sub-class of **TypeError** is raised each time.
 * Try to instantiate the **PackageStructure** class in the module being tested with an empty string, an arbitrary string not being a path to a Python package but a module or simple folder, an arbitrary string not being a proper file or folder path at all - check that an exception of sub-class of **ValueError** is raised each time.
-* Initiate the **PackageStructure** class in the module being tested with the paths to the *test_package*, *test_package/sub1*, *test_package/sub1/subsub* and *test_package/sub2* folders - check that the package names, list of source files, list of dependencies and the import names mapping dictionary are formed properly. Also check the generated list of the packaging sub-packages and compare it with the expectations.
+* Initiate the **PackageStructure** class in the module being tested with the paths to the *test_package*, *test_package/sub1*, *test_package/sub1/subsub* and *test_package/sub2* folders - check that the package names, list of source files, list of dependencies and the import names mapping dictionary are formed properly. Also check the generated list of the packaging sub-packages and compare it with the expectations, as well as the 'packaging' names of the included source code sub-folders and metadata of the 'root' of the package.
 * Delete the created files and folders
 
 **Test result:** PASS
@@ -256,6 +256,7 @@ For traceability the relation between tests and requirements is summarized in th
 | REQ-FUN-761        | TEST-T-760                 | YES                      |
 | REQ-FUN-762        | TEST-T-761                 | YES                      |
 | REQ-FUN-763        | TEST-T-760                 | YES                      |
+| REQ-FUN-764        | TEST-T-760                 | YES                      |
 | REQ-AWM-700        | All TEST-T-7x0, TEST-T-761 | YES                      |
 | REQ-AWM-701        | TEST-T-750, TEST-T-760     | YES                      |
 

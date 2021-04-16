@@ -15,7 +15,7 @@ Modules:
         dependencies
 """
 
-__project__ ='Python introspection framework'
+__project__ = 'Python introspection framework'
 __version_info__= (0, 5, 0)
 __version_suffix__= '-dev1'
 __version__= ''.join(['.'.join(map(str, __version_info__)), __version_suffix__])

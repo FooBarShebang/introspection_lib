@@ -119,6 +119,7 @@
 | REQ-FUN-761        | TEST-T-760                                                                         | YES                      |
 | REQ-FUN-762        | TEST-T-761                                                                         | YES                      |
 | REQ-FUN-763        | TEST-T-760                                                                         | YES                      |
+| REQ-FUN-764        | TEST-T-760                                                                         | YES                      |
 | REQ-AWM-700        | All TEST-T-7x0, TEST-T-761                                                         | YES                      |
 | REQ-AWM-701        | TEST-T-750, TEST-T-760                                                             | YES                      |
 

@@ -1,0 +1,43 @@
+@startuml files_list_retrival
+
+title Activity Diagram of the Source Files List Retrival
+
+start
+
+if (data is already cached?) then (Yes)
+    :return cached data>
+
+    stop
+else (No)
+    :recursively iterate through the files structure starting from <b>self.Path</b> using <i>os.walk</i> function|
+
+    while (for each <b>Folder</b>, <b>SubFolders</b>, <b>Files</b>)
+        if (<b>Folder</b> != <b>self.Path</b>) then (True)
+            :remove the 'root' path from <b>Folder</b> -> <b>Prefix</b> string;
+
+            :replace the OS-dependent path separators in <b>Prefix</b> by '/';
+        else (False)
+            :<b>Prefix</b> is None;
+        endif
+
+        if (<b>Prefix</b> is None OR it does not match any folders filters pattern?) then (True)
+            while (for each <b>File</b> in <b>Files</b>)
+                :construct <b>Path</b> to the file from <b>Folder</b> and <b>File</b> strings;
+
+                if (<b>Path</b> is a Python sorce file AND <b>File</b> does not match any files filters pattern?) then (True)
+                    if (<b>Prefix</b> is None?) then (Yes)
+                        :append <b>File</b> to the cached data;
+                    else (No)
+                        :append <b>Prefix</b> + '/' + <b>File</b> to the cached data;
+                    endif
+                endif
+            end while (all files are processed) 
+        endif
+    end while (all folders are processed)
+    
+    :return cached data>
+
+    stop
+endif
+
+@enduml

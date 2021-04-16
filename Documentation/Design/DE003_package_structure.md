@@ -156,6 +156,36 @@ The modules / packages paths containing 'site-packages' are, most probably, inst
 
 Packages / modules with the paths not containing 'site-packages' or 'dist-packages' sub-string, nor starting with the common Python prefix (*sys.prefix* or *sys.base_prefix*) are, most probably, 3rd party packages not installed properly, but manually added to the *sys.path*.
 
+## Metadata
+
+This section describes the metadata extraction rules, which are applicable for the simplest case - direct, static definition using one-line statements. More complex cases, e.g. multi-line spanning definitions, etc. may require more efforts, e.g. *tokenize* module functionality (Standard Library) or even lexical / syntax analysis.
+
+* The package's metadata is defined in the *\_\_init\_\_.py* module in the 'root' folder of the package
+* The metadata is defined via a set of assignments in the form `name = value`, where:
+  * `name` is a dundler, i.e. it starts and ends with double underscore ('\_\_')
+  * the `name` must be one of the currently recognized values (the list may be extended later):
+    * \_\_version\_\_
+    * \_\_version\_info\_\_
+    * \_\_version_suffix\_\_
+    * \_\_project\_\_
+    * \_\_date\_\_
+    * \_\_status\_\_
+    * \_\_author\_\_
+    * \_\_maintainer\_\_
+    * \_\_copyright\_\_
+    * \_\_license\_\_
+  * `value` is a valid Python expression, e.g. a literal: string, integer, floating point or boolean - or an expression, which is evaluated to a literal
+  * the value of the `value` is read-out from the source file without data conversion and evaluation of the expressions
+* The read-out metadata is neither modified nor analyzed, it is just stored - further processing of the data is out of the scope of this module; and this task is to be delegated to the clients of this module, when required.
+
+The extracted metadata is to be stored as a dictionary, consisting of the following entries:
+
+```python
+name : {'line' : lineno, 'value' : value}
+```
+
+where `lineno` is the source code file line number (indexing from zero), in which the corresponding `name = value` definition is found.
+
 ## Example
 
 Consider the following example (can be used for testing). There is a folder *Project_folder*, which is not a Python package itself, but it contains several Python packages, with *test_package* amongst them.
@@ -212,9 +242,72 @@ This example is only for illustration of the dependencies and import names resol
 `__init__.py`
 
 ```python
+__project__ = 'test'
+__version_info__ = (0.1.2)
+__version_suffix__ = '-dev1'
+__version__ = '.'.join(map(str, __version_info__))
+__author__ = 'anton'
+_author__ = 'john'
+__date__ = 'jan 01'
+__status__ = 'whatever'
+__maintainer__ = 'whoever'
+__license__ = 'LSD'
+__copyright__ = 'what?'
+
+
 import os, sys as my_sys
 
 raise ImportError
+
+def a():
+    __author__ = 'john'
+```
+
+Hence, the metadata to be propertly extracted is:
+
+```python
+{
+  '__project__' : {
+    'line' : 0,
+    'value' : "'test'"
+  },
+  '__version_info__' : {
+    'line' : 1,
+    'value' : '(0.1.2)'
+  },
+  '__version_suffix__' : {
+    'line' : 2,
+    'value' : "'-dev1'"
+  },
+  '__version__' : {
+    'line' : 3,
+    'value' : "'.'.join(map(str, __version_info__))"
+  },
+  '__author__' : {
+    'line' : 4,
+    'value' : "'anton'"
+  },
+  '__date__' : {
+    'line' : 6,
+    'value' : "'jan 01'"
+  },
+  '__status__' : {
+    'line' : 7,
+    'value' : "'whatever'"
+  },
+  '__maintainer__' : {
+    'line' : 8,
+    'value' : "'whoever'"
+  },
+  '__license__' : {
+    'line' : 9,
+    'value' : "'LSD'"
+  },
+  '__copyright__' : {
+    'line' : 10,
+    'value' : "'what?'"
+  }
+}
 ```
 
 `a.py`
@@ -239,9 +332,22 @@ raise ImportError
 `sub1/__init__.py`
 
 ```python
+__version__ = '0.1.1'
+
 import os.path
 
 raise ImportError
+```
+
+Hence, the metadata to be propertly extracted is:
+
+```python
+{
+  '__version__' : {
+    'line' : 0,
+    'value' : "'0.1.1'"
+  }
+}
 ```
 
 `sub1/sub1_a.py`
@@ -262,10 +368,14 @@ raise ImportError
 `sub1/subsub/__init__.py`
 
 ```python
+__whatever__ = ''
+
 import pip
 
 raise ImportError
 ```
+
+Hence, the metadata to be propertly extracted is an empty dictionary.
 
 `sub1/subsub/subsub_a.py`
 
@@ -286,6 +396,8 @@ raise ImportError
 ```python
 from ..sub1.sub1_a import something # -> test_package.sub1.sub1_a.something
 ```
+
+Hence, the metadata to be propertly extracted is an empty dictionary.
 
 `tests/test_a.py`
 

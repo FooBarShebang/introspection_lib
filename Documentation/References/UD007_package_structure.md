@@ -23,6 +23,32 @@ For example, a package may contain a number of modules, sub-packages and sub-mod
 
 Both individual source files and the entire sub-folders (including all their nested sub-sub-folders) can be excluded using simple match patterns including Unix shell-style wildcards (see **fnmatch** in the Python Standard Library). The individual files are filtered by application of the patterns to the base filenames, whereas the folder names are matched on the remaining part of the path after the removal of the common prefix (path to the 'root' folder of the analysis). All sub-folders remaining after application of the filtering and containg, at least, one Python source file (not filtered out by the second set of patterns) will be included into the distibution configuration file. Another convention is that the 'root' folder in the analysis will be made into the 'top level' element ('root' package).
 
+All selected Python source files are to be analyzed, and a list of the 'top level' dependencies, whcih are not parts of the Standard Library, should be created. Also, a list of the 'packaging' names for the selected sub-folders should be created using the following conventions: a) the 'root' folder of the analyzed package is supposed to be installed as the 'top' level *distribution* package, even if this folder is an *import* sub-package of another package; and b) even if the included sub-folder is not a proper Python import (sub-) package it should be treated as a sub-package. Finally, the 'root' package metadata should be extracted as well.
+
+This data can be passed into another module, class method or function, which is responsible for the generation of the packaging configuration files as in a fictional example below:
+
+```python
+from introspection_lib.package_structure import PackageStructure
+
+...
+
+Analyzer = PackageStructure('path/to/some/package')
+FullPackageName = Analyzer.Package # as in package.sub-package.sub-sub-package, etc.
+PackageDistributionName = FullPackageName.split('.')[-1]
+...
+
+#name of the function is fictional, with the following signature:
+#+ FolderPath: str, PackageName: str /,* , **kwargs/ -> None
+GenerateConfig(Analyzer.Path, PackageDistributionName,
+                Dependencies = Analyzer.getDependencies(),
+                PackagingNames = Analyzer.getPackagingNames(),
+                Metadata = Analyzer.Metadata)
+```
+
+The automatically generated configuration files, in many cases, may be used directly; but, in general, they must be adjusted / corrected manually, especially concerning the restrictions. However, the proper structure (template) is guaranteed in the auto-generated configuration files, as well as proper filling-in of the majority of the 'boiler-plate' information.
+
+## Design and Implementation
+
 The detection of dependencies is based solely on the static analysis of the source code of the source files selected for the packaging. Only the direct importing statements as `import module` and `from module import something` are concerned. The functional call based imports (e.g. using **importlib**) are ignored. There several reasons for this design decision:
 
 * Dynamic (functional call) imports is mostly used to 'load-on-demand' specific modules in response to the specific user input or received data, thus the names of the respective packages or module may be even indeductible using static source code analysis
@@ -31,11 +57,7 @@ The detection of dependencies is based solely on the static analysis of the sour
 
 Basically, the algorithm looks up all `import ...` and `from ... import ...` statements and forms a list of the unique 'root' / 'top level' names of the imports (the first part in the dot notation name) and filters out all names referencing the Python Standard Library top level modules (like *os*) and packages (like *collections*). The remainder of the list is the 3rd party packages, i.e. the dependencies, which can be put into the dependencies part of the configuration file. The currently installed versions of the respective packages are indicated as the initial restrictions. See [DE003](../Design/DE003_package_structure.md) design document for further references.
 
-The automatically generated configuration files, in many cases, may be used directly; but, in general, they must be adjusted / corrected manually, especially concerning the restrictions. However, the proper structure (template) is guaranteed in the auto-generated configuration files, as well as proper filling-in of the majority of the 'boiler-plate' information.
-
 As the added functionality, the mappings of the imported and aliased names into the fully qualified names of the imported objects (per namespace / source code module) is generated during the analysis, cached and made available for more detailed analysis of the source code tasks.
-
-## Design and Implementation
 
 The components diagram of the module is shown below:
 
@@ -73,6 +95,45 @@ The function *ResolveRelativeImport*() is designed for the resolution of the rel
 
 ![ResolveRelativeImport()](../UML/package_structure/resolve_relative_import.png)
 
+The class diagram of the module is shown below
+
+![Class diagram](../UML/package_structure/package_structure_classes.png)
+
+The class **PackageStructure** is responsible for the static analysis of a Python *import* package structure and dependencies, as a help tool for the auto-generation of the *distribution* package. It must be instantiated with a path to the respective folder.
+
+Upon instantiation this class checks that the respective folder is a Python *import* package, and it raises **introspection_lib.base_exceptions.UT_TypeError** exception otherwise. It also resolves the fully qualified name of that package, which is stored in a 'private' instance attribute, and it is accessible via a read-only property *Package*. The resolved absolute path to the folder is also stored in a 'private' instance attribute, which is interfaced by the read-only property *Path*. Also, the initialization method creates 'private' instance attributes to store the Unix shell wildcard compatible matching patterns for the base filenames of the Python source files, as well as for the residual paths to the source sub-folders, relative to the 'root' folder path. These 'private' attributes are interfaced by the read-only properties *FilesFilters* and *FoldersFilters*. Initially, these lists of strings are populated as defined in the [DE003](../Design/DE003_package_structure.md) design document. Finally, the rest of the 'private' instance attributes is created to cache the results of the analysis later, but initially they are set to dummy values.
+
+The filtering patterns may be modified at any time using one of the following methods:
+
+* *setFilesFilters*() and *setFoldersFilters*() - the entire set of the filtering rules is passed as a sequence of strings; if any analysis data is cached, this cache is invalidated and cleared
+* *addFilesFilter*() and *addFoldersFilter*() - the passed single sting pattern is to be appended into the corresponding set; if this pattern is already present in the set, it is not added (to avoid duplications), and the cached analysis data is preserved; otherwise the cache is invalidated and cleared
+* *removeFilesFilter*() and *removeFoldersFilter*() - the passed single sting pattern is to be appended into the corresponding set; if this pattern is already present in the set, it is not added (to avoid duplications), and the cached analysis data is preserved; otherwise the cache is invalidated and cleared
+
+The read-only property *Metadata* performs a simplified lexical analysis of the *\_\_init\_\_.py* file in the package 'root' folder, assuming a specific syntax. It searches assigment statements to the pre-defined names made at the 'top level' within the module (no indentations). The found names, assigned values and the source code file line numbers are cached in the internal dictionary, thus with the repeated access the already cached values are returned. All assignments are supposed to fit one line in the source code.
+
+![Metadata retrival](../UML/package_structure/metadata_retrival.png)
+
+The method *getModules*() recursively iterates over the files structure of the 'root' folder and selects all Python source files, for which two conditions are true:
+
+* the folder (dir) part of the remainder of the path with the 'root' folder prefix removed does not match any of the folders filtering patterns
+* the base filename does not match any of the files filtering patterns
+
+**Note**: the treatment of the paths is OS-independent, but internally, all relative (remaining) paths are stored using Unix convention, i.e. '/' path separator.
+
+![Files list retrival](../UML/package_structure/files_list_retrival.png)
+
+The method *getPackagingNames* is designed to generate the list of the (sub-) packages names to be included into a distriution package, as the value of the option 'packages' in the section '[options]' of the *setup.cfg* file. It assumes that:
+
+* Even if the current 'root' folder is an *import* sub-package of another package, it will be packaged as a 'top level' *distribution* package
+* All selected source files sub-folders must be included, even if they are not *import* sub-packages
+
+![getPackagingNames()](../UML/package_structure/get_packaging_names.png)
+
+The method *getDependencies*() performs the static analysis of all found Python source files concerning the static import statements. It caches both the found 'top level' dependencies list and the per module import names -> qualified real names of the components look up table. However, it returns only the list of the 'top level' dependencies. See [DE003](../Design/DE003_package_structure.md) for the applied rules.
+
+![getDependencies()](../UML/package_structure/get_dependencies.png)
+
+Finally, the method *getImportNames*() calls the *getDependencies*() method and returns the cached data.
 ## API Reference
 
 ### Functions
@@ -193,3 +254,216 @@ Attempts to resolve the relative import into an absolute relatively to the 'root
 ### Classes
 
 #### PackageStructure
+
+Static analyzer of a Python package folder structure.
+
+_**Instantiation**_:
+
+**\_\_init\_\_**(Path)
+
+*Signature*:
+
+str -> None
+
+*Args*:
+
+* *Path*: str; path to a Python import package (as folder)
+
+*Raises*:
+
+* **UT_TypeError**: passed argument is not a string
+* **UT_ValueError**: passed argument is a string, but not a path to a Python package folder
+
+*Description*:
+
+Initializer. Checks and stores the folder path and the fully qualified package name. Sets the files and folders filtering option to the default values, i.e. to ignore everthing related to the setuptools packaging process.
+
+_**Properties**_:
+
+* *Path*: (read-only) **str**; path to the folder
+* *Package*: (read-only) **str**; fully qualified package name
+* *FilesFilers*: (read-only) **list(str)**; Unix shell base filenames filtering patterns
+* *FoldersFilers*: (read-only) **list(str)**; Unix shell sub-folders names filtering patterns
+* *Metadata*: (read-only) **dict(str -> dict(str -> int OR str))**; metadata found for the package
+
+_**Instance methods**_:
+
+**getModules**()
+
+*Signature*:
+
+None -> list(str)
+
+*Returns*:
+
+**list(str)**: remaining parts of the paths to the modules, relative to the package's folder
+
+*Description*:
+
+Makes a list of the relative paths to all found Python source modules, recursively checking all sub-folders, even if they are not sub-packages. Folders and files filtering patterns are applied.
+
+**getDependencies**()
+
+*Signature*:
+
+None -> list(str)
+
+*Returns*:
+
+**list(str)**: found unique 'top level' dependencies, excluding the Standard Library
+
+*Description*:
+
+Makes a list of the top level dependencies found in the Python source modules, recursively checking all sub-folders, even if they are not sub-packages. Folders and files filtering patterns are applied.
+
+**getImportNames**()
+
+*Signature*:
+
+None -> dict(str -> dict(str -> str))
+
+*Returns*:
+
+**dict(str -> dict(str -> str))**: per module mapping of the local (namespace) names (as aliases) to the fully qualified names of the imported components; the top level keys are the relative paths to the respective modules
+
+*Description*:
+
+Creates a look-up table mapping per module the local names of the imported components to their fully qualified names.
+
+**getPackagingNames**()
+
+*Signature*:
+
+None -> list(str)
+
+*Returns*:
+
+**list(str)**: dot-separated qualified names of the package and sub-packages, assuming this one being installed as 'top level'
+
+*Description*:
+
+Creates a list of the (sub-) packages names relative to this one, which is to be packaged as 'top level'.
+
+**addFilesFilter**(Pattern)
+
+*Signature*:
+
+str -> bool
+
+*Args*:
+
+* *Pattern*: **str**; Unix shell wildcard-enabled match pattern
+
+*Returns*:
+
+**bool**: *True* if the pattern is added, *False* - if it is not added (was present already)
+
+*Raises*:
+
+* **UT_TypeError**: passed argument is not a string
+
+*Description*:
+
+Method to add a new base filename matching pattern for filtering.
+
+**removeFilesFilter**(Pattern)
+
+*Signature*:
+
+str -> bool
+
+*Args*:
+
+* *Pattern*: **str**; Unix shell wildcard-enabled match pattern
+
+*Returns*:
+
+**bool**: *True* if the pattern is removed, *False* - if it is not removed (was not present)
+
+*Raises*:
+
+* **UT_TypeError**: passed argument is not a string
+
+*Description*:
+
+Method to remove an existing base filename matching pattern for filtering.
+
+**setFilesFilters**(Patterns):
+
+*Signature*:
+
+seq(str) -> None
+
+*Args*:
+
+* *Patterns*: **seq(str)**; a sequence of Unix shell wildcard-enabled match patterns
+
+*Raises*:
+
+* **UT_TypeError**: passed argument is not a sequence of strings
+
+*Description*:
+
+Method to set the entire list of the base filename matching pattern for filtering.
+
+**addFoldersFilter**(Pattern)
+
+*Signature*:
+
+str -> bool
+
+*Args*:
+
+* *Pattern*: **str**; Unix shell wildcard-enabled match pattern
+
+*Returns*:
+
+**bool**: *True* if the pattern is added, *False* - if it is not added (was present already)
+
+*Raises*:
+
+* **UT_TypeError**: passed argument is not a string
+
+*Description*:
+
+Method to add a new sub-folder matching pattern for filtering.
+
+**removeFoldersFilter**(Pattern)
+
+*Signature*:
+
+str -> bool
+
+*Args*:
+
+* *Pattern*: **str**; Unix shell wildcard-enabled match pattern
+
+*Returns*:
+
+**bool**: *True* if the pattern is removed, *False* - if it is not removed (was not present)
+
+*Raises*:
+
+* **UT_TypeError**: passed argument is not a string
+
+*Description*:
+
+Method to remove an existing sub-folder matching pattern for filtering.
+
+**setFoldersFilters**(Patterns)
+
+*Signature*:
+
+seq(str) -> None
+
+*Args*:
+
+* *Patterns*: **seq(str)**; a sequence of Unix shell wildcard-enabled match patterns
+
+*Raises*:
+
+* **UT_TypeError**: passed argument is not a sequence of strings
+
+*Description*:
+
+Method to set the entire list of the sub-folder matching pattern for filtering.

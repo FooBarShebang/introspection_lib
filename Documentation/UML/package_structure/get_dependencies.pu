@@ -1,0 +1,99 @@
+@startuml get_dependencies
+
+title Activity Diagram of the Creation of the Dependencies List
+
+start
+
+if (data is already cached?) then (Yes)
+    :return cached dependencies list>
+
+    stop
+else (No)
+    :initiate <b>Temp</b> as an empty list;
+
+    :split <b>self.Package</b> by '.' and get the first element -> <b>Parent</b> ;
+
+    :retrive the list of the source modules, see method <i>getModules</i>()|
+
+    while (for each <b>Entry</b> in this list)
+        :from the full absolute path to the corresponding module and open it for reading;
+
+        while (for each <b>Line</b> in the source file)
+            if (<b>Line</b> starts with 'import'?) then (True)
+                :remove 'import' part and split remainder by ',';
+                
+                while (for each <b>Element</b> in the split)
+                    if (<b>Element</b> contains 'as'?) then (Yes)
+                        :<b>Name</b> is <b>Element</b> part before 'as';
+
+                        :<b>Alias</b> is <b>Element</b> part after 'as';
+                    else (No)
+                        :<b>Name</b> is <b>Element<b> ;
+
+                        :<b>Alias</b> is <b>Name</b>;
+                    endif
+
+                    :remove leading and tailing whitespaces from <b>Name</b> and <b>Alias</b>;
+
+                    :add [<b>Entry</b>][<b>Alias</b>] entry into the cached look-up table
+                    with the value <b>Name</b>;
+
+                    :split <b>Name</b> by '.' and get the first element -> <b>Root</b> ;
+
+                    if (<b>Root</b> != <b>Parent</b> and <b>Root</b> NOT IN <b>Temp</b> ?) then (Yes)
+                        :append <b>Root</b> into <b>Temp</b> list;
+                    endif
+                end while (all elements are checked)
+            elseif (<b>Line</b> starts with 'from' and contains 'import' ?) then (True)
+                :<b>Prefix</b> is a sub-string between 'from' and 'import'
+                with the tailing and leading whitespaces removed;
+
+                :Convert relative import in <b>Prefix</b> into an absolute, if required|
+
+                :split the remainder after 'import' by ',';
+
+                while (for each <b>Element</b> in the split)
+                    if (<b>Element</b> contains 'as'?) then (Yes)
+                        :<b>Name</b> is <b>Element</b> part before 'as';
+
+                        :<b>Alias</b> is <b>Element</b> part after 'as';
+                    else (No)
+                        :<b>Name</b> is <b>Element<b> ;
+
+                        :<b>Alias</b> is <b>Name</b>;
+                    endif
+
+                    :remove leading and tailing whitespaces from <b>Name</b> and <b>Alias</b>;
+
+                    :add [<b>Entry</b>][<b>Alias</b>] entry into the cached look-up table
+                    with the value <b>Prefix</b> + '.' + <b>Name</b> ;
+
+                    :split <b>Name</b> by '.' and get the first element -> <b>Root</b> ;
+
+                    if (<b>Root</b> != <b>Parent</b> and <b>Root</b> NOT IN <b>Temp</b> ?) then (Yes)
+                        :append <b>Root</b> into <b>Temp</b> list;
+                    endif
+                end while (all elements are checked)
+            else (False)
+            endif
+        end while (all lines are processed)
+    end while (all entries are processed)
+
+    while (for each <b>Root</b> in <b>Temp</b> list)
+        :try to find the module using <i>importlib.util.find_spec(<b>Root</b>)</i> function]
+
+        if (not found?) then (True)
+            :append <b>Root</b> to the cached dependencies list;
+        else (False)
+            if (spec object has attribute 'location' AND its not starting with <i>sys.prefix</i> or <i>sys.base_prefix</b>\nOR it contains 'site-packages' or 'dist-packages'?) then (True)
+                :append <b>Root</b> to the cached dependencies list;
+            endif
+        endif
+    end while (all processed)
+
+    :return cached dependencies list>
+
+    stop
+endif
+
+@enduml

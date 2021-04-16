@@ -1,0 +1,31 @@
+@startuml get_packaging_names
+
+title Activity Diagram of the Creation of Packaging Names List
+
+start
+
+:initiate <b>Result</b> as an empty list;
+
+:get the last part of the dot-notated fully qualified name of the package <b>self.Package</b> -> store it as <b>Root</b>;
+
+:add <b>Root</b> into <b>Result</b> list;
+
+:retrive the list of the source modules, see method <i>getModules</i>()]
+
+while (for each <b>Entry</b> in this list)
+    if (<b>Entry</b> is not a base filename?) then (True)
+        :get the <i>dirname</i> part of the <b>Entry</b> and replace '/' with '.' -> <b>DirPath</b> ;
+
+        :form the sub-package name as <b>Root</b> + '.' + <b>DirPath</b> -> <b>Name</b> string;
+
+        if (<b>Name</b> is not in <b>Result</b> ?) then (Yes)
+            :append <b>Name</b> to <b>Result</b> list;
+        endif
+    endif
+end while (all entries are processed)
+
+:return <b>Result</b> list>
+
+stop
+
+@enduml

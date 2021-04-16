@@ -1,0 +1,32 @@
+@startuml metadata_retrival
+
+title Activity Diagram of the Metadata Retrival
+
+start
+
+if (data is already cached?) then (Yes)
+    :return cached data>
+
+    stop
+else (No)
+    :open file <b>self.Path</b>+'/'+'_ _init_ _.py' for reading;
+
+    while (for each line in the source file)
+        if (line starts with the pre-defined name and contains '=') then (True)
+            :split the line into 2 parts - before and after the first '+'
+            sign. Strip the leading and tailing whitespaces -> <b>Name</b> 
+            and <b>Value</b> ;
+
+            :get the source code line number -> <b>Number</b> ;
+
+            :add entry {<b>Name<b> : {'line' : <b>Number</b>, 'value' : <b>Value</b>}}
+            into the internal cache dictonary;
+        endif
+    end while (all lines are processed)
+    
+    :return cached data>
+
+    stop
+endif
+
+@enduml
