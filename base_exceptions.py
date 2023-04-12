@@ -93,7 +93,7 @@ class TracebackPlugin():
     used only as left plugin for sub-classing exceptions.
 
     Properties:
-        Traceback: (read-only) introspection_lib.traceback.ExceptionTraceback
+        Traceback: (read-only) introspection_lib.my_traceback.ExceptionTraceback
     
     Methods:
         with_traceback(Traceback):

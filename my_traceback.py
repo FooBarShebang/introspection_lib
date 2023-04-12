@@ -1,6 +1,6 @@
 #usr/bin/python3
 """
-Module introspection_lib.traceback
+Module introspection_lib.my_traceback
 
 Implements classes to obtain, store and analyze the stack and exception
 traceback.
@@ -26,7 +26,7 @@ __status__ = "Production"
 import inspect
 
 from types import TracebackType
-from typing import List, Tuple, Optional
+from typing import List, Tuple, Optional, ClassVar
 
 #types
 
@@ -68,45 +68,43 @@ def ParseFramesList(Frames: TFramesList, *,
     
     Version 1.0.0.0
     """
-    iLen = len(Frames)
-    gtuplstResult = []
-    if iLen:
-        if (isinstance(SkipFrames, int) and (0 < SkipFrames <= (iLen-1))):
-            iEnd = iLen - SkipFrames
-        else:
-            iEnd = iLen
-        for iIndex in range(iEnd):
+    NumberFrames = len(Frames)
+    Result = []
+    if NumberFrames:
+        EndFrameIndex = NumberFrames
+        if (isinstance(SkipFrames, int) and (0 < SkipFrames < NumberFrames)):
+            EndFrameIndex -= SkipFrames
+        for FrameIndex in range(EndFrameIndex):
             #resolving module, caller name and qualified name
-            Item = Frames[iIndex]
-            objFrame = Item.frame
-            objModule = inspect.getmodule(objFrame)
-            if objModule is None:
-                strModule = '<console input>'
+            FrameData = Frames[FrameIndex]
+            FrameObject = FrameData.frame
+            Module = inspect.getmodule(FrameObject)
+            ModuleName= '<console input>' if Module is None else Module.__name__
+            del Module
+            Caller = FrameData.function
+            if Caller == '<module>':
+                FullName = ModuleName
             else:
-                strModule = objModule.__name__
-            strCaller = Item.function
-            if strCaller == '<module>':
-                strFullName = strModule
-            else:
-                dictLocals = objFrame.f_locals
-                if 'self' in dictLocals:
-                    strClass = dictLocals['self'].__class__.__name__
-                    strFullName = '.'.join([strModule, strClass, strCaller])
-                elif 'cls' in dictLocals:
-                    strClass = dictLocals['cls'].__name__
-                    strFullName = '.'.join([strModule, strClass, strCaller])
+                LocalsDictionary = FrameObject.f_locals
+                if 'self' in LocalsDictionary:
+                    ClassName = LocalsDictionary['self'].__class__.__name__
+                    FullName = '.'.join([ModuleName, ClassName, Caller])
+                elif 'cls' in LocalsDictionary:
+                    ClassName = LocalsDictionary['cls'].__name__
+                    FullName = '.'.join([ModuleName, ClassName, Caller])
                 else:
-                    strFullName = '.'.join([strModule, strCaller])
-            strFilePath = Item.filename
-            #getting content 
-            iLineNum = Item.lineno
-            iLineIndex = Item.index
-            strlstCodeLines = Item.code_context
+                    FullName = '.'.join([ModuleName, Caller])
+            del FrameObject
+            FilePath = FrameData.filename
+            #getting content of the source code file
+            LineNumber = FrameData.lineno
+            LineIndex = FrameData.index
+            CodeLines = FrameData.code_context
             #adding entry to the list
-            glstTemp = (strFilePath, strCaller, strFullName, iLineNum,
-                                                iLineIndex, strlstCodeLines)
-            gtuplstResult.append(glstTemp)
-    return gtuplstResult
+            Result.append((FilePath, Caller, FullName, LineNumber, LineIndex,
+                                                                    CodeLines))
+            del FrameData
+    return Result
 
 #classes
 
@@ -128,11 +126,11 @@ class StackTraceback():
     Version 1.0.1.0
     """
     
-    #class data attributes
+    #class data attributes - default values
     
-    ConsoleWidth: int = 80 #max width of the lines in the Info output
+    ConsoleWidth: ClassVar[int] = 80 #max width of the lines in the Info output
     
-    ContextLenght: int = 3 #number of the lines of the source code per frame
+    ContextLenght: ClassVar[int] = 3 #number of the lines to display per frame
     
     #special methods
     
@@ -167,19 +165,17 @@ class StackTraceback():
         else:
             _ContextLenght = self.ContextLenght
         if (isinstance(ConsoleWidth, int) and ConsoleWidth > 0):
-            self.ConsoleWidth = ConsoleWidth
-        tblstTemp = list(reversed(inspect.stack(_ContextLenght)))
+            self._ConsoleWidth = ConsoleWidth
+        else:
+            self._ConsoleWidth = self.ConsoleWidth
+        RawFrames = list(reversed(inspect.stack(_ContextLenght)))
         if isinstance(SkipFrames, int) and SkipFrames > 0:
             _SkipFrames = SkipFrames + 1
         else:
             _SkipFrames = 1
-        self._lstTraceback = ParseFramesList(tblstTemp, SkipFrames= _SkipFrames)
-        #cleaning up, removing the frame objects
-        #+ de-referencing the invidual frames
-        while len(tblstTemp):
-            tblstTemp.pop()
-        #+ de-referncing the temporary list
-        del tblstTemp
+        self._Traceback = ParseFramesList(RawFrames, SkipFrames= _SkipFrames)
+        RawFrames.clear()
+        del RawFrames
     
     def __del__(self) -> None:
         """
@@ -191,15 +187,14 @@ class StackTraceback():
         
         Version 1.0.1.0
         """
-        while len(self._lstTraceback):
-            TempFrame = self._lstTraceback.pop()
-            for gItem in TempFrame:
-                if isinstance(gItem, list):
-                    while len(gItem):
-                        gItem.pop()
-                del gItem
-            del TempFrame
-        self._lstTraceback = []
+        while self._Traceback:
+            Frame = self._Traceback.pop()
+            for Item in Frame:
+                if isinstance(Item, list):
+                    Item.clear()
+                del Item
+            del Frame
+        self._Traceback = []
     
     #public methods
     
@@ -216,8 +211,8 @@ class StackTraceback():
         
         Version 1.0.1.0
         """
-        strlstCallers = [Item[2] for Item in self._lstTraceback]
-        return strlstCallers
+        Callers = [Item[2] for Item in self._Traceback]
+        return Callers
     
     @property
     def Info(self) -> str:
@@ -246,44 +241,43 @@ class StackTraceback():
         
         Version 1.0.1.0
         """
-        strInfo = ''
-        strlstCallers = self.CallChain
-        for Frame in self._lstTraceback:
-            (strFilePath, strCaller, strFullCaller, iLineNum,
-                iLineIndex, strlstCodeLines) = Frame
-            if not (strlstCodeLines is None):
-                iMaxDigits = len(str(iLineNum + iLineIndex))
-                if strCaller == '<module>':
-                    strCallerInfo = 'In module {}'.format(strFullCaller)
+        Info = ''
+        for Frame in self._Traceback:
+            FilePath, Caller, FullName, LineNumber, LineIndex, CodeLines = Frame
+            if not (CodeLines is None):
+                MaxDigits = len(str(LineNumber + LineIndex))
+                MaxLineWidth = self._ConsoleWidth - 2 - MaxDigits
+                if Caller == '<module>':
+                    CallerInfo = f'In module {FullName}'
                 else:
-                    strCallerInfo = 'Caller {}()'.format(strFullCaller)
-                strFileInfo = 'Line {} in {}'.format(iLineNum, strFilePath)
-                strlstCodeInfo = []
-                for iLineIdx, _strLine in enumerate(strlstCodeLines):
-                    strLine = _strLine.rstrip()
-                    iRealLineNum = iLineNum - iLineIndex + iLineIdx
-                    strLineNum = str(iRealLineNum)
-                    while len(strLineNum) < iMaxDigits:
-                        strLineNum = '0{}'.format(strLineNum)
-                    if iRealLineNum == iLineNum:
-                        strLineNum = '>{} '.format(strLineNum)
+                    CallerInfo = f'Caller {FullName}()'
+                FileInfo = f'Line {LineNumber} in {FilePath}'
+                SourceCode = []
+                for LineOffset, SourceLine in enumerate(CodeLines):
+                    SourceLine = SourceLine.rstrip()
+                    CurrentLineNumber = LineNumber - LineIndex + LineOffset
+                    if CurrentLineNumber == LineNumber:
+                        Prefix = '>'
                     else:
-                        strLineNum = ' {} '.format(strLineNum)
-                    if len(strLine) > (self.ConsoleWidth - 2 - iMaxDigits):
-                        strFullLine = '{}{}...'.format(strLineNum,
-                                strLine[ : self.ConsoleWidth - 5 - iMaxDigits])
+                        Prefix = ' '
+                    PrintNumber = str(CurrentLineNumber)
+                    if len(PrintNumber) < MaxDigits:
+                        Prefix = f'{Prefix} '
+                    PrintNumber = f'{Prefix}{PrintNumber} '
+                    if len(SourceLine) > (MaxLineWidth):
+                        CodeLine = '{}{}...'.format(PrintNumber,
+                                                SourceLine[MaxLineWidth - 3])
                     else:
-                        strFullLine = '{}{}'.format(strLineNum, strLine)
-                    strlstCodeInfo.append(strFullLine)
-                strCodeInfo = '\n'.join(strlstCodeInfo)
-                strInfo = '\n'.join([strInfo, strCallerInfo, strFileInfo,
-                                                                strCodeInfo])
+                        CodeLine = f'{PrintNumber}{SourceLine}'
+                    SourceCode.append(CodeLine)
+                CodeInfo = '\n'.join(SourceCode)
+                Info = '\n'.join([Info, CallerInfo, FileInfo, CodeInfo])
             else:
-                strInfo = '\n'.join([strInfo, '<console input>',
-                                'Line {} in console input'.format(iLineNum)])
-        if len(strInfo):
-            strInfo = strInfo.lstrip()
-        return strInfo
+                Info = '\n'.join([Info, '<console input>',
+                                        f'Line {LineNumber} in console input'])
+        if Info:
+            Info = Info.lstrip()
+        return Info
 
 class ExceptionTraceback(StackTraceback):
     """
@@ -348,23 +342,27 @@ class ExceptionTraceback(StackTraceback):
         
         Version 1.0.1.0
         """
+
+
         if (isinstance(ContextLength, int) and ContextLength > 0):
             _ContextLenght = ContextLength
         else:
             _ContextLenght = self.ContextLenght
         if (isinstance(ConsoleWidth, int) and ConsoleWidth > 0):
-            self.ConsoleWidth = ConsoleWidth
+            self._ConsoleWidth = ConsoleWidth
+        else:
+            self._ConsoleWidth = self.ConsoleWidth
+        if isinstance(SkipFrames, int) and SkipFrames > 0:
+            _SkipFrames = SkipFrames
+        else:
+            _SkipFrames = None
         if ((not (FromTraceback is None)) and
                                     isinstance(FromTraceback, TracebackType)):
-            tblstTemp = inspect.getinnerframes(FromTraceback, _ContextLenght)
-            self._lstTraceback = ParseFramesList(tblstTemp)
+            RawFrames = inspect.getinnerframes(FromTraceback, _ContextLenght)
+            self._Traceback = ParseFramesList(RawFrames)
         else:
-            tblstTemp = inspect.trace(_ContextLenght)
-            self._lstTraceback = ParseFramesList(tblstTemp,
-                                                    SkipFrames = SkipFrames)
-        #cleaning up, removing the frame objects
-        #+ de-referencing the invidual frames
-        while len(tblstTemp):
-            tblstTemp.pop()
-        #+ de-referncing the temporary list
-        del tblstTemp
+            RawFrames = inspect.trace(_ContextLenght)
+            self._Traceback = ParseFramesList(RawFrames,
+                                                    SkipFrames = _SkipFrames)
+        RawFrames.clear()
+        del RawFrames
