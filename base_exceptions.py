@@ -13,7 +13,7 @@ Functions:
 
 Classes:
     TracebackPlugin: left plugin class implementing the built-in traceback
-        analysis functionality
+        analysis functionality and the exception message modification
     UT_Exception: the base custom exception, parent to all custom exceptions
     UT_TypeError: custom version of TypeError
     UT_ValueError: custom version of ValueError
@@ -22,8 +22,8 @@ Classes:
     UT_KeyError: custom version of KeyError
 """
 
-__version__ = "1.0.0.1"
-__date__ = "11-11-2020"
+__version__ = "1.1.0.0"
+__date__ = "12-04-2023"
 __status__ = "Production"
 
 #imports
@@ -88,7 +88,9 @@ def GetObjectClass(gObject: Any) -> str:
 
 class TracebackPlugin():
     """
-    Left plugin class implementing the built-in traceback aalysis functionality.
+    Left plugin class implementing the built-in traceback analysis functionality
+    and error message handling.
+    
     Cannot be instantiated by itself, since TypeError will be raised. Must be
     used only as left plugin for sub-classing exceptions.
 
@@ -99,7 +101,7 @@ class TracebackPlugin():
         with_traceback(Traceback):
             types.TracebackType -> Exception
     
-    Version 1.0.0.0
+    Version 2.0.0.0
     """
 
     #special methods
@@ -234,6 +236,10 @@ class UT_Exception(TracebackPlugin, Exception, abc.ABC):
                 (duck-typing, 'has a' check) is not applicable; only the actual
                 sub-classing is concerned
         
+        Note: try / except in Python 3 does not use issubclass() or isinstance()
+        and checks the inheritance using MRO directly, so UT_Exception cannot
+        be used as an umbrella for catching, only for the analysis.
+        
         Signature:
             type A -> bool OR NotImplemented
         
@@ -250,13 +256,8 @@ class UT_Exception(TracebackPlugin, Exception, abc.ABC):
         
         Version 1.0.0.0
         """
-        if cls is UT_Exception and hasattr(C, '__mro__'):
-            #only this class, do not propagate!
-            #+ C shold be a class, not an instance!
-            if UT_Exception in C.__mro__:
-                    #direct child
-                gResult = True
-            elif hasattr(C, 'Traceback'):  #has required property
+        if cls is UT_Exception:
+            if issubclass(C, TracebackPlugin):
                 gResult = True
             else:
                 gResult = False

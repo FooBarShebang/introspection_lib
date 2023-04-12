@@ -15,8 +15,8 @@ Classes:
     ExceptionTraceback: exception traceback
 """
 
-__version__ = "1.0.1.0"
-__date__ = "06-11-2020"
+__version__ = "1.0.2.0"
+__date__ = "12-04-2023"
 __status__ = "Production"
 
 #imports
