@@ -143,6 +143,38 @@ The verification method for a requirement is given by a single letter according 
 
 **Test result:** PASS
 
+---
+
+**Test Identifier:** TEST-T-007
+
+**Requirement ID(s)**: REQ-FUN-005
+
+**Verification method:** T
+
+**Test goal:** Implementation of the structured objects mapping.
+
+**Expected result:** All tests defined in the document [TE006](./TE006_structure_map_test_report.md) have passed.
+
+**Test steps:** Run the unit-test module [Tests/UT005_structure_map.py](../../Tests/UT005_structure_map.py).
+
+**Test result:** PASS / FAIL
+
+---
+
+**Test Identifier:** TEST-T-008
+
+**Requirement ID(s)**: REQ-FUN-006
+
+**Verification method:** T
+
+**Test goal:** Implementation of the static analysis of the modules and packages dependencies.
+
+**Expected result:** All tests defined in the document [TE007](./TE007_package_structure_test_report.md) have passed.
+
+**Test steps:** Run the unit-test module [Tests/UT006_package_structure.py](../../UT006_package_structure.py).
+
+**Test result:** PASS
+
 ## Traceability
 
 For traceability the relation between tests and requirements is summarized in the table below:
@@ -154,6 +186,8 @@ For traceability the relation between tests and requirements is summarized in th
 | REQ-FUN-002        | TEST-T-004             | YES                      |
 | REQ-FUN-003        | TEST-T-005             | YES                      |
 | REQ-FUN-004        | TEST-T-006             | YES                      |
+| REQ-FUN-005        | TEST-T-007             | NO                       |
+| REQ-FUN-006        | TEST-T-008             | YES                      |
 | REQ-IAR-000        | TEST-T-001             | YES                      |
 | REQ-IAR-001        | TEST-T-002             | YES                      |
 | REQ-IAR-002        | TEST-T-001             | YES                      |

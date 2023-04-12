@@ -31,3 +31,7 @@ Bug fix:
 ## 2021-03-30
 
 Renamed modules *traceback* and *logging* to *my_traceback* and *my_logging* respectively, otherwise the packaging doesn't work.
+
+## 2021-04-14 v0.5.0-dev1
+
+* Added *package_structure* module with the tests and documentation

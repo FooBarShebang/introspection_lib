@@ -1,0 +1,45 @@
+@startuml resolve_relative_import
+
+title Activity Diagram of the function ResolveRelativeImport()
+
+start
+
+:<b>ModulePath</b> - str, expected path to a module
+<b>ImportName</b> - str, expected import name found in the same module<
+
+if (<b>ModulePath</b> AND <b>ImportName</b> are strings?) then (True)
+    if (<b>ImportName</b> starts with a dot '.' ?) then (Yes)
+        if (<b>ModulePath</b> is Python source file?) then (True)
+            :get qualified name for <b>ModulePath</b>, see <i>GetQualifiedName</i>() -> <b>ModuleName</b> |
+            
+            :calculate the number of leading dots in <b>ImportName</b> -> <b>CountUp</b> ;
+            
+            :remove the leading dots from <b>ImportName</b> -> <b>Suffix</b>;
+            if (<b>ModuleName</b> has more '.' separated elements than <b>Count</b>?) then (Yes)
+                :remove <b>Count</b> last dot separated elements from <b>ModuleName</b> -> <b>Prefix</b> ;
+                
+                :combine <b>Prefix</b> and <b>Suffix</b> via a dot -> <b>ResolvedName</b> ;
+            else (No)
+                :raise ValueError (sub-) class exception;
+                
+                end
+            endif
+        else (False)
+            :raise ValueError (sub-) class exception;
+            
+            end
+        endif
+    else (No)
+        :<b>ResolvedName</b> = <b>ImportName</b> ;
+    endif
+else (False)
+    :raise TypeError (sub-) class exception;
+    
+    end
+endif
+
+:return <b>ResolvedName</b> string>
+
+stop
+
+@enduml

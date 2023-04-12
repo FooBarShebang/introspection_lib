@@ -25,7 +25,7 @@ Functions:
 
 __version__ = "1.0.0.0"
 __date__ = "04-03-2021"
-__status__ = "Testing"
+__status__ = "Production"
 
 #imports
 

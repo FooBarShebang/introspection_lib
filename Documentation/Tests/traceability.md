@@ -6,7 +6,7 @@
 * module **my_traceback** - 1xx
   * class *StackTraceback* - 10x
   * class *ExceptionTraceback* - 11x
-* module **base_exceptions** - 2(0|1|2)x
+* module **base_exceptions** - 2xx
   * common requirements for all classes - 20x
   * class *UT_Exception* specific - 210
   * class *UT_TypeError* specific - 220
@@ -15,8 +15,8 @@
   * class *UT_IndexError* specific - 250
   * class *UT_KeyError* specific - 260
 * module **my_logging** - 3xx
-  * class **DualLogger** specific - 30x
-  * class **DummyLogger** specific - 310
+  * class *DualLogger* specific - 30x
+  * class *DummyLogger* specific - 310
 * module **dynamic_import** - 4xx
 * module **universal_access** - 5xx
   * common requirements for all functions, including *FlattenPath*() - 50x
@@ -26,6 +26,16 @@
   * function *SetDataStrict*() - 540
   * function *GetElement*() - 550
   * function *SetElement*() - 560
+* module **structure_map** - 6xx
+  * common requirements for all functions - 60x
+* module **package_structure** - 7xx
+  * common requirements for all functions - 70x
+  * function *IsPyFile*() - 710
+  * function *IsPyPackage*() - 720
+  * function *SelectPySourceFiles*() - 730
+  * function *GetQualifiedName*() - 740
+  * function ResolveRelativeImport() - 750
+  * class **PackageStructure** - 76x
 
 ## Requirements vs Tests Traceability
 
@@ -36,6 +46,8 @@
 | REQ-FUN-002        | TEST-T-004                                                                         | YES                      |
 | REQ-FUN-003        | TEST-T-005                                                                         | YES                      |
 | REQ-FUN-004        | TEST-T-006                                                                         | YES                      |
+| REQ-FUN-005        | TEST-T-007                                                                         | NO                       |
+| REQ-FUN-006        | TEST-T-008                                                                         | YES                      |
 | REQ-IAR-000        | TEST-T-001                                                                         | YES                      |
 | REQ-IAR-001        | TEST-T-002                                                                         | YES                      |
 | REQ-IAR-002        | TEST-T-001                                                                         | YES                      |
@@ -88,6 +100,28 @@
 | REQ-AWM-501        | TEST-T-550, TEST-T-560                                                             | YES                      |
 | REQ-AWM-502        | TEST-T-530, TEST-T-540, TEST-T-560                                                 | YES                      |
 | REQ-AWM-503        | TEST-T-510, TEST-T-540, TEST-T-550, TEST-T-560                                     | YES                      |
+| REQ-FUN-600        | TEST-T-610, TEST-T-620                                                             | NO                       |
+| REQ-FUN-601        | TEST-T-610, TEST-T-620                                                             | NO                       |
+| REQ-FUN-602        | TEST-T-610, TEST-T-620                                                             | NO                       |
+| REQ-FUN-610        | TEST-T-610                                                                         | NO                       |
+| REQ-FUN-611        | TEST-T-610                                                                         | NO                       |
+| REQ-FUN-612        | TEST-T-610                                                                         | NO                       |
+| REQ-FUN-620        | TEST-T-620                                                                         | NO                       |
+| REQ-FUN-621        | TEST-T-620                                                                         | NO                       |
+| REQ-FUN-622        | TEST-T-620                                                                         | NO                       |
+| REQ-AWM-600        | TEST-T-600                                                                         | NO                       |
+| REQ-FUN-710        | TEST-T-710                                                                         | YES                      |
+| REQ-FUN-720        | TEST-T-720                                                                         | YES                      |
+| REQ-FUN-730        | TEST-T-730                                                                         | YES                      |
+| REQ-FUN-740        | TEST-T-740                                                                         | YES                      |
+| REQ-FUN-750        | TEST-T-750                                                                         | YES                      |
+| REQ-FUN-760        | TEST-T-760                                                                         | YES                      |
+| REQ-FUN-761        | TEST-T-760                                                                         | YES                      |
+| REQ-FUN-762        | TEST-T-761                                                                         | YES                      |
+| REQ-FUN-763        | TEST-T-760                                                                         | YES                      |
+| REQ-FUN-764        | TEST-T-760                                                                         | YES                      |
+| REQ-AWM-700        | All TEST-T-7x0, TEST-T-761                                                         | YES                      |
+| REQ-AWM-701        | TEST-T-750, TEST-T-760                                                             | YES                      |
 
 | **Software ready for production \[YES/NO\]** | **Rationale**                 |
 | :------------------------------------------: | :---------------------------- |

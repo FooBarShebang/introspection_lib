@@ -1,0 +1,27 @@
+@startuml check_if_package
+
+title Activity Diagram of the function IsPyPackage()
+
+start
+
+:<b>Path</b> - str, expected path to a folder<
+
+if (<b>Path</b> is not a string?) then (Yes)
+    :raise TypeError (sub-) class exception;
+    
+    end
+else (No)
+    if (<b>Path</b> is a folder and not a symlink?) then (True)
+        if (file _ _init_ _.py exists in the <b>Path</b> folder?) then (Yes)
+            :return True>
+        else (No)
+            :return False>
+        endif
+    else (False)
+        :return False>
+    endif
+endif
+
+stop
+
+@enduml

@@ -1,0 +1,33 @@
+@startuml select_source_files
+
+title Activity Diagram of the function SelectPySourceFiles()
+
+start
+
+:<b>Path</b> - str, expected path to a folder<
+
+if (<b>Path</b> is not a string?) then (Yes)
+    :raise TypeError (sub-) class exception;
+    
+    end
+else (No)
+    if (<b>Path</b> is a folder and not a symlink?) then (True)
+        :initialize <b>Result</b> = [] - empty list;
+        
+        while (for each entry in <i>listdir</i>(<b>Path</b>))
+            :check if this entry is a Python source file, see <i>IsPyFile</i>()|
+            
+            if (entry is a source file ?) then (True)
+                :append entry into <b>Result</b> list;
+            endif
+        end while (all elements are checked)
+        
+        :return <b>Result</b> list>
+    else (False)
+        :return [] - empty list>
+    endif
+endif
+
+stop
+
+@enduml

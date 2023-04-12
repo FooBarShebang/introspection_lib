@@ -1,0 +1,35 @@
+!$PACKAGE_STRUCTURE_COMPONENTS = "v2"
+
+!if %not(%variable_exists("$COMPONENTS"))
+    !include ../Templates/Components2.cuml
+!endif
+
+$module(package_structure) {
+    $function(SelectPySourceFiles)
+
+    $function(IsPyFile)
+    
+    IsPyFile <- SelectPySourceFiles
+    
+    $function(IsPyPackage)
+    
+    IsPyPackage -[hidden] IsPyFile
+    
+    $function(GetQualifiedName)
+    
+    IsPyPackage <-- GetQualifiedName
+    
+    IsPyFile <-- GetQualifiedName
+    
+    $class(PackageStructure)
+    
+    SelectPySourceFiles <-- PackageStructure
+    
+    GetQualifiedName <- PackageStructure
+    
+    $function(ResolveRelativeImport)
+    
+    GetQualifiedName <-- ResolveRelativeImport
+    
+    PackageStructure --> ResolveRelativeImport
+}
