@@ -244,7 +244,7 @@ Implement the unit test cases in the [UT006_package_structure](../../Tests/UT006
 
 For traceability the relation between tests and requirements is summarized in the table below:
 
-| **Requirement ID** | **Covered in test(s)**     | **Verified \[YES/NO\]**) |
+| **Requirement ID** | **Covered in test(s)**     | **Verified \[YES/NO\]**  |
 | :----------------- | :------------------------- | :----------------------- |
 | REQ-FUN-700        | TEST-A-700                 | YES                      |
 | REQ-FUN-710        | TEST-T-710                 | YES                      |

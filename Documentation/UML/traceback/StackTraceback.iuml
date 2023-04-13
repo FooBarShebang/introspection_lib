@@ -6,14 +6,14 @@
 
 class StackTraceback {
     ..class attributes..
+    + $static_field(ConsoleWidth) : int = 80
     + $static_field(ContextLength) : int = 3
-    ..instance attributes..
-    + ConsoleWidth : int = 80
     ..read-only properties..
     # {field} CallChain : list(str)
     # Info : str
     ..'private' instance attributes..
-    - {field} _lstTraceback: list(tuple(str, str, str, int >= 0, int >= 0, list(str)))
+    - {field} _Traceback: list(tuple(str, str, str, int >= 0, int >= 0, list(str)))
+    - _ConsoleWidth : int
     ___
     ..special methods..
     + _ _init_ _(SkipFrames = None, ContextLength = None, ConsoleWidth = None) : /int, int, int/ -> None

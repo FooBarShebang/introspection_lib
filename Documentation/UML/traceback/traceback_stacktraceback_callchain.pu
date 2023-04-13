@@ -6,7 +6,7 @@ start
 
 :initiate <b>CallChain</b> with an empty list;
 
-while (for each tuple stored in the list referenced by the 'private' instance attribute <b>_lstTraceback</b> )
+while (for each tuple stored in the list referenced by the 'private' instance attribute <b>_Traceback</b> )
     :extract the 3rd element of the tuple - the qualified caller's name - and append it to <b>CallChain</b> list;
 end while
 

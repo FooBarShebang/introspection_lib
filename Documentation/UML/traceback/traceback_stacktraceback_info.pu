@@ -6,7 +6,7 @@ start
 
 :Instantiate <b>Result</b> as an empty string;
 
-while (for each tuple stored in the instance attribute <b>_lstTraceback</b> list)
+while (for each tuple stored in the instance attribute <b>_Traceback</b> list)
     :extract <b>Path</b>, <b>Name</b> and <b>QualifiedName</b> names of the caller, <b>LineNumber</b>\nand <b>LineIndex</b> indexes and <b>CodeLines</b> list by their position;
     
     if (<b>CodeLines</b> list is not empty, i.e. None?) then (Yes)
@@ -24,9 +24,9 @@ while (for each tuple stored in the instance attribute <b>_lstTraceback</b> list
             :form the string prefix with the actual line number left zero padded to the maximum length;
             
             if (current line is the call point?) then (Yes)
-                :add '>' before the line number prefix and a whitespace after;
+                :add '>' before the line number prefix;
             else (No)
-                :wrap line number prefix with whitespaces on both sides;
+                :add a whitespace before the line number prefix;
             endif
             
             :combine line number prefix with the actual source code line <b>Line</b> ;

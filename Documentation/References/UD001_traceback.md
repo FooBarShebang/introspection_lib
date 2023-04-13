@@ -1,4 +1,4 @@
-# Module introspection_lib.traceback Reference
+# Module introspection_lib.my_traceback Reference
 
 ## Scope
 
@@ -64,6 +64,8 @@ The activity diagrams of the implemented methods are given in the figures blow. 
 
 ![StackTraceback del](../UML/traceback/traceback_stacktraceback_del.png)
 
+The diagram below shows the internal mechanism of the (nested) sequence elements de-referencing. In practice, the Python built-in method *clear()* of the mutable sequences is used.
+
 ![ExceptionTraceback initialization](../UML/traceback/traceback_exceptiontraceback_init.png)
 
 ![CallChain property](../UML/traceback/traceback_stacktraceback_callchain.png)
@@ -101,16 +103,16 @@ Parses the passed list of the inspect.FrameInfo objects into a list of tuples of
 
 Responsible for the retrieval, storage and analysis of a snapshot of the current state of the call stack. Stack snapshot is created upon instantiation of the class and is stored and shown bottom-up with the first / outmost caller being the first element (normally, the top level of the interpreter’s loop) and the last made / innermost call being the last in frame in the traceback.
 
-__*Class and Instance Data Attributes*__:
+***Class and Instance Data Attributes***:
 
-The instance attributes are created automatically upon instantiation and use the values of the class data attributes with the same names as the default values. The default values are overridden by the values passed as the optional arguments of the initialization method.
+The *private* instance attributes are created automatically upon instantiation and use the values of the respective *public* class data attributes as the default values. The default values are overridden by the values passed as the optional arguments of the initialization method.
 
-* **ConsoleWidth**: non-negative integer, the desired maximum display length in characters of the source code lines including the line number prefix (default value is 80)
-* **ContexLength**: non-negative integer, the desired number of the source code lines per call frame centred around the one, where the call has happened.
-* **CallChain**: list of strings, _**read-only property**_, the fully qualified names of the callers along the call chain / frames traceback
-* **Info**: string, _**read-only property**_, composed of multiple text lines separated by the newline character ‘\n’ as a human-readable representation of the traceback frame records. For each record the fully qualified name of the caller is given as the first line; the path to the corresponding module and the line’s number in the code where the call has occurred – as the second line; and followed by pretty-formatted specified number of the lines of the code around the ‘call’ line.
+* **ConsoleWidth**:  (class attribute) non-negative integer, the desired maximum display length in characters of the source code lines including the line number prefix (default value is 80)
+* **ContexLength**: (class attribute) non-negative integer, the desired number of the source code lines per call frame centred around the one, where the call has happened.
+* **CallChain**: list of strings, ***read-only property***, the fully qualified names of the callers along the call chain / frames traceback
+* **Info**: string, ***read-only property***, composed of multiple text lines separated by the newline character ‘\n’ as a human-readable representation of the traceback frame records. For each record the fully qualified name of the caller is given as the first line; the path to the corresponding module and the line’s number in the code where the call has occurred – as the second line; and followed by pretty-formatted specified number of the lines of the code around the ‘call’ line.
 
-__*Initialization*__:
+***Initialization***:
 
 **\_\_init\_\_**(*, SkipFrames = None, ContextLength = None, ConsoleWidth = None)
 
@@ -134,7 +136,7 @@ Responsible for the retrieval, storage and analysis of a snapshot of the traceba
 
 Sub classes the class **StackTraceback**. The instantiation method **\_\_init\_\_**() is re-defined, but the rest of the API is inherited without changes (class / instance data attributes and properties).
 
-__*Initialization*__:
+***Initialization***:
 
 **\_\_init\_\_**(*, SkipFrames = None, ContextLength = None, ConsoleWidth = None, FromTraceback = None)
 

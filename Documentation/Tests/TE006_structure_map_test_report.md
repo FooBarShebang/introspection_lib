@@ -108,7 +108,7 @@ Define the test cases in the unit-test module [UT005](../../Tests/UT005_structur
 
 For traceability the relation between tests and requirements is summarized in the table below:
 
-| **Requirement ID** | **Covered in test(s)**                                                             | **Verified \[YES/NO\]**) |
+| **Requirement ID** | **Covered in test(s)**                                                             | **Verified \[YES/NO\]**  |
 | :----------------- | :--------------------------------------------------------------------------------- | :----------------------- |
 | REQ-FUN-600        | TEST-T-610, TEST-T-620                                                             | NO                       |
 | REQ-FUN-601        | TEST-T-610, TEST-T-620                                                             | NO                       |

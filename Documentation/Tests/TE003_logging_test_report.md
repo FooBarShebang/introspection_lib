@@ -134,7 +134,7 @@ Analyze the console output and the content of the created log files. All message
 
 For traceability the relation between tests and requirements is summarized in the table below:
 
-| **Requirement ID** | **Covered in test(s)** | **Verified \[YES/NO\]**) |
+| **Requirement ID** | **Covered in test(s)** | **Verified \[YES/NO\]**  |
 | :----------------- | :--------------------- | :----------------------- |
 | REQ-FUN-300        | TEST-D-300             | YES                      |
 | REQ-FUN-301        | TEST-D-302, TEST-D-304 | YES                      |

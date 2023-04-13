@@ -7,5 +7,6 @@
 class ExceptionTraceback {
     ___
     ..special methods..
-    + _ _init_ _(SkipFrames = None, ContextLength = None, ConsoleWidth = None, Traceback = None) : /int, int, int, types.TracebackType/ -> None
+    + _ _init_ _(SkipFrames = None, ContextLength = None, ConsoleWidth = None, FromTraceback = None) :
+    /int, int, int, types.TracebackType/ -> None
 }

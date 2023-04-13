@@ -6,7 +6,7 @@ start
 
 :<b>SkipFrames</b> - optional non-negative integer, number of the innermost frames to skip
 <b>LinesNumber</b> - optional non-negative integer, number of lines of source code per frame
-<b>Width</b> - optional non-negative integer, total width of the code lines + line numbers to truncate to<
+<b>ConsoleWidth</b> - optional non-negative integer, total width of the code lines + line numbers to truncate to<
 
 if (<b>LinesNumber</b> is integer AND <b>LinesNumber</b> > 0 ?) then (True)
     :use this value as <b>ContextLength</b>;
@@ -14,15 +14,17 @@ else (False)
     :use the value of the class attribute <b>ContextLength</b>;
 endif
 
-if (<b>Width</b> is integer AND <b>Width</b> > 0 ?) then (True)
-    :store the value of <b>Width</b> in the instance attribute <b>ContextWidth</b>;
+if (<b>ConsoleWidth</b> is integer AND <b>ConsoleWidth</b> > 0 ?) then (True)
+    :store the value of <b>ConsoleWidth</b> in the\ninstance attribute <b>_ConsoleWidth</b>;
+else (False)
+    :Copy the class default value into the\ninstance attribute <b>_ConsoleWidth</b>;
 endif
 
 :obtain the system call stack using <b>inspect.stack</b>() function with <b>ContextLength</b> lines of code per frame;
 
 :reverse the order of the frames -> as <b>Traceback</b> ;
 
-:obtain the parsed traceback via function <b>ParseFramesList(Traceback, SkipFrames)</b> and store the\nreturned value in the 'private' instance attribute <b>_lstTraceback</b>|
+:obtain the parsed traceback via function <b>ParseFramesList(Traceback, SkipFrames)</b> and store the\nreturned value in the 'private' instance attribute <b>_Traceback</b>|
 
 :De-reference the elements of the <b>Traceback</b> and the list itself]
 

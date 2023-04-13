@@ -181,7 +181,7 @@ See unit test suite module [UT003_dynamic_import](../../Tests/UT003_dynamic_impo
 
 For traceability the relation between tests and requirements is summarized in the table below:
 
-| **Requirement ID** | **Covered in test(s)**                       | **Verified \[YES/NO\]**) |
+| **Requirement ID** | **Covered in test(s)**                       | **Verified \[YES/NO\]**  |
 | :----------------- | :------------------------------------------- | :----------------------- |
 | REQ-FUN-400        | TEST-T-400                                   | YES                      |
 | REQ-FUN-401        | TEST-T-401                                   | YES                      |

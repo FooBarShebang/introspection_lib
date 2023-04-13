@@ -6,8 +6,8 @@ start
 
 :<b>SkipFrames</b> - optional non-negative integer, number of the innermost frames to skip
 <b>LinesNumber</b> - optional non-negative integer, number of lines of source code per frame
-<b>Width</b> - optional non-negative integer, total width of the code lines + line numbers to truncate to
-<b>Traceback</b> - optional, traceback object<
+<b>ConsoleWidth</b> - optional non-negative integer, total width of the code lines + line numbers to truncate to
+<b>FromTraceback</b> - optional, traceback object<
 
 if (<b>LinesNumber</b> is integer AND <b>LinesNumber</b> > 0 ?) then (True)
     :use this value as <b>ContextLength</b>;
@@ -15,23 +15,25 @@ else (False)
     :use the value of the class attribute <b>ContextLength</b>;
 endif
 
-if (<b>Width</b> is integer AND <b>Width</b> > 0 ?) then (True)
-    :store the value of <b>Width</b> in the instance attribute <b>ContextWidth</b>;
+if (<b>ConsoleWidth</b> is integer AND <b>ConsoleWidth</b> > 0 ?) then (True)
+    :store the value of <b>ConsoleWidth</b> in the\ninstance attribute <b>_ConsoleWidth</b>;
+else (False)
+    :Copy the class default value into the\ninstance attribute <b>_ConsoleWidth</b>;
 endif
 
-if (<b>Traceback</b> is a proper traceback object?) then (Yes)
+if (<b>FromTraceback</b> is a proper traceback object?) then (Yes)
     :obtain a list of inner frames for the current frame\nof this traceback using function <b>inspect.getinnerframes</b>()\nwith <b>ContextLength</b> lines of code per frame;
 
-    :obtain the parsed traceback via function <b>ParseFramesList(Traceback)</b> |
+    :obtain the parsed traceback via function <b>ParseFramesList(FromTraceback)</b> |
 else (No)
     :obtain the system call stack using <b>inspect.trace</b>()\nfunction with <b>ContextLength</b> lines of code per frame;
 
-    :obtain the parsed traceback via function <b>ParseFramesList(Traceback, SkipFrames)</b> |
+    :obtain the parsed traceback via function <b>ParseFramesList(FromTraceback, SkipFrames)</b> |
 endif
 
-:store the returned value in the 'private' instance attribute <b>_lstTraceback</b> list;
+:store the returned value in the 'private' instance attribute <b>_Traceback</b> list;
 
-:De-reference the elements of the <b>Traceback</b> and the list itself]
+:De-reference the elements of the <b>FromTraceback</b> and the list itself]
 
 stop
 

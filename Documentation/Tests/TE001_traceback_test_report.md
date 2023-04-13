@@ -137,7 +137,7 @@ Print the content of the Info property into the console and visually analyze / v
 
 For traceability the relation between tests and requirements is summarized in the table below:
 
-| **Requirement ID** | **Covered in test(s)** | **Verified \[YES/NO\]**) |
+| **Requirement ID** | **Covered in test(s)** | **Verified \[YES/NO\]**  |
 | :----------------- | :--------------------- | :----------------------- |
 | REQ-FUN-100        | TEST-T-100             | YES                      |
 | REQ-FUN-101        | TEST-T-101             | YES                      |

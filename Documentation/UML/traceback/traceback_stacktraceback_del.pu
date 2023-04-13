@@ -22,7 +22,7 @@ if (traceback is stored?) then (True)
     :de-reference the list referenced by the traceback attribute;
 endif
 
-:store <b>None</b> in the <b>self._tblstTraceback</b> attribute;
+:store <b>None</b> in the <b>self._Traceback</b> attribute;
 
 stop
 
