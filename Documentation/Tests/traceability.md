@@ -65,7 +65,7 @@
 | REQ-FUN-202        | TEST-T-202                                                                         | YES                      |
 | REQ-FUN-203        | TEST-D-200                                                                         | YES                      |
 | REQ-FUN-204        | TEST-T-203                                                                         | YES                      |
-| REQ-FUN-205        | TEST-T-204                                                                         | NO                       |
+| REQ-FUN-205        | TEST-T-204                                                                         | YES                      |
 | REQ-FUN-210        | TEST-T-210                                                                         | YES                      |
 | REQ-FUN-220        | TEST-T-220                                                                         | YES                      |
 | REQ-FUN-230        | TEST-T-230                                                                         | YES                      |

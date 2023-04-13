@@ -119,7 +119,7 @@ Prepare the unit-test module with the test cases classes for the defined custom 
 * Instantiate but do not raise a custom exception with some arbitrary but valid argument values. Try to replace the message using a number of different data type values - check that the str() representation of the passed data is the new error message each time.
 * Do these checks with all defined custom exception classes.
 
-**Test result:** PASS / FAIL
+**Test result:** PASS
 
 ## Tests definition (Demonstration)
 
@@ -151,7 +151,7 @@ For traceability the relation between tests and requirements is summarized in th
 | REQ-FUN-202        | TEST-T-202             | YES                      |
 | REQ-FUN-203        | TEST-D-200             | YES                      |
 | REQ-FUN-204        | TEST-T-203             | YES                      |
-| REQ-FUN-205        | TEST-T-204             | NO                       |
+| REQ-FUN-205        | TEST-T-204             | YES                      |
 | REQ-FUN-210        | TEST-T-210             | YES                      |
 | REQ-FUN-220        | TEST-T-220             | YES                      |
 | REQ-FUN-230        | TEST-T-230             | YES                      |
@@ -161,4 +161,4 @@ For traceability the relation between tests and requirements is summarized in th
 
 | **Software ready for production \[YES/NO\]** | **Rationale**           |
 | :------------------------------------------: | :---------------------- |
-| NO                                           | Under development       |
+| YES                                          | All tests are passed    |

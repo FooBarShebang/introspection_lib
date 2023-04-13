@@ -23,7 +23,7 @@ Classes:
 """
 
 __version__ = "1.1.0.0"
-__date__ = "12-04-2023"
+__date__ = "13-04-2023"
 __status__ = "Production"
 
 #imports
@@ -57,7 +57,7 @@ TScalarSequence = Union[Any, List[Any]]
 
 #functions
 
-def GetObjectClass(gObject: Any) -> str:
+def GetObjectClass(Value: Any) -> str:
     """
     Helper function. Attempts to extract the class's name of the passed class
     or instance of a class. The fallback option is str(type(Value)) when the
@@ -67,19 +67,19 @@ def GetObjectClass(gObject: Any) -> str:
         type A -> str
     
     Args:
-        gObject: type A; the object to be analyzed
+        Value: type A; the object to be analyzed
     
     Returns:
         str: the determined class or type name
     
     Version 1.0.0.0
     """
-    if hasattr(gObject, '__name__'):
-        strResult = gObject.__name__
-    elif hasattr(gObject, '__class__'):
-        strResult = gObject.__class__.__name__
+    if hasattr(Value, '__name__'):
+        strResult = Value.__name__
+    elif hasattr(Value, '__class__'):
+        strResult = Value.__class__.__name__
     else:
-        strResult = str(type(gObject))
+        strResult = str(type(Value))
     return strResult
 
 #classes
@@ -100,6 +100,12 @@ class TracebackPlugin():
     Methods:
         with_traceback(Traceback):
             types.TracebackType -> Exception
+        getMessage():
+            None -> str
+        appendMessage(Message):
+            type A -> None
+        setMessage(Message):
+            type A -> None
     
     Version 2.0.0.0
     """
@@ -190,6 +196,43 @@ class TracebackPlugin():
         self._Traceback = None
         self._SkipFrames = None
         return super().with_traceback(Traceback)
+    
+    def getMessage(self) -> str:
+        """
+        Accesses the string error message of the exception.
+        
+        Signature:
+            None -> str
+        
+        Version 1.0.0.0
+        """
+        return self.args[0]
+    
+    def setMessage(self, Message: Any) -> None:
+        """
+        Changes the exception error message to the string representation of the
+        passed argument value.
+        
+        Signature:
+            type A -> None
+        
+        Version 1.0.0.0
+        """
+        self.args = (str(Message), )
+    
+    def appendMessage(self, Message: Any) -> None:
+        """
+        Changes the exception error message by appending to the end the string
+        representation of the passed argument value separated by a single
+        whitespace.
+        
+        Signature:
+            type A -> None
+        
+        Version 1.0.0.0
+        """
+        NewMessage = ' '.join([self.args[0], str(Message)])
+        self.args = (NewMessage, )
 
 #+ main classes
 
@@ -217,8 +260,14 @@ class UT_Exception(TracebackPlugin, Exception, abc.ABC):
     Methods:
         with_traceback(Traceback):
             types.TracebackType -> UT_Exception
+        getMessage():
+            None -> str
+        appendMessage(Message):
+            type A -> None
+        setMessage(Message):
+            type A -> None
 
-    Version 1.0.0.0
+    Version 2.0.0.0
     """
 
     #special methods
@@ -258,12 +307,12 @@ class UT_Exception(TracebackPlugin, Exception, abc.ABC):
         """
         if cls is UT_Exception:
             if issubclass(C, TracebackPlugin):
-                gResult = True
+                Result = True
             else:
-                gResult = False
+                Result = False
         else: #use the standard check mechanism
-            gResult = NotImplemented
-        return gResult
+            Result = NotImplemented
+        return Result
 
     def __init__(self, Message: str, *, SkipFrames: TIntNone = None,
                     FromTraceback: TTracebackNone = None) -> None:
@@ -322,13 +371,19 @@ class UT_TypeError(TracebackPlugin, TypeError):
     Methods:
         with_traceback(Traceback):
             types.TracebackType -> UT_TypeError
+        getMessage():
+            None -> str
+        appendMessage(Message):
+            type A -> None
+        setMessage(Message):
+            type A -> None
 
-    Version 1.0.0.0
+    Version 2.0.0.0
     """
 
     #special methods
 
-    def __init__(self, gObject: Any, seqTypes: TScalarSequence, *,
+    def __init__(self, Value: Any, Types: TScalarSequence, *,
                     SkipFrames: TIntNone = None,
                     FromTraceback: TTracebackNone = None) -> None:
         """
@@ -347,8 +402,8 @@ class UT_TypeError(TracebackPlugin, TypeError):
                 -> None
         
         Args:
-            gObject: type A; the object involved
-            seqTypes: type B; any single type / class or a sequence of types
+            Value: type A; the object involved
+            Types: type B; any single type / class or a sequence of types
                 or classes, which the object was expected to be
             SkipFrames: (keyword) int > 0 OR None; number of the innermost
                 frames to remove from the actual traceback, ignored if the
@@ -360,12 +415,16 @@ class UT_TypeError(TracebackPlugin, TypeError):
         
         Version 1.0.0.0
         """
-        if isinstance(seqTypes, collections.abc.Sequence):
-            _seqTypes = seqTypes
+        ObjectType = GetObjectClass(Value)
+        if isinstance(Types, str):
+            Message = f'{ObjectType} is not a sub-class of {Types}'
         else:
-            _seqTypes = [seqTypes]
-        Message = '{} is not a sub-class of ({}, )'.format(
-            GetObjectClass(gObject), ', '.join(map(GetObjectClass, _seqTypes)))
+            if isinstance(Types, collections.abc.Sequence):
+                _seqTypes = Types
+            else:
+                _seqTypes = [Types]
+            Message = '{} is not a sub-class of ({}, )'.format(ObjectType,
+                                    ', '.join(map(GetObjectClass, _seqTypes)))
         super().__init__(Message, SkipFrames = SkipFrames,
                                     FromTraceback = FromTraceback)
 
@@ -394,13 +453,19 @@ class UT_ValueError(TracebackPlugin, ValueError):
     Methods:
         with_traceback(Traceback):
             types.TracebackType -> UT_ValueError
+        getMessage():
+            None -> str
+        appendMessage(Message):
+            type A -> None
+        setMessage(Message):
+            type A -> None
 
-    Version 1.0.0.0
+    Version 2.0.0.0
     """
 
     #special methods
 
-    def __init__(self, gObject: Any, strRanges: str, *,
+    def __init__(self, Value: Any, Ranges: str, *,
                     SkipFrames: TIntNone = None,
                     FromTraceback: TTracebackNone = None) -> None:
         """
@@ -419,7 +484,7 @@ class UT_ValueError(TracebackPlugin, ValueError):
         
         Args:
             gObject: type A; the object involved
-            strRanges: str; explanation on the violated limitations / ranges
+            Ranges: str; explanation on the violated limitations / ranges
             SkipFrames: (keyword) int > 0 OR None; number of the innermost
                 frames to remove from the actual traceback, ignored if the
                 keyword argument FromTraceback holds a proper traceback object
@@ -430,8 +495,7 @@ class UT_ValueError(TracebackPlugin, ValueError):
         
         Version 1.0.0.0
         """
-        Message = '{} does not meet restriction {}'.format(str(gObject), 
-                                                                    strRanges)
+        Message = f'{str(Value)} does not meet restriction {Ranges}'
         super().__init__(Message, SkipFrames = SkipFrames,
                                     FromTraceback = FromTraceback)
 
@@ -460,13 +524,19 @@ class UT_AttributeError(TracebackPlugin, AttributeError):
     Methods:
         with_traceback(Traceback):
             types.TracebackType -> UT_AttributeError
+        getMessage():
+            None -> str
+        appendMessage(Message):
+            type A -> None
+        setMessage(Message):
+            type A -> None
 
-    Version 1.0.0.0
+    Version 2.0.0.0
     """
 
     #special methods
 
-    def __init__(self, gObject: Any, strAttribute: str, *,
+    def __init__(self, gObject: Any, AttributeName: str, *,
                     SkipFrames: TIntNone = None,
                     FromTraceback: TTracebackNone = None) -> None:
         """
@@ -485,7 +555,7 @@ class UT_AttributeError(TracebackPlugin, AttributeError):
         
         Args:
             gObject: type A; the object (class or instance) involved
-            strAttribute: str; name of the involved attribute
+            AttributeName: str; name of the involved attribute
             SkipFrames: (keyword) int > 0 OR None; number of the innermost
                 frames to remove from the actual traceback, ignored if the
                 keyword argument FromTraceback holds a proper traceback object
@@ -496,7 +566,8 @@ class UT_AttributeError(TracebackPlugin, AttributeError):
         
         Version 1.0.0.0
         """
-        Message = '{}.{}'.format(GetObjectClass(gObject), strAttribute)
+        ObjectType = GetObjectClass(gObject)
+        Message = f'{ObjectType}.{AttributeName}'
         super().__init__(Message, SkipFrames = SkipFrames,
                                     FromTraceback = FromTraceback)
 
@@ -525,8 +596,14 @@ class UT_IndexError(TracebackPlugin, IndexError):
     Methods:
         with_traceback(Traceback):
             types.TracebackType -> UT_IndexError
+        getMessage():
+            None -> str
+        appendMessage(Message):
+            type A -> None
+        setMessage(Message):
+            type A -> None
 
-    Version 1.0.0.0
+    Version 2.0.0.0
     """
 
     #special methods
@@ -561,7 +638,7 @@ class UT_IndexError(TracebackPlugin, IndexError):
         
         Version 1.0.0.0
         """
-        Message = 'Out of range index {}[{}]'.format(Name, Index)
+        Message = f'Out of range index {Name}[{Index}]'
         super().__init__(Message, SkipFrames = SkipFrames,
                                     FromTraceback = FromTraceback)
 
@@ -590,8 +667,14 @@ class UT_KeyError(TracebackPlugin, KeyError):
     Methods:
         with_traceback(Traceback):
             types.TracebackType -> UT_KeyError
+        getMessage():
+            None -> str
+        appendMessage(Message):
+            type A -> None
+        setMessage(Message):
+            type A -> None
 
-    Version 1.0.0.0
+    Version 2.0.0.0
     """
 
     #special methods
@@ -626,7 +709,7 @@ class UT_KeyError(TracebackPlugin, KeyError):
         
         Version 1.0.0.0
         """
-        Message = 'Key not found {}[{}]'.format(Name, Key)
+        Message = f'Key not found {Name}[{Key}]'
         super().__init__(Message, SkipFrames = SkipFrames,
                                     FromTraceback = FromTraceback)
 

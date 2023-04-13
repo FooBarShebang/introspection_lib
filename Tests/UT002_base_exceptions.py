@@ -5,8 +5,8 @@ Module introspection_lib.Tests.UT002_base_exceptions
 Implements unit testing of the module introspection_lib.base_exceptions.
 """
 
-__version__ = "1.0.1.0"
-__date__ = "06-11-2020"
+__version__ = "1.0.2.0"
+__date__ = "13-04-2020"
 __status__ = "Testing"
 
 #imports
@@ -598,6 +598,104 @@ class Test_UT_Exception(unittest.TestCase):
         with self.assertRaises(TypeError):
             self.TestClass(*lstTemp)
         del lstTemp
+    
+    def test_getMessage(self):
+        """
+        Checks that the method to get the error message works properly.
+        
+        Test ID: TEST-T-204
+        Covers the requirement: REQ-FUN-205
+        """
+        TestError = self.TestClass(*self.DefArguments)
+        ArgsString = TestError.args[0]
+        ErrorString = str(TestError).strip("'")
+        Message = TestError.getMessage()
+        self.assertEqual(Message, ArgsString)
+        self.assertEqual(Message, ErrorString)
+        try:
+            raise TestError
+        except self.TestClass as NewError:
+            Message = NewError.getMessage()
+            self.assertEqual(Message, ArgsString)
+            self.assertEqual(Message, ErrorString)
+            del NewError
+        del TestError
+    
+    def test_setMessage(self):
+        """
+        Checks that the method to set the error message works properly.
+        
+        Test ID: TEST-T-204
+        Covers the requirement: REQ-FUN-205
+        """
+        for Arg in [1, 1.0, 'abc', True, [1, 2]]:
+            TestError = self.TestClass(*self.DefArguments)
+            ArgsString = TestError.args[0]
+            ErrorString = str(TestError).strip("'")
+            Check = str(Arg)
+            try:
+                raise TestError
+            except self.TestClass as NewError:
+                Message = NewError.getMessage()
+                self.assertEqual(Message, ArgsString)
+                self.assertEqual(Message, ErrorString)
+                NewError.setMessage(Arg)
+                ArgsString = NewError.args[0]
+                ErrorString = str(NewError).strip("'")
+                Message = NewError.getMessage()
+                self.assertEqual(ArgsString, Check)
+                self.assertEqual(ErrorString, Check)
+                self.assertEqual(Message, Check)
+                try:
+                    raise NewError
+                except self.TestClass as LastError:
+                    ArgsString = LastError.args[0]
+                    ErrorString = str(LastError).strip("'")
+                    Message = LastError.getMessage()
+                    self.assertEqual(ArgsString, Check)
+                    self.assertEqual(ErrorString, Check)
+                    self.assertEqual(Message, Check)
+                    del LastError
+                del NewError
+            del TestError
+    
+    def test_appendMessage(self):
+        """
+        Checks that the method to add to the error message works properly.
+        
+        Test ID: TEST-T-204
+        Covers the requirement: REQ-FUN-205
+        """
+        for Arg in [1, 1.0, 'abc', True, [1, 2]]:
+            TestError = self.TestClass(*self.DefArguments)
+            ArgsString = TestError.args[0]
+            ErrorString = str(TestError).strip("'")
+            Check = f'{ArgsString} {str(Arg)}'
+            try:
+                raise TestError
+            except self.TestClass as NewError:
+                Message = NewError.getMessage()
+                self.assertEqual(Message, ArgsString)
+                self.assertEqual(Message, ErrorString)
+                NewError.appendMessage(Arg)
+                ArgsString = NewError.args[0]
+                ErrorString = str(NewError).strip("'")
+                Message = NewError.getMessage()
+                self.assertEqual(ArgsString, Check)
+                self.assertEqual(ErrorString, Check)
+                self.assertEqual(Message, Check)
+                try:
+                    raise NewError
+                except self.TestClass as LastError:
+                    ArgsString = LastError.args[0]
+                    ErrorString = str(LastError).strip("'")
+                    Message = LastError.getMessage()
+                    self.assertEqual(ArgsString, Check)
+                    self.assertEqual(ErrorString, Check)
+                    self.assertEqual(Message, Check)
+                    del LastError
+                del NewError
+            del TestError
 
 class Test_Sub_Exception(Test_UT_Exception):
     """
