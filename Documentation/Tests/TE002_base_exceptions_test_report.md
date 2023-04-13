@@ -99,6 +99,28 @@ Prepare the unit-test module with the test cases classes for the defined custom 
 
 **Test result:** PASS
 
+---
+
+**Test Identifier:** TEST-T-204
+
+**Requirement ID(s)**: REQ-FUN-205
+
+**Verification method:** T
+
+**Test goal:** Error message modification.
+
+**Expected result:** The custom exception classes provide methods or properties to read-out, replace or append to the error message. The read-out error message is returned as a string, which exactly matches the expected one (as displayed after the exception class name, i.e. its str() representation). With the additional string appended or the original message being replaced the made changes must be properly displayed both in the str() representation and the direct error message getter method / property.
+
+**Test steps:** Perform the following checks:
+
+* Raise a custom exception with some arbitrary but valid argument values. Catch the exception and check its message, compare it with the str() representation of the error. Append some arbitrary string to the message. Check that the new message is changed as expected. Re-raise and catch the exception. Check that the modified version of the message is preserved.
+* Raise a custom exception with some arbitrary but valid argument values. Catch the exception and check its message, compare it with the str() representation of the error. Replace the message with some arbitrary string. Check that the new message is changed as expected. Re-raise and catch the exception. Check that the modified version of the message is preserved.
+* Instantiate but do not raise a custom exception with some arbitrary but valid argument values. Try to append to the message using a number of different data type values - check that the str() representation of the passed data is appended to the error message each time.
+* Instantiate but do not raise a custom exception with some arbitrary but valid argument values. Try to replace the message using a number of different data type values - check that the str() representation of the passed data is the new error message each time.
+* Do these checks with all defined custom exception classes.
+
+**Test result:** PASS / FAIL
+
 ## Tests definition (Demonstration)
 
 **Test Identifier:** TEST-D-200
@@ -129,6 +151,7 @@ For traceability the relation between tests and requirements is summarized in th
 | REQ-FUN-202        | TEST-T-202             | YES                      |
 | REQ-FUN-203        | TEST-D-200             | YES                      |
 | REQ-FUN-204        | TEST-T-203             | YES                      |
+| REQ-FUN-205        | TEST-T-204             | NO                       |
 | REQ-FUN-210        | TEST-T-210             | YES                      |
 | REQ-FUN-220        | TEST-T-220             | YES                      |
 | REQ-FUN-230        | TEST-T-230             | YES                      |
@@ -138,4 +161,4 @@ For traceability the relation between tests and requirements is summarized in th
 
 | **Software ready for production \[YES/NO\]** | **Rationale**           |
 | :------------------------------------------: | :---------------------- |
-| YES                                          | All tests are passed    |
+| NO                                           | Under development       |

@@ -82,6 +82,20 @@ The verification method for a requirement is given by a single letter according 
 
 ---
 
+**Requirement ID:** REQ-FUN-205
+
+**Title:** Exception message handling
+
+**Description:** The defined custom exceptions should provide methods or properties to:
+
+* Get the string error message (normally displayed after the exception class)
+* Replace that message with any other string formed from any data type
+* Append any string formed from any data type to the current error message
+
+**Verification Method:** T
+
+---
+
 **Requirement ID:** REQ-FUN-210
 
 **Title:** Initialization of the custom sub-class of **Exception**
