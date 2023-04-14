@@ -7,6 +7,7 @@ This document describes the intended usage, design and implementation of the fun
 The functional objects covered in this document are:
 
 * (helper) function **GetObjectClass**()
+* (left plug-in) class **TracebackPlugin**
 * class **UT_Exception**
 * class **UT_TypeError**
 * class **UT_ValueError**
@@ -31,7 +32,7 @@ except TypeError as err:
 
 For instance, the module **introspection_lib.my_traceback** provides class **ExceptionTraceback**, which can be instantiated from such a traceback object, and will generate the machine- and human-readable call chain as well as the extended human-readable traceback per-frame dump.
 
-The purpose of this module is to provide a framework of the custom exceptions, which extend the standard classes **Exception**, **TypeError**, **ValueError**, **AttributeError**, **IndexError** and **KeyError** by adding the functionality provided by the **introspection_lib.my_traceback.ExceptionTraceback** class.
+The purpose of this module is to provide a framework of the custom exceptions, which extend the standard classes **Exception**, **TypeError**, **ValueError**, **AttributeError**, **IndexError** and **KeyError** by adding the exception's error message manipulation methods and the exception stack analysis functionality provided by the **introspection_lib.my_traceback.ExceptionTraceback** class.
 
 The custom versions of the standard exceptions are their actual sub-classes (see diagram below), so the clause `except TypeError` will intercept both the **TypeError** and **UT_TypeError**, whereas the clause `except UT_TypeError` will intercept only **UT_TypeError**, but not any other exeption in the diagram below.
 
@@ -41,7 +42,11 @@ In addition, all defined custom exceptions are registered as *virtual* sub-class
 
 ![Classes diagram - virtual inheritance](../UML/base_exceptions/classes_virtual.png)
 
-The design is to enable use of **UT_Exception** in the *try...except* clause to catch any of the defined custom exceptions. This approach works fine with Python 2.7, where the check in the *except* clause relies upon *isinstance*() function. In Python 3 (up to v3.8), however, the *except* clause check does not use *isinstance*() check, but checks the MRO directly at low level (C-implementation). Instead of meddling with metaclasses a simple solution is added - a tuple **UT_Exception_Check**, which lists all custom exceptions defined in this module. Use this 'umbrella' to catch any custom exception.
+Basically, the standard functions *issubclass*() and *isinstance*() will consider the classes / instance of **UT\_{XXX}Error** to be sub-classes / instances of sub-classes of **UT_Exception** as well as their 'real parents' **{XXX}Error** but not of each other.
+
+Thus in Python 2.7 the **UT_Exception** class can be used in the *try...except* clause to catch any of the defined custom exceptions.
+
+**Note**: In Python 3 the *except* clause check does not use *isinstance*() check, but checks the MRO directly at low level (C-implementation). Instead of meddling with metaclasses a simple solution is added - a tuple **UT_Exception_Check**, which lists all custom exceptions defined in this module. Use this 'umbrella' to catch any custom exception.
 
 The added functionality of the custom exceptions is implemented as a read-only property *Traceback*, which returns an instance of **introspection_lib.my_traceback.ExceptionTraceback** class. Thus, the traceback analysis of any of the custom exception can be performed as in the example below:
 
@@ -50,6 +55,7 @@ try:
     #do some stuff, which may lead to an exception (use custom ones!)
     ...
 except UT_Exception_Check as err:
+    print(err.__class__.__name, ':', err) #exception class and message
     print(err.Traceback.Info) #complete traceback per-frame dump
     print(err.Traceback.CallChain) #list of the qualified names of the callers
     ...
@@ -95,7 +101,7 @@ except UT_Exception as err:
     print(err.Traceback.CallChain)
 ```
 
-In this case the *Traceback* refers to the modified traceback with the 2 innermost frames being hidden, i.e. the reported call chain is \<'module'\> -> Outer(). This is convenient when you want to hide some implementation details, for example, your function or method uses some type-checking helper function method, and this detailed information will only complicate the debugging process.
+In this case the *Traceback* refers to the modified traceback with the 2 innermost frames being hidden, i.e. the reported call chain is \<'module'\> -> Outer(). This is convenient when you want to hide some implementation details, for example, your function or method uses some type-checking helper function method, and this detailed information will only complicate the debugging process. Or an assignment is made to an object's attribute, which is an instance of a descriptor class, and raises an exception in response to the improper or incompatible data type or value. In such a case it is conveninent to show the exception's traceback up to the assignment, which is the actual violation, and to 'hide' the internal implementation of the data sanity check.
 
 **Note** that the *\_\_traceback\_\_* argument will still hold the actual exception traceback (full 4 elements call chain).
 
@@ -120,13 +126,13 @@ try:
         Outer(2.3)
     except (UT_TypeError, UT_ValueError) as err:
         Message = '{} - required a positive integer'.format(err.args[0])
-        raise UT_Exception(Message, FromTraceback = err.__traceback__)
+        raise UT_Exception(Message, FromTraceback = err.__traceback__) from None
     #do some stuff
 except UT_Exception_Check as err:
     print(err.Traceback.CallChain)
 ```
 
-In this case the *Traceback* refers to the substituted traceback with the call chain being \<'module'\> -> Outer() -> Middle() -> Inner(), although it has been raised directly in the module's top frame. This is convenient when you want to hide some implementation details, or, as in this example, for coercing of the exceptions. In this example, not integer input value results in sub-class of TypeError, whereas integer but not positive - ValueError. Both situations are caught and converted into a single (combined) error with extended explanation (error message) and preserved exception traceback.
+In this case the *Traceback* refers to the substituted traceback with the call chain being \<'module'\> -> Outer() -> Middle() -> Inner(), although it has been raised directly in the module's top frame. This is convenient when you want to hide some implementation details, or, as in this example, for coercing of the exceptions. In this example, not integer input value results in sub-class of **TypeError**, whereas integer but not positive - **ValueError**. Both situations are caught and converted into a single (combined) error with extended explanation (error message) and preserved exception traceback.
 
 **Note** that the *\_\_traceback\_\_* argument will still hold the actual exception traceback (only the module's frame). The keyword argument *FromTraceback* (substitution) takes precedent on the *SkipFrames* (truncation).
 
@@ -155,7 +161,7 @@ except UT_Exception_Check as err:
     print(err.Traceback.CallChain)
 ```
 
-In this case the actual traceback of the latest exception (only the module's frame) is extended by the traceback of the original exception (module's frame, Outer(), Middle() and Inner() frames). This traceback is refered by the *\_\_traceback\_\_* attribute, which is used for the creation of the traceback analysis objecyt returned by the *Traceback* property.
+In this case the actual traceback of the latest exception (only the module's frame) is extended by the traceback of the original exception (module's frame, Outer(), Middle() and Inner() frames). This traceback is refered by the *\_\_traceback\_\_* attribute, which is used for the creation of the traceback analysis object returned by the *Traceback* property.
 
 **Note** call of the method *with_traceback*() overrides the effects of the truncation and substitution of the traceback, regardless if they were applied to the original or secondary exceptions.
 
@@ -163,12 +169,36 @@ In this case the actual traceback of the latest exception (only the module's fra
 
 Apart from the explicit chaining using *with_traceback*() method there is also *implicit* chaining, which happends under the following conditions:
 
-* (re-) raise of an exception inside `except` or `finally` clause during handling of an exception
-* an exception being raised from another as `raise SomeException(...) from AnotherException`
+* an exception is explicitely reraised inside `except` or `finally` clause during handling of an exception
+* another exception is raised during handling of an exeption `raise SomeException(...) from AnotherException`
 
-In the both cases the exception's traceback (as *\_\_traceback\_\_* or *Traceback* attribute's content) is not affected, unless the method *with_traceback*() is called. However, the content of the 'special' attributes *\_\_cause\_\_* and / or *\_\_context\_\_* inherited from the standard exception classes are modified, and can be analyzed. If the exception is not caught (propagated to the top level of the interactive interpreter loop), the corresponding information is displayed in the dump.
+```python
+try:
+    #do something dangerous
+except UT_TypeError as err1:
+    #do some other stuff
+    raise err1 #case 1 - explicit re-raise
+except UT_ValueError as err2:
+    #do some stuff
+    raise UT_Exception('Oops!') from err2
+```
 
-This standard behaviour is inherited without modification, including the ability to suppress the implicit chaining during (re-) raise as `raise SomeException(...) from None'.
+In the first case the execution frame is added where the exception is re-raised.
+
+In the second case the exception's traceback (as *\_\_traceback\_\_* or *Traceback* attribute's content) is not affected, unless the method *with_traceback*() is called. However, the content of the 'special' attributes *\_\_cause\_\_* and / or *\_\_context\_\_* inherited from the standard exception classes are modified, and can be analyzed. If the exception is not caught (propagated to the top level of the interactive interpreter loop), the corresponding information is displayed in the dump.
+
+This standard behaviour is inherited without modification, including the ability to suppress the implicit chaining during (re-) raise as `raise SomeException(...) from None`.
+
+**Note** that the exception traceback is not modified either if it is re-raised implicitely simply using *raise* without operand in the *except* clause; which allows, for instance, modification of the error message. Basically, some additional information on the cause of the error can be added along the error propagation way without modification of its real and 'human readble' tracebacks.
+
+```python
+try:
+        #do something dangerous
+except UT_TypeError as err:
+    err.appendMessage('That was expected, do not worry!')
+    #or err.setMessage('Opps, we do not know what is wrong!')
+    raise
+```
 
 ## Design and Implementation
 
@@ -190,13 +220,15 @@ The property *Traceback* of the custom exceptions is also inherited from the mix
 
 ![Property Traceback](../UML/base_exceptions/traceback_property.png)
 
-The described functionality is achieved via the multiple inheritance as shown below for the **UT_Exception** and **UT_TypeError** classes.
+Additionally, this class adds methods *getMessage*(), *setMessage*() and *appendMessage*(), which return the string representation of the data stored in the first element of the *args* tuple attribute of the actual exception class, replaces it by some other string or converts it into a string appends another string to it respectively.
+
+The described functionality is achieved via the multiple inheritance as shown below for the **UT_Exception** and **UT_TypeError** classes (for other implemented classes the scheme is the same, only the actual exception super-class is different).
 
 ![UT_Exception class](../UML/base_exceptions/ut_exception.png)
 
 ![UT_TypeError class](../UML/base_exceptions/ut_typeerror.png)
 
-The class **UT_Exception** is not an actual super class for any of the other custom exceptions (neither it is a sub-class of any of them). However, it is made a *virtual* super class for them by hooking the 'is a' MRO method ('special' class method *\_\_subclasshook\_\_*()). In addition to the standard 'is a' check on direct descendancy, the 'has a' check is added - any class having *Traceback* attribute is considered to be (virtual) sub-class of the **UT_Exception**. in addition, it is ensured that such 'has a' check is not applied in the case of the real sub-classes of **UT_Exception**, which should revert to the standard 'is a' check (see diagram below).
+The class **UT_Exception** is not an actual super class for any of the other custom exceptions (neither it is a sub-class of any of them). However, it is made a *virtual* super class for them by hooking the 'is a' MRO method ('special' class method *\_\_subclasshook\_\_*()). Basically, any class derived from the **TracebackPlugin** is considered to be a sub-class of **UT_Exception**, but this does not propagate to the descendants of the **UT_Exception** class.
 
 ![MRO hook](../UML/base_exceptions/ut_exception_subclasshook.png)
 
@@ -212,7 +244,7 @@ Finally, the custom exceptions **TypeError**, **ValueError** and **AtrubuteError
 
 ### Functions
 
-**GetObjectClass**(gObject: Any)
+**GetObjectClass**(Value: Any)
 
 *Signature*:
 
@@ -220,7 +252,7 @@ type A -> str
 
 *Args*:
 
-* *gObject*: type A; the object to be analyzed
+* *Value*: type A; the object to be analyzed
 
 *Returns*:
 
@@ -234,7 +266,7 @@ Helper function. Attempts to extract the class's name of the passed class or ins
 
 Left plugin class implementing the built-in traceback aalysis functionality. Cannot be instantiated by itself, since **TypeError** will be raised. Must be used only as left plugin for sub-classing exceptions.
 
-__*Class and Instance Data Attributes*__:
+***Class and Instance Data Attributes***:
 
 * **Traceback**: (read-only property) instance of **introspection_lib.traceback.ExceptinTraceback** class to provide the machine- and human-readable exception traceback analysis
 
@@ -278,6 +310,44 @@ types.TracebackType -> Exception
 
 Overrides the standard exceptions' method; ensures the de-referencig of the stored exception traceback instance and sets the corresponding 'private' attributes to None, thus when requested the traceback analysis object will be created from the actual traceback of the exception. Then it reverts to the original version of the same method.
 
+**getMessage**()
+
+*Signature*:
+
+None -> str
+
+*Description*:
+
+Returns the error message of the exception.
+
+**setMessage**(Message)
+
+*Signature*:
+
+type A -> None
+
+*Args*:
+
+* *Message*: type A; any data type value to be set as the error's message.
+
+*Description*:
+
+Converts the passed argument into a string and sets is as the error's message.
+
+**appendMessage**(Message)
+
+*Signature*:
+
+type A -> None
+
+*Args*:
+
+* *Message*: type A; any data type value to be set as the error's message.
+
+*Description*:
+
+Converts the passed argument into a string and appends to the current error's message produced by convertion the *args[0]* into a string.
+
 ### Class UT_Exception
 
 Base custom exception, which is considered to be a base class (real or virtual) to all custom exceptions. Should be instantiated as:
@@ -314,7 +384,10 @@ The single mandatory argument (the error message) is stored as the only element 
 
 __*Instance methods*__:
 
-**with_traceback**(Traceback): types.TracebackType -> Exception
+* **with_traceback**(Traceback): types.TracebackType -> Exception
+* **getMessage**(): None -> str
+* **setMessage**(Message): type A -> None
+* **appendMessage**(Message): type A -> None
 
 Inherited from **TracebackPlugin** mixin class.
 
@@ -332,14 +405,14 @@ Has the same API as **UT_Exception**, except for the instantiation.
 
 __*Initialization*__:
 
-**\_\_init\_\_**(gObject, seqTypes, *, SkipFrames = None, FromTraceback = None): type A, type B/, int > 0 OR None, types.TracebackType OR None/ -> None
+**\_\_init\_\_**(Value, Types, *, SkipFrames = None, FromTraceback = None): type A, type B/, int > 0 OR None, types.TracebackType OR None/ -> None
 
 Converts the two passed mandatory (positional) arguments into a single string error message, which is stored as the only element of the args tuple attribute.
 
 *Args*:
 
-* *gObject*: type A; the object involved
-* *seqTypes*: type B; any single type / class or a sequence of types or classes, which the object was expected to be
+* *Value*: type A; the object involved
+* *Types*: type B; any single type / class or a sequence of types or classes, which the object was expected to be
 * *SkipFrames*: (keyword) int > 0 OR None; number of the innermost frames to remove from the actual traceback, ignored if the keyword argument *FromTraceback* holds a proper traceback object
 * *FromTraceback*: (keyword) types.TracebackType OR None; substitute traceback (from another exception) to use; if it is provided and holds a proper traceback object the *SkipFrames* argument is ignored
 
@@ -357,14 +430,14 @@ Has the same API as **UT_Exception**, except for the instantiation.
 
 __*Initialization*__:
 
-**\_\_init\_\_**(gObject, strRanges, *, SkipFrames = None, FromTraceback = None): type A, str/, int > 0 OR None, types.TracebackType OR None/ -> None
+**\_\_init\_\_**(Value, Ranges, *, SkipFrames = None, FromTraceback = None): type A, str/, int > 0 OR None, types.TracebackType OR None/ -> None
 
 Converts the two passed mandatory (positional) arguments into a single string error message, which is stored as the only element of the args tuple attribute.
 
 *Args*:
 
-* *gObject*: type A; the object involved
-* *strRanges*: str; explanation on the violated limitations / ranges
+* *Value*: type A; the object involved
+* *Ranges*: str; explanation on the violated limitations / ranges
 * *SkipFrames*: (keyword) int > 0 OR None; number of the innermost frames to remove from the actual traceback, ignored if the keyword argument *FromTraceback* holds a proper traceback object
 * *FromTraceback*: (keyword) types.TracebackType OR None; substitute traceback (from another exception) to use; if it is provided and holds a proper traceback object the *SkipFrames* argument is ignored
 
@@ -382,14 +455,14 @@ Has the same API as **UT_Exception**, except for the instantiation.
 
 __*Initialization*__:
 
-**\_\_init\_\_**(gObject, strAttribute, *, SkipFrames = None, FromTraceback = None): type A, str/, int > 0 OR None, types.TracebackType OR None/ -> None
+**\_\_init\_\_**(gObject, AttributeName, *, SkipFrames = None, FromTraceback = None): type A, str/, int > 0 OR None, types.TracebackType OR None/ -> None
 
 Converts the two passed mandatory (positional) arguments into a single string error message, which is stored as the only element of the args tuple attribute.
 
 *Args*:
 
 * *gObject*: type A; the object involved
-* *strAttribute*: str; name of the involved attribute
+* *AttributeName*: str; name of the involved attribute
 * *SkipFrames*: (keyword) int > 0 OR None; number of the innermost frames to remove from the actual traceback, ignored if the keyword argument *FromTraceback* holds a proper traceback object
 * *FromTraceback*: (keyword) types.TracebackType OR None; substitute traceback (from another exception) to use; if it is provided and holds a proper traceback object the *SkipFrames* argument is ignored
 

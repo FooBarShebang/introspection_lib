@@ -7,6 +7,6 @@
 class Exception <<Builtin>> {
     + {field} args: tuple(type A)
     + __traceback__ : types.TracebackType
-    + with_traceback(): type.TracebackType -> Exception
     + __init__(): type A -> None
+    + with_traceback(): type.TracebackType -> Exception
 }

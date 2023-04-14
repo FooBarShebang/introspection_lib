@@ -4,18 +4,18 @@ title Activity Diagram of the Traceback Property
 
 start
 
-if ('private' instance attribute _traceback stores instance of <b>ExceptionTraceback</b>?) then (Yes)
-    :return reference to the\nstored in _traceback object>
+if ('private' instance attribute _Traceback stores instance of <b>ExceptionTraceback</b>?) then (Yes)
+    :return reference to the\nstored in _Traceback object>
 else (No)
     if (a positive integer is stored as number of frames to skip?) then (True)
         :instantiate <b>ExceptionTraceback</b> from the\nsystem stack with skipping frames keyword;
     else (False)
-        :instantiate <b>ExceptionTraceback</b> from the\nstored exception's traceback, i.e. \_\_traceback\_\_\nargument's content;
+        :instantiate <b>ExceptionTraceback</b> from the\nstored exception's traceback, i.e. _ _traceback_ _\nargument's content (system exception superclass);
     endif
 
-    :store the created instance in the 'private' attribute _traceback;
+    :store the created instance in the 'private' attribute _Traceback;
 
-    :return reference to the stored in _traceback object>
+    :return reference to the stored in _Traceback object>
 endif
 
 stop

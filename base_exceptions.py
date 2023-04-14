@@ -8,7 +8,7 @@ UT_Exception_Check as an 'umbrella' term in the except clause to catch any of
 the defined custom exceptions.
 
 Functions:
-    GetObjectClass(gObject):
+    GetObjectClass(Value):
         type A -> str
 
 Classes:
@@ -206,7 +206,7 @@ class TracebackPlugin():
         
         Version 1.0.0.0
         """
-        return self.args[0]
+        return str(self.args[0])
     
     def setMessage(self, Message: Any) -> None:
         """
@@ -231,7 +231,7 @@ class TracebackPlugin():
         
         Version 1.0.0.0
         """
-        NewMessage = ' '.join([self.args[0], str(Message)])
+        NewMessage = ' '.join([str(self.args[0]), str(Message)])
         self.args = (NewMessage, )
 
 #+ main classes

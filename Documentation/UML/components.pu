@@ -21,7 +21,7 @@ $library(introspection_lib) {
         !include ./traceback/traceback_components.iuml
     !endif
     
-    ExceptionTraceback -o CustomExceptions
+    ExceptionTraceback -o TracebackPlugin
     
     !if $is_not_defined("$LOGGING_COMPONENTS")
         !include ./logging/logging_components.iuml

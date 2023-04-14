@@ -5,11 +5,14 @@
 !endif
 
 $left_mixin_class(TracebackPlugin) {
-    - _traceback : ExceptionTraceback OR None
+    - _Traceback : ExceptionTraceback OR None
     - _SkipFrames: int OR None
     ..read-only properties..
     # Traceback : ExceptionTraceback
     ___
-    + with_traceback(): type.TracebackType -> Exception
     + __init__(*args, SkipFrames = None, FromTraceback = None): /type A, ..., int OR None, type.TracebackType OR None/ -> None
+    + with_traceback(): type.TracebackType -> Exception
+    + getMessage(): None -> str
+    + setMessage(Message): type A -> None
+    + appendMessage(Message) : type A -> None
 }

@@ -9,5 +9,9 @@ $module(base_exceptions) {
 
     $class(CustomExceptions)
     
+    $class(TracebackPlugin)
+
     GetObjectClass <-- CustomExceptions
+
+    TracebackPlugin <|- CustomExceptions
 }
