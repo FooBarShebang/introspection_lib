@@ -1,6 +1,6 @@
 #usr/bin/python3
 """
-Module introspection_lib.logging
+Module introspection_lib.my_logging
 
 Implements custom logging classes.
 
@@ -13,8 +13,8 @@ Classes:
     FileHandlerFilter: helper class - file logging handler
 """
 
-__version__ = "1.0.1.0"
-__date__ = "16-12-2020"
+__version__ = "1.0.1.1"
+__date__ = "17-04-2023"
 __status__ = "Production"
 
 #imports
@@ -85,16 +85,16 @@ def _ResolveLevel(Level: TStrInt) -> int:
     if isinstance(Level, int):
         if Level < 0:
             raise ValueError('Severity level must be a non-negative integer')
-        iResult = Level
+        Result = Level
     elif isinstance(Level, str):
-        iResult = LOOKUP_TABLE.get(Level.lower(), None)
-        if iResult is None:
+        Result = LOOKUP_TABLE.get(Level.lower(), None)
+        if Result is None:
             raise ValueError('Unknown level alias: {}'.format(Level))
     else:
         strError = ' '.join(['Severity level must be a string or an integer,',
                                 'not {}'.format(type(Level))])
         raise TypeError(strError)
-    return iResult
+    return Result
 
 #classes
 
@@ -112,13 +112,13 @@ class LoggerFilter:
     passed during instantiation of this class.
 
     Methods:
-        filter(Parent):
+        filter(Record):
             logging.LogRecord -> bool
     
     Attributes:
         parent: introspection_lib.logging.DualLogger
     
-    Version 1.0.0.1
+    Version 1.0.0.2
     """
 
     #special methods
@@ -173,18 +173,18 @@ class LoggerFilter:
         Returns:
             bool: always True value
         
-        Version 1.0.0.0
+        Version 1.1.0.0
         """
-        iMin, iMax = self.parent.getConsoleRange()
-        iLoggerLevel = self.parent.getEffectiveLevel()
-        if ((Record.levelno >= iMin) and (Record.levelno <= iMax)
-                                        and (Record.levelno >= iLoggerLevel)):
+        MinLevel, MaxLevel = self.parent.getConsoleRange()
+        LoggerLevel = self.parent.getEffectiveLevel()
+        if ((MinLevel <= Record.levelno <= MaxLevel)
+                                        and (Record.levelno >= LoggerLevel)):
             Record.IsToPrint = True
         else:
             Record.IsToPrint = False
-        iMin, iMax = self.parent.getPropagateRange()
-        if ((Record.levelno >= iMin) and (Record.levelno <= iMax)
-                                        and (Record.levelno >= iLoggerLevel)):
+        MinLevel, MaxLevel = self.parent.getPropagateRange()
+        if ((MinLevel <= Record.levelno <= MaxLevel)
+                                        and (Record.levelno >= LoggerLevel)):
             Record.IsToPropagate = True
         else:
             Record.IsToPropagate = False
@@ -199,7 +199,7 @@ class ConsoleHandlerFilter(LoggerFilter):
     to the instantiation method of this class. Sub-classes LoggerFilter.
 
     Methods:
-        filter(Parent):
+        filter(Record):
             logging.LogRecord -> bool
     
     Attributes:
@@ -239,13 +239,13 @@ class FileHandlerFilter(LoggerFilter):
     instantiation method of this class. Sub-classes LoggerFilter.
     
     Methods:
-        filter(Parent):
+        filter(Record):
             logging.LogRecord -> bool
     
     Attributes:
         parent: introspection_lib.logging.DualLogger
     
-    Version 1.0.0.0
+    Version 1.0.0.1
     """
 
     #public API
@@ -267,20 +267,20 @@ class FileHandlerFilter(LoggerFilter):
             bool: True if the message must be processed by the handler, False
                 otherwise
         
-        Version 1.0.0.0
+        Version 1.1.0.0
         """
-        iMin, iMax = self.parent.getFileRange()
-        if (Record.levelno >= iMin) and (Record.levelno <= iMax):
+        MinLevel, MaxLevel = self.parent.getFileRange()
+        if (MinLevel <= Record.levelno <= MaxLevel):
             if Record.name == self.parent.name:
                 if Record.levelno >= self.parent.getEffectiveLevel():
-                    bResult = True
+                    Result = True
                 else:
-                    bResult = False
+                    Result = False
             else:
-                bResult = Record.IsToPropagate
+                Result = Record.IsToPropagate
         else:
-            bResult = False
-        return bResult
+            Result = False
+        return Result
 
 #+ main classes
 class DummyLogger(base_logging.Logger):
@@ -375,7 +375,7 @@ class DualLogger(base_logging.Logger):
                         Parent: Optional[base_logging.Logger] = None) -> None:
         """
         Initialization method. Assigns a name, creates and attaches a single
-        handler - StreamHandler, but only to a 'root' instance. Special keywoard
+        handler - StreamHandler, but only to a 'root' instance. Special keyword
         argument Parent can be passed referencing to another instance of a
         logger class as the parent of this instance, in which case a console
         handler is not attached. Do not use this functionality directly - it is
@@ -396,19 +396,19 @@ class DualLogger(base_logging.Logger):
                 logger, defaults to None, in which case the instance is created
                 as a 'root' logger
         
-        Version 1.0.0.1
+        Version 1.0.0.2
         """
         if isinstance(Name, str):
-            strName = Name
+            _Name = Name
         else:
-            strName = self.__class__.__name__
+            _Name = self.__class__.__name__
         if isinstance(Parent, DualLogger):
-            strName = '{}.{}'.format(Parent.name, strName)
-            super().__init__(strName)
+            _Name = f'{Parent.name}.{_Name}'
+            super().__init__(_Name)
             self.parent = Parent
             self.propagate = True
         else:
-            super().__init__(strName)
+            super().__init__(_Name)
         if ((self.parent is None) or
                             isinstance(self.parent, base_logging.RootLogger)):
             self.parent = None
@@ -475,8 +475,8 @@ class DualLogger(base_logging.Logger):
 
         Version 1.0.0.0
         """
-        iLevel = _ResolveLevel(Level)
-        super().setLevel(iLevel)
+        _Level = _ResolveLevel(Level)
+        super().setLevel(_Level)
     
     def setMinConsoleLevel(self, Level: TStrInt) -> None:
         """
@@ -553,18 +553,19 @@ class DualLogger(base_logging.Logger):
                 current date-time stamp and the logger's name, with the '.log'
                 extension.
         
-        Version 1.0.0.0
+        Version 1.0.0.1
         """
         if isinstance(FileName, str):
-            strFilePath = os.path.abspath(FileName)
+            FilePath = os.path.abspath(FileName)
         else:
-            strTime = datetime.datetime.now().strftime('%Y%m%d_%H%M%S')
-            strName = '{}_{}.log'.format(strTime, self.name)
-            strFilePath = os.path.abspath(strName)
-        if not (self._FileHandler is None) and self._LogFile != strFilePath:
+            str
+            TimeStamp = datetime.datetime.now().strftime('%Y%m%d_%H%M%S')
+            FullName = '{}_{}.log'.format(TimeStamp, self.name)
+            FilePath = os.path.abspath(FullName)
+        if not (self._FileHandler is None) and self._LogFile != FilePath:
             self.disableFileLogging()
         if self._FileHandler is None:
-            self._FileHandler = base_logging.FileHandler(strFilePath)
+            self._FileHandler = base_logging.FileHandler(FilePath)
             self._FileHandler.setLevel(ALL)
             self._FileHandler.addFilter(FileHandlerFilter(self))
             self._FileHandler.setFormatter(self._DefaultFormatter)

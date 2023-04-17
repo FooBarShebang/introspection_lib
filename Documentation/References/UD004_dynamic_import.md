@@ -174,7 +174,7 @@ MyClass = Alias
 
 *Signature*:
 
-str/, str, *, dict/ -> __builtins__.module
+str/, str, *, dict/ -> \_\_builtins\_\_.module
 
 *Args*:
 
