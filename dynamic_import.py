@@ -6,14 +6,14 @@ Implements functions to import modules or objects from modules dynamically, i.e.
 using their string names at the runtime.
 
 Functions:
-    import_module(strPath, strAlias = None, *, dictGlobals = None)
+    import_module(Path, Alias = None, *, Globals = None)
         str/, str, *, dict/ -> __builtins__.module
-    import_from_module(strPath, strName, strAlias = None, *, dictGlobals = None)
+    import_from_module(Path, Name, Alias = None, *, Globals = None)
         str, str/, str, *, dict/ -> type A
 """
 
-__version__ = "1.0.0.0"
-__date__ = "26-02-2021"
+__version__ = "1.0.1.0"
+__date__ = "17-04-2023"
 __status__ = "Production"
 
 #imports
@@ -24,6 +24,7 @@ import sys
 import os
 import importlib
 import collections
+import types
 
 from typing import Optional, Any
 
@@ -42,28 +43,29 @@ from introspection_lib.base_exceptions import UT_TypeError, UT_ValueError
 
 #functions
 
-def import_module(strPath:str, strAlias:Optional[str] = None, *,
-                                            dictGlobals:Optional[str] = None):
+def import_module(Path:str, Alias:Optional[str] = None, *,
+                        Globals:Optional[dict] = None) -> types.ModuleType:
     """
     Dynamic import of a module, optionally, with aliasing of its name. In order
     to place the reference to the imported module into the global symbol table
     of the caller's module such table must be passed as the keyword argument
-    'dictGlobals' or a the third positional argument; otherwise the reference
+    'Globals' or a the third positional argument; otherwise the reference
     to the module is placed into the global symbol table of the module
-    fsio_lib.dynamic_import itself.
+    introspection_lib.dynamic_import itself.
     
     Example:
-        import_module('library.package.module', dictGlobals = globals())
+        import_module('library.package.module', Globals = globals())
             ~ is equivalent to ~
                 import library.package.module
-        MyModule =import_module('library.package.module', dictGlobals=globals())
+        MyModule =import_module('library.package.module', Globals = globals())
             ~ is equivalent to ~
                 import library.package.module
                 MyModule = library.package.module
-        import_module('library.package.module', 'Alias', globals())
+        import_module('library.package.module', 'Alias', Globals = globals())
             ~ is equivalent to ~
                 import library.package.module as Alias
-        MyModule = import_module('library.package.module', 'Alias', globals())
+        MyModule = import_module('library.package.module', 'Alias',
+                                                            Globals = globals())
             ~ is equivalent to ~
                 import library.package.module as Alias
                 MyModule = Alias
@@ -72,9 +74,9 @@ def import_module(strPath:str, strAlias:Optional[str] = None, *,
         str/, str, *, dict/ -> __builtins__.module
     
     Args:
-        strPath: string, path to a module, e.g. 'library.package.module'
-        strAlias: (optional) string, alias to be assigned to the imported module
-        dictGlobals: (keyword) dictionary representing the global symbol table
+        Path: string; path to a module, e.g. 'library.package.module'
+        Alias: (optional) string; alias to be assigned to the imported module
+        Globals: (keyword) dict; dictionary representing the global symbol table
     
     Returns:
         __builtins__.module: a reference to the imported module
@@ -85,57 +87,55 @@ def import_module(strPath:str, strAlias:Optional[str] = None, *,
             a dictionary or None
         UT_ValueError: required module is not found
     
-    Version 1.0.0.0
+    Version 1.1.0.0
     """
     #input data sanity checks
-    if not isinstance(strPath, str):
-        raise UT_TypeError(strPath, str, SkipFrames = 1)
-    if (not (strAlias is None)) and (not isinstance(strAlias, str)):
-        raise UT_TypeError(strAlias, str, SkipFrames = 1)
-    if (not (dictGlobals is None)) and (not isinstance(dictGlobals,
+    if not isinstance(Path, str):
+        raise UT_TypeError(Path, str, SkipFrames = 1)
+    if (not (Alias is None)) and (not isinstance(Alias, str)):
+        raise UT_TypeError(Alias, str, SkipFrames = 1)
+    if (not (Globals is None)) and (not isinstance(Globals,
                                                     collections.abc.Mapping)):
-        raise UT_TypeError(dictGlobals, collections.abc.Mapping, SkipFrames = 1)
+        raise UT_TypeError(Globals, collections.abc.Mapping, SkipFrames = 1)
     #actual job
-    if dictGlobals is None:
-        dictGlobals = globals()
+    if Globals is None:
+        Globals = globals()
     try:
-        modModule = importlib.import_module(strPath)
+        Module = importlib.import_module(Path)
     except ImportError as err:
-        objException = UT_ValueError(1, 'whatever', SkipFrames = 1)
-        objException.args = (''.join(map(str, err.args)), )
+        objException = UT_ValueError(1, 'Import error - ', SkipFrames = 1)
+        objException.appendMessage(''.join(map(str, err.args)))
         raise objException from None
-    if strAlias is None:
-        strName = strPath.split('.')[0]
-        dictGlobals[strName] = sys.modules[strName]
+    if Alias is None:
+        Name = Path.split('.')[0]
+        Globals[Name] = sys.modules[Name]
     else:
-        dictGlobals[strAlias] = modModule
-    return modModule
+        Globals[Alias] = Module
+    return Module
 
-def import_from_module(strPath:str, strName:str,
-                            strAlias:Optional[str] = None, *,
-                                    dictGlobals:Optional[str] = None) -> Any:
+def import_from_module(Path:str, Name:str, Alias:Optional[str] = None, *,
+                                        Globals:Optional[dict] = None) -> Any:
     """
     Dynamic import of an object from a module, optionally, with aliasing of its
     name. In order to place the reference to the imported object into the global
     symbol table of the caller's module such table must be passed as the keyword
     argument 'dictGlobals' or a the fourth positional argument; otherwise the
     reference to the object is placed into the global symbol table of the module
-    fsio_lib.dynamic_import itself.
+    introspection_lib.dynamic_import itself.
     
     Example:
-        import_from_module('library.module', 'SomeClass', dictGlobals=globals())
+        import_from_module('library.module', 'SomeClass', Globals = globals())
             ~ is equivalent to ~
                 from library.module import SomeClass
-        MyClass=import_from_module('library', 'S_Class', dictGlobals=globals())
+        MyClass=import_from_module('library', 'S_Class', Globals = globals())
             ~ is equivalent to ~
                 from library import S_Class
                 MyClass = S_Class
-        import_from_module('library', 'SomeClass', 'Alias',
-                                                        dictGlobals=globals())
+        import_from_module('library', 'SomeClass', 'Alias', Globals = globals())
             ~ is equivalent to ~
                 from library import SomeClass as Alias
-        MyClass = import_module('library', 'SomeClass', 'Alias',
-                                                        dictGlobals=globals())
+        MyClass = import_from_module('library', 'SomeClass', 'Alias',
+                                                            Globals=globals())
             ~ is equivalent to ~
                 from library import SomeClass as Alias
                 MyClass = Alias
@@ -144,10 +144,10 @@ def import_from_module(strPath:str, strName:str,
         str, str/, str, *, dict/ -> type A
     
     Args:
-        strPath: string, path to a module, e.g. 'library.package.module'
-        strName: name of an object defined in the module, e.g. 'SomeClass'
-        strAlias: (optional) string, alias to be assigned to the imported object
-        dictGlobals: (keyword) dictionary representing the global symbol table
+        Path: string, path to a module, e.g. 'library.package.module'
+        Name: name of an object defined in the module, e.g. 'SomeClass'
+        Alias: (optional) string, alias to be assigned to the imported object
+        Globals: (keyword) dictionary representing the global symbol table
     
     Returns:
         type A: a reference to the imported object
@@ -160,29 +160,29 @@ def import_from_module(strPath:str, strName:str,
         UT_ValueError: required module is not found, OR required object is not
             found in the module
     
-    Version 1.0.0.0
+    Version 1.1.0.0
     """
     #input data sanity checks
-    if not isinstance(strPath, str):
-        raise UT_TypeError(strPath, str, SkipFrames = 1)
-    if not isinstance(strName, str):
-        raise UT_TypeError(strName, str, SkipFrames = 1)
-    if (not (strAlias is None)) and (not isinstance(strAlias, str)):
-        raise UT_TypeError(strAlias, str, SkipFrames = 1)
-    if (not (dictGlobals is None)) and (not isinstance(dictGlobals,
+    if not isinstance(Path, str):
+        raise UT_TypeError(Path, str, SkipFrames = 1)
+    if not isinstance(Name, str):
+        raise UT_TypeError(Name, str, SkipFrames = 1)
+    if (not (Alias is None)) and (not isinstance(Alias, str)):
+        raise UT_TypeError(Alias, str, SkipFrames = 1)
+    if (not (Globals is None)) and (not isinstance(Globals,
                                                     collections.abc.Mapping)):
-        raise UT_TypeError(dictGlobals, collections.abc.Mapping, SkipFrames = 1)
+        raise UT_TypeError(Globals, collections.abc.Mapping, SkipFrames = 1)
     #actual job
-    if dictGlobals is None:
-        dictGlobals = globals()
+    if Globals is None:
+        Globals = globals()
     try:
-        gObject = getattr(importlib.import_module(strPath), strName)
+        Object = getattr(importlib.import_module(Path), Name)
     except (ImportError, AttributeError) as err:
-        objException = UT_ValueError(1, 'whatever', SkipFrames = 1)
-        objException.args = (''.join(map(str, err.args)), )
+        objException = UT_ValueError(1, 'Import error - ', SkipFrames = 1)
+        objException.appendMessage(''.join(map(str, err.args)))
         raise objException from None
-    if strAlias is None:
-        dictGlobals[strName] = gObject
+    if Alias is None:
+        Globals[Name] = Object
     else:
-        dictGlobals[strAlias] = gObject
-    return gObject
+        Globals[Alias] = Object
+    return Object

@@ -5,8 +5,8 @@ Module introspection_lib.Tests.UT003_dynamic_import
 Implements unit testing of the module dynamic_import. See test report TE004.
 """
 
-__version__ = "1.0.0.0"
-__date__ = "26-02-2021"
+__version__ = "1.0.1.0"
+__date__ = "17-04-2023"
 __status__ = "Testing"
 
 #imports
@@ -77,7 +77,7 @@ class Test_import_module(unittest.TestCase):
         Test ID - TEST-T-400. Covers requirements REQ-FUN-400, REQ-FUN-420
         and REQ-FUN-421
         """
-        Temp = self.TestFunction('os.path', dictGlobals = globals())
+        Temp = self.TestFunction('os.path', Globals = globals())
         self.assertEqual(Temp.basename(__file__), FILENAME,
                                                     msg = 'By module reference')
         self.assertEqual(os.path.basename(__file__), FILENAME,
@@ -93,7 +93,7 @@ class Test_import_module(unittest.TestCase):
         Test ID - TEST-T-401. Covers requirements REQ-FUN-401, REQ-FUN-420
         and REQ-FUN-421
         """
-        Temp = self.TestFunction('os.path', 'Alias', dictGlobals = globals())
+        Temp = self.TestFunction('os.path', 'Alias', Globals = globals())
         self.assertEqual(Temp.basename(__file__), FILENAME,
                                                     msg = 'By module reference')
         self.assertEqual(Alias.basename(__file__), FILENAME,
@@ -116,7 +116,7 @@ class Test_import_module(unittest.TestCase):
                 self.TestFunction('os.path', gValue)
         for gValue in self.NotDict:
             with self.assertRaises(TypeError):
-                self.TestFunction('os.path', 'Alias', dictGlobals = gValue)
+                self.TestFunction('os.path', 'Alias', Globals = gValue)
     
     def test_ValueError(self):
         """
@@ -155,7 +155,7 @@ class Test_import_from_module(unittest.TestCase):
         Test ID - TEST-T-410. Covers requirements REQ-FUN-410, REQ-FUN-420
         and REQ-FUN-421
         """
-        Temp = self.TestFunction('os.path', 'basename', dictGlobals = globals())
+        Temp = self.TestFunction('os.path', 'basename', Globals = globals())
         self.assertEqual(Temp(__file__), FILENAME,
                                                 msg = 'By function reference')
         self.assertEqual(basename(__file__), FILENAME,
@@ -172,7 +172,7 @@ class Test_import_from_module(unittest.TestCase):
         and REQ-FUN-421
         """
         Temp = self.TestFunction('os.path', 'basename', 'Alias',
-                                                    dictGlobals = globals())
+                                                        Globals = globals())
         self.assertEqual(Temp(__file__), FILENAME,
                                                 msg = 'By function reference')
         self.assertEqual(Alias(__file__), FILENAME,
@@ -198,7 +198,7 @@ class Test_import_from_module(unittest.TestCase):
         for gValue in self.NotDict:
             with self.assertRaises(TypeError):
                 self.TestFunction('os.path', 'basename', 'Alias',
-                                                        dictGlobals = gValue)
+                                                            Globals = gValue)
     
     def test_ValueError(self):
         """

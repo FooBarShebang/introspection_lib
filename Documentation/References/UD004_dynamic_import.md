@@ -69,7 +69,7 @@ The function **import_from_module**() operates as:
 ### Case 1
 
 ```python
-import_module('library.package.module', dictGlobals = globals())
+import_module('library.package.module', Globals = globals())
 ```
 
 is equivalent to
@@ -81,7 +81,7 @@ import library.package.module
 ### Case 2
 
 ```python
-MyModule =import_module('library.package.module', dictGlobals = globals())
+MyModule =import_module('library.package.module', Globals = globals())
 ```
 
 is equivalent to
@@ -94,7 +94,7 @@ MyModule = library.package.module
 ### Case 3
 
 ```python
-import_module('library.package.module', 'Alias', dictGlobals = globals())
+import_module('library.package.module', 'Alias', Globals = globals())
 ```
 
 is equivalent to
@@ -106,7 +106,7 @@ import library.package.module as Alias
 ### Case 4
 
 ```python
-MyModule = import_module('library.package.module', 'Alias', dictGlobals = globals())
+MyModule = import_module('library.package.module', 'Alias', Globals = globals())
 ```
 
 is equivalent to
@@ -119,7 +119,7 @@ MyModule = Alias
 ### Case 5
 
 ```python
-import_from_module('library.module', 'SomeClass', dictGlobals = globals())
+import_from_module('library.module', 'SomeClass', Globals = globals())
 ```
 
 is equivalent to
@@ -131,7 +131,7 @@ from library.module import SomeClass
 ### Case 6
 
 ```python
-MyClass=import_from_module('library', 'S_Class', dictGlobals = globals())
+MyClass=import_from_module('library', 'S_Class', Globals = globals())
 ```
 
 is equivalent to
@@ -144,7 +144,7 @@ MyClass = S_Class
 ### Case 7
 
 ```python
-import_from_module('library', 'SomeClass', 'Alias', dictGlobals = globals())
+import_from_module('library', 'SomeClass', 'Alias', Globals = globals())
 ```
 
 is equivalent to
@@ -156,7 +156,7 @@ from library import SomeClass as Alias
 ## Case 8
 
 ```python
-MyClass = import_module('library', 'SomeClass', 'Alias', dictGlobals = globals())
+MyClass = import_from_module('library', 'SomeClass', 'Alias', Globals = globals())
 ```
 
 is equivalent to
@@ -170,7 +170,7 @@ MyClass = Alias
 
 ### Functions
 
-**import_module**(strPath, strAlias = None, *, dictGlobals = None)
+**import_module**(Path, Alias = None, *, Globals = None)
 
 *Signature*:
 
@@ -178,9 +178,9 @@ str/, str, *, dict/ -> __builtins__.module
 
 *Args*:
 
-* *strPath*: string, path to a module, e.g. 'library.package.module'
-* *strAlias*: (optional) string, alias to be assigned to the imported module
-* *dictGlobals*: (keyword) dictionary representing the global symbol table
+* *Path*: string, path to a module, e.g. 'library.package.module'
+* *Alias*: (optional) string, alias to be assigned to the imported module
+* *Globals*: (keyword) dictionary representing the global symbol table
 
 *Returns*:
 
@@ -193,9 +193,9 @@ str/, str, *, dict/ -> __builtins__.module
 
 *Description*:
 
-Dynamic import of a module, optionally, with aliasing of its name. In order to place the reference to the imported module into the global symbol table of the caller's module such table must be passed as the keyword argument *dictGlobals* or a the third positional argument; otherwise the reference to the module is placed into the global symbol table of the module *dynamic_import* itself.
+Dynamic import of a module, optionally, with aliasing of its name. In order to place the reference to the imported module into the global symbol table of the caller's module such table must be passed as the keyword argument *Globals* or a the third positional argument; otherwise the reference to the module is placed into the global symbol table of the module *dynamic_import* itself.
 
-**import_from_module**(strPath, strName, strAlias = None, *, dictGlobals = None)
+**import_from_module**(Path, Name, Alias = None, *, Globals = None)
 
 *Signature*:
 
@@ -203,10 +203,10 @@ str, str/, str, *, dict/ -> type A
 
 *Args*:
 
-* *strPath*: string, path to a module, e.g. 'library.package.module'
-* *strName*: name of an object defined in the module, e.g. 'SomeClass'
-* *strAlias*: (optional) string, alias to be assigned to the imported object
-* *dictGlobals*: (keyword) dictionary representing the global symbol table
+* *Path*: string, path to a module, e.g. 'library.package.module'
+* *Name*: name of an object defined in the module, e.g. 'SomeClass'
+* *Alias*: (optional) string, alias to be assigned to the imported object
+* *Globals*: (keyword) dictionary representing the global symbol table
 
 *Returns*:
 
@@ -219,4 +219,4 @@ str, str/, str, *, dict/ -> type A
 
 *Description*:
 
-Dynamic import of an object from a module, optionally, with aliasing of its name. In order to place the reference to the imported object into the global symbol table of the caller's module such table must be passed as the keyword argument *dictGlobals* or a the fourth positional argument; otherwise the reference to the object is placed into the global symbol table of the module *dynamic_import* itself.
+Dynamic import of an object from a module, optionally, with aliasing of its name. In order to place the reference to the imported object into the global symbol table of the caller's module such table must be passed as the keyword argument *Globals* or a the fourth positional argument; otherwise the reference to the object is placed into the global symbol table of the module *dynamic_import* itself.
