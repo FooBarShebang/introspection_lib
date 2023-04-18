@@ -788,6 +788,7 @@ class Test_PackageStructure(unittest.TestCase):
         Test ID: TEST-T-760. Covers requirements REQ-FUN-760, REQ-FUN-761
         and REQ-FUN-763.
         """
+        self.maxDiff = None
         objTest = self.TestClass(self.RootPath)
         self.assertEqual(objTest.Package, 'test_package')
         gTest = objTest.getModules()

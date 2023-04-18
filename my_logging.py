@@ -91,9 +91,9 @@ def _ResolveLevel(Level: TStrInt) -> int:
         if Result is None:
             raise ValueError('Unknown level alias: {}'.format(Level))
     else:
-        strError = ' '.join(['Severity level must be a string or an integer,',
+        ErrorMessage=' '.join(['Severity level must be a string or an integer,',
                                 'not {}'.format(type(Level))])
-        raise TypeError(strError)
+        raise TypeError(ErrorMessage)
     return Result
 
 #classes

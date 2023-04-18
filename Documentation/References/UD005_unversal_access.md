@@ -32,7 +32,7 @@ Thus, the first task of this module is to provide an unified procedural *get* / 
 
 ### Functions
 
-**GetData**(gObject, gPath)
+**GetData**(Object, Path)
 
 *Signature*:
 
@@ -40,8 +40,8 @@ type A, str OR int -> type B
 
 *Args*:
 
-* *gObject*: **type A**; the object to be inspected
-* *gPath*: **str** OR **int**; the attribute name / key or index of the element to be accessed
+* *Object*: **type A**; the object to be inspected
+* *Path*: **str** OR **int**; the attribute name / key or index of the element to be accessed
 
 *Returns*:
 
@@ -58,7 +58,7 @@ type A, str OR int -> type B
 
 Universal 'read' access to an element of a list, key : value pair entry of a mapping type or an attribute of a generic class or instance. Raises exceptions compatible with (sub-classes of) the standard exceptions **IndexError**, **KeyError** or **AttributeError**, which should be normally raised upon 'read' access to a non-existing element.
 
-**GetDataDefault**(gObject, gPath, gValue)
+**GetDataDefault**(Object, Path, Default)
 
 *Signature*:
 
@@ -66,9 +66,9 @@ type A, str OR int, type B -> type C
 
 *Args*:
 
-* *gObject*: **type A**; the object to be inspected
-* *gPath*: **str** OR **int**; the attribute name / key or index of the element to be accessed
-* *gValue*: **type B**; the default value to return, if such element is not found
+* *Object*: **type A**; the object to be inspected
+* *Path*: **str** OR **int**; the attribute name / key or index of the element to be accessed
+* *Default*: **type B**; the default value to return, if such element is not found
 
 *Returns*:
 
@@ -82,7 +82,7 @@ type A, str OR int, type B -> type C
 
 Universal 'read' access to an element of a list, key : value pair entry of a mapping type or an attribute of a generic class or instance with a default value, which should be returned upon 'read' access to a non-existing element instead of raising of a respective exception.
 
-**SetDataStrict**(gObject, gPath, gValue)
+**SetDataStrict**(Object, Path, Value)
 
 *Signature*:
 
@@ -90,9 +90,9 @@ type A, str OR int, type B -> None
 
 *Args*:
 
-* *gObject*: **type A**; the object to be inspected
-* *gPath*: **str** OR **int**; the attribute name / key or index of the element to be accessed
-* *gValue*: **type B**; the value assign
+* *Object*: **type A**; the object to be inspected
+* *Path*: **str** OR **int**; the attribute name / key or index of the element to be accessed
+* *Value*: **type B**; the value assign
 
 *Raises*:
 
@@ -105,7 +105,7 @@ type A, str OR int, type B -> None
 
 Universal 'write' access to an element of a list, key : value pair entry of a mapping type or an attribute of a generic class or instance, but only to the existing ones of the mutable objects. New attributes, sequence elements or mapping type entries cannot be created even if the object itself is mutable. Existing elements of the immutable sequences or exsiting entries of the immutable mapping type objects cannot be modified.
 
-**SetData**(gObject, gPath, gValue)
+**SetData**(Object, Path, Value)
 
 *Signature*:
 
@@ -113,9 +113,9 @@ type A, str OR int, type B -> None
 
 *Args*:
 
-* *gObject*: **type A**; the object to be inspected
-* *gPath*: **str** OR **int**; the attribute name / key or index of the element to be accessed
-* *gValue*: **type B**; the value assign
+* *Object*: **type A**; the object to be inspected
+* *Path*: **str** OR **int**; the attribute name / key or index of the element to be accessed
+* *Value*: **type B**; the value assign
 
 *Raises*:
 
@@ -125,7 +125,7 @@ type A, str OR int, type B -> None
 
 Universal 'write' access to an element of a list, key : value pair entry of a mapping type or an attribute of a generic class or instance. If such element is not found, it is created automatically, unless the object is immutable. In the case of a mutable sequence type object, the new element is prepended as a first element or appended as the last one if the passed index is outside the current range.
 
-**FlattenPath**(gPath)
+**FlattenPath**(Path)
 
 *Signature*:
 
@@ -133,7 +133,7 @@ str OR int OR seq(type A) -> list(str OR int)
 
 *Args*:
 
-* *gPath*: **str** OR **int** OR **seq**(type A); the generic nested path description to be flattened
+* *Path*: **str** OR **int** OR **seq**(type A); the generic nested path description to be flattened
 
 *Returns*:
 
@@ -147,7 +147,7 @@ str OR int OR seq(type A) -> list(str OR int)
 
 Flattens a nested generic path definition into a plain list of only strings and integers defining a navigation path within a nested structured object, with each element in the path being an integer index or a string key or attribute name. The input is supposed to be a string, an integer or a flat or nested sequence of only integers and strings. Any string in the input may encode multiple levels using dot notation.
 
-**GetElement**(gObject, gPath, *, bStrict = True, gDefault = None)
+**GetElement**(Object, Path, *, IsStrict = True, Default = None)
 
 *Signature*:
 
@@ -155,10 +155,10 @@ type A, str OR int OR seq(type B)/, *, bool, type C/ -> type D
 
 *Args*:
 
-* *gObject*: **type A**; the object to be inspected
-* *gPath*: **str** OR **int** OR **seq**(type B); the generic path to the end node of a nested struture object
-* *bStrict*: (keyword) **bool**; the flag if the strict access mode is to be used, defaults to *True*
-* *gDefault*: (keyword) **type C**; the default value to return, if any level element is not found along the path, defaults to *None*, has an effect only if the *bStrict* flag is *False*
+* *Object*: **type A**; the object to be inspected
+* *Path*: **str** OR **int** OR **seq**(type B); the generic path to the end node of a nested struture object
+* *IsStrict*: (keyword) **bool**; the flag if the strict access mode is to be used, defaults to *True*
+* *Default*: (keyword) **type C**; the default value to return, if any level element is not found along the path, defaults to *None*, has an effect only if the *bStrict* flag is *False*
 
 *Returns*:
 
@@ -176,7 +176,7 @@ type A, str OR int OR seq(type B)/, *, bool, type C/ -> type D
 
 Attempts to retrieve the value of an element (key, attribute) of the nested structured object (including nested sequences) defined by a generic path. Can operate in two modes: 'strict' and 'relaxed'. In the strict mode an exception is raised if the path is incorrect, i.e., at least, one element of the path is not found. In the 'relaxed' mode a default value is returned is the path is incorrect.
 
-**SetElement**(gObject, gPath, gValue, *, bStrict = True)
+**SetElement**(Object, Path, Value, *, IsStrict = True)
 
 *Signature*:
 

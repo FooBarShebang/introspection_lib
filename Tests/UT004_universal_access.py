@@ -5,8 +5,8 @@ Module introspection_lib.Tests.UT004_universal_access
 Implements unit testing of the module universal_access. See test report TE005.
 """
 
-__version__ = "1.0.0.0"
-__date__ = "26-02-2021"
+__version__ = "1.0.1.0"
+__date__ = "18-04-2023"
 __status__ = "Testing"
 
 #imports
@@ -723,11 +723,11 @@ class Test_GetElement(unittest.TestCase):
         """
         for gPath in self.EmptyPaths:
             with self.assertRaises(ValueError, msg = str(gPath)):
-                self.TestFunction(self.Data, gPath, bStrict = True)
+                self.TestFunction(self.Data, gPath, IsStrict = True)
             with self.assertRaises(ValueError, msg = str(gPath)):
-                self.TestFunction(self.Data, gPath, bStrict = False)
+                self.TestFunction(self.Data, gPath, IsStrict = False)
             with self.assertRaises(ValueError, msg = str(gPath)):
-                self.TestFunction(self.Data, gPath, bStrict = False, gDefault=9)
+                self.TestFunction(self.Data, gPath, IsStrict = False, Default=9)
             with self.assertRaises(ValueError, msg = str(gPath)):
                 self.TestFunction(self.Data, gPath)
     
@@ -740,11 +740,11 @@ class Test_GetElement(unittest.TestCase):
         """
         for gPath in self.BadTypes:
             with self.assertRaises(TypeError, msg = str(gPath)):
-                self.TestFunction(self.Data, gPath, bStrict = True)
+                self.TestFunction(self.Data, gPath, IsStrict = True)
             with self.assertRaises(TypeError, msg = str(gPath)):
-                self.TestFunction(self.Data, gPath, bStrict = False)
+                self.TestFunction(self.Data, gPath, IsStrict = False)
             with self.assertRaises(TypeError, msg = str(gPath)):
-                self.TestFunction(self.Data, gPath, bStrict = False, gDefault=9)
+                self.TestFunction(self.Data, gPath, IsStrict = False, Default=9)
             with self.assertRaises(TypeError, msg = str(gPath)):
                 self.TestFunction(self.Data, gPath)
     
@@ -758,11 +758,11 @@ class Test_GetElement(unittest.TestCase):
         """
         for gPath in self.PathMissMatch:
             with self.assertRaises(TypeError, msg = str(gPath)):
-                self.TestFunction(self.Data, gPath, bStrict = True)
+                self.TestFunction(self.Data, gPath, IsStrict = True)
             with self.assertRaises(TypeError, msg = str(gPath)):
-                self.TestFunction(self.Data, gPath, bStrict = False)
+                self.TestFunction(self.Data, gPath, IsStrict = False)
             with self.assertRaises(TypeError, msg = str(gPath)):
-                self.TestFunction(self.Data, gPath, bStrict = False, gDefault=9)
+                self.TestFunction(self.Data, gPath, IsStrict = False, Default=9)
             with self.assertRaises(TypeError, msg = str(gPath)):
                 self.TestFunction(self.Data, gPath)
     
@@ -779,31 +779,31 @@ class Test_GetElement(unittest.TestCase):
             with self.assertRaises(AttributeError, msg = str(gPath)):
                 self.TestFunction(self.Data, gPath)
             with self.assertRaises(AttributeError, msg = str(gPath)):
-                self.TestFunction(self.Data, gPath, gDefault = 9)
+                self.TestFunction(self.Data, gPath, Default = 9)
             with self.assertRaises(AttributeError):
-                self.TestFunction(self.Data, gPath, bStrict = True)
+                self.TestFunction(self.Data, gPath, IsStrict = True)
             with self.assertRaises(AttributeError):
-                self.TestFunction(self.Data, gPath, bStrict = True, gDefault= 9)
+                self.TestFunction(self.Data, gPath, IsStrict = True, Default= 9)
         #missing index
         for gPath in self.IndexMissingPaths:
             with self.assertRaises(IndexError, msg = str(gPath)):
                 self.TestFunction(self.Data, gPath)
             with self.assertRaises(IndexError, msg = str(gPath)):
-                self.TestFunction(self.Data, gPath, gDefault = 9)
+                self.TestFunction(self.Data, gPath, Default = 9)
             with self.assertRaises(IndexError):
-                self.TestFunction(self.Data, gPath, bStrict = True)
+                self.TestFunction(self.Data, gPath, IsStrict = True)
             with self.assertRaises(IndexError):
-                self.TestFunction(self.Data, gPath, bStrict = True, gDefault= 9)
+                self.TestFunction(self.Data, gPath, IsStrict = True, Default= 9)
         #missing key
         for gPath in self.KeyMissingPaths:
             with self.assertRaises(KeyError, msg = str(gPath)):
                 self.TestFunction(self.Data, gPath)
             with self.assertRaises(KeyError, msg = str(gPath)):
-                self.TestFunction(self.Data, gPath, gDefault = 9)
+                self.TestFunction(self.Data, gPath, Default = 9)
             with self.assertRaises(KeyError):
-                self.TestFunction(self.Data, gPath, bStrict = True)
+                self.TestFunction(self.Data, gPath, IsStrict = True)
             with self.assertRaises(KeyError):
-                self.TestFunction(self.Data, gPath, bStrict = True, gDefault= 9)
+                self.TestFunction(self.Data, gPath, IsStrict = True, Default= 9)
     
     def test_MissingPathRelaxed(self):
         """
@@ -815,10 +815,10 @@ class Test_GetElement(unittest.TestCase):
         for lstPaths in [self.AttrMissingPaths, self.IndexMissingPaths,
                                                         self.KeyMissingPaths]:
             for gPath in lstPaths:
-                gResult = self.TestFunction(self.Data, gPath, bStrict = False)
+                gResult = self.TestFunction(self.Data, gPath, IsStrict = False)
                 self.assertIsNone(gResult, msg = str(gPath))
-                gResult = self.TestFunction(self.Data, gPath, bStrict = False,
-                                                                gDefault = 9)
+                gResult = self.TestFunction(self.Data, gPath, IsStrict = False,
+                                                                Default = 9)
                 self.assertEqual(gResult, 9, msg = str(gPath))
     
     def test_NormalOperation(self):
@@ -832,43 +832,43 @@ class Test_GetElement(unittest.TestCase):
         for DefVal in [None, 9]:
             for bMode in [True, False]:
                 gResult = self.TestFunction(self.Data, 'a',
-                                            bStrict= bMode , gDefault= DefVal)
+                                            IsStrict= bMode , Default= DefVal)
                 self.assertEqual(gResult, self.Data.a)
                 gResult = self.TestFunction(self.Data, ['b'],
-                                            bStrict= bMode , gDefault= DefVal)
+                                            IsStrict= bMode , Default= DefVal)
                 self.assertListEqual(gResult, self.Data.b)
                 gResult = self.TestFunction(self.Data, ['b', 0],
-                                            bStrict= bMode , gDefault= DefVal)
+                                            IsStrict= bMode , Default= DefVal)
                 self.assertEqual(gResult, self.Data.b[0])
                 gResult = self.TestFunction(self.Data, 'c.a',
-                                            bStrict= bMode , gDefault= DefVal)
+                                            IsStrict= bMode , Default= DefVal)
                 self.assertEqual(gResult, self.Data.c['a'])
                 gResult = self.TestFunction(self.Data, ['c.b', 0],
-                                            bStrict= bMode , gDefault= DefVal)
+                                            IsStrict= bMode , Default= DefVal)
                 self.assertEqual(gResult, self.Data.c['b'][0])
                 gResult = self.TestFunction(self.Data, ['c.b', 'a'],
-                                            bStrict= bMode , gDefault= DefVal)
+                                            IsStrict= bMode , Default= DefVal)
                 self.assertEqual(gResult, self.Data.c['b'].a)
                 gResult = self.TestFunction(self.Data, ['c', 'b', 'a'],
-                                            bStrict= bMode , gDefault= DefVal)
+                                            IsStrict= bMode , Default= DefVal)
                 self.assertEqual(gResult, self.Data.c['b'].a)
                 gResult = self.TestFunction(self.Data, 'c.b.a',
-                                            bStrict= bMode , gDefault= DefVal)
+                                            IsStrict= bMode , Default= DefVal)
                 self.assertEqual(gResult, self.Data.c['b'].a)
                 gResult = self.TestFunction(self.Data, ['c', 'c.b', 'a'],
-                                            bStrict= bMode , gDefault= DefVal)
+                                            IsStrict= bMode , Default= DefVal)
                 self.assertEqual(gResult, self.Data.c['c']['b']['a'])
                 gResult = self.TestFunction(self.Data, ['c', 'd', 0],
-                                            bStrict= bMode , gDefault= DefVal)
+                                            IsStrict= bMode , Default= DefVal)
                 self.assertEqual(gResult, self.Data.c['d'][0])
                 gResult = self.TestFunction(self.Data, ['c.e', 0, 0],
-                                            bStrict= bMode , gDefault= DefVal)
+                                            IsStrict= bMode , Default= DefVal)
                 self.assertEqual(gResult, self.Data.c['e'][0][0])
                 gResult = self.TestFunction(self.Data, ['c.e', 1, 'a'],
-                                            bStrict= bMode , gDefault= DefVal)
+                                            IsStrict= bMode , Default= DefVal)
                 self.assertEqual(gResult, self.Data.c['e'][1]['a'])
                 gResult = self.TestFunction(self.Data, ['c', 'e', 2, 'a'],
-                                            bStrict= bMode , gDefault= DefVal)
+                                            IsStrict= bMode , Default= DefVal)
                 self.assertEqual(gResult, self.Data.c['e'][2].a)
 
 class Test_SetElement(unittest.TestCase):
@@ -923,9 +923,9 @@ class Test_SetElement(unittest.TestCase):
         """
         for gPath in self.EmptyPaths:
             with self.assertRaises(ValueError, msg = str(gPath)):
-                self.TestFunction(self.Data, gPath, 9, bStrict = True)
+                self.TestFunction(self.Data, gPath, 9, IsStrict = True)
             with self.assertRaises(ValueError, msg = str(gPath)):
-                self.TestFunction(self.Data, gPath, 9, bStrict = False)
+                self.TestFunction(self.Data, gPath, 9, IsStrict = False)
             with self.assertRaises(ValueError, msg = str(gPath)):
                 self.TestFunction(self.Data, gPath, 9)
     
@@ -938,9 +938,9 @@ class Test_SetElement(unittest.TestCase):
         """
         for gPath in self.BadTypes:
             with self.assertRaises(TypeError, msg = str(gPath)):
-                self.TestFunction(self.Data, gPath, 9, bStrict = True)
+                self.TestFunction(self.Data, gPath, 9, IsStrict = True)
             with self.assertRaises(TypeError, msg = str(gPath)):
-                self.TestFunction(self.Data, gPath, 9, bStrict = False)
+                self.TestFunction(self.Data, gPath, 9, IsStrict = False)
             with self.assertRaises(TypeError, msg = str(gPath)):
                 self.TestFunction(self.Data, gPath, 9)
     
@@ -954,9 +954,9 @@ class Test_SetElement(unittest.TestCase):
         """
         for gPath in self.PathMissMatch:
             with self.assertRaises(TypeError, msg = str(gPath)):
-                self.TestFunction(self.Data, gPath, 9, bStrict = True)
+                self.TestFunction(self.Data, gPath, 9, IsStrict = True)
             with self.assertRaises(TypeError, msg = str(gPath)):
-                self.TestFunction(self.Data, gPath, 9, bStrict = False)
+                self.TestFunction(self.Data, gPath, 9, IsStrict = False)
             with self.assertRaises(TypeError, msg = str(gPath)):
                 self.TestFunction(self.Data, gPath, 9)
     
@@ -973,19 +973,19 @@ class Test_SetElement(unittest.TestCase):
             with self.assertRaises(AttributeError, msg = str(gPath)):
                 self.TestFunction(self.Data, gPath, 9)
             with self.assertRaises(AttributeError):
-                self.TestFunction(self.Data, gPath, 9, bStrict = True)
+                self.TestFunction(self.Data, gPath, 9, IsStrict = True)
         #missing index
         for gPath in self.IndexMissingPaths:
             with self.assertRaises(IndexError, msg = str(gPath)):
                 self.TestFunction(self.Data, gPath, 9)
             with self.assertRaises(IndexError):
-                self.TestFunction(self.Data, gPath, 9, bStrict = True)
+                self.TestFunction(self.Data, gPath, 9, IsStrict = True)
         #missing key
         for gPath in self.KeyMissingPaths:
             with self.assertRaises(KeyError, msg = str(gPath)):
                 self.TestFunction(self.Data, gPath, 9)
             with self.assertRaises(KeyError):
-                self.TestFunction(self.Data, gPath, 9, bStrict = True)
+                self.TestFunction(self.Data, gPath, 9, IsStrict = True)
     
     def test_MissingPathRelaxed(self):
         """
@@ -999,28 +999,28 @@ class Test_SetElement(unittest.TestCase):
                     ['c', 'c', 'b', 'd']]
         for gPath in lstPaths:
             iNumber = random.randint(6, 12)
-            self.TestFunction(self.Data, gPath, iNumber, bStrict = False)
+            self.TestFunction(self.Data, gPath, iNumber, IsStrict = False)
             self.assertEqual(TestModule.GetElement(self.Data, gPath), iNumber)
         #adding missing elements to mutable sequences
         for gPath in ['b', ['c', 'e', 0]]:
             iNumber = random.randint(6, 12)
             lstTest = [1, 2, 3, iNumber]
-            self.TestFunction(self.Data, [gPath, 5], iNumber, bStrict = False)
+            self.TestFunction(self.Data, [gPath, 5], iNumber, IsStrict = False)
             self.assertListEqual(TestModule.GetElement(self.Data, gPath),
                                                                         lstTest)
             iNumber = random.randint(6, 12)
             lstTest.insert(0, iNumber)
-            self.TestFunction(self.Data, [gPath, -6], iNumber, bStrict = False)
+            self.TestFunction(self.Data, [gPath, -6], iNumber, IsStrict = False)
             self.assertListEqual(TestModule.GetElement(self.Data, gPath),
                                                                         lstTest)
         #adding missing branches to mutable objects
         iNumber = random.randint(6, 12)
         gPath = ['e', 1, 1, 'a'] #dict in a list in a list as d attr of top lev.
-        self.TestFunction(self.Data, gPath, iNumber, bStrict = False)
+        self.TestFunction(self.Data, gPath, iNumber, IsStrict = False)
         self.assertEqual(self.Data.e[0][0]['a'], iNumber)
         gPath = ['c', 'e', 5, 'e', 1, 1, 'a'] #dict in a list in a list
         #appended as the last element to an exising list in a dict at top lev.
-        self.TestFunction(self.Data, gPath, iNumber, bStrict = False)
+        self.TestFunction(self.Data, gPath, iNumber, IsStrict = False)
         self.assertEqual(self.Data.c['e'][3]['e'][0][0]['a'], iNumber)
     
     def test_NormalOperation(self):
@@ -1033,24 +1033,24 @@ class Test_SetElement(unittest.TestCase):
         """
         for bMode in [True, False]:
             iNumber = random.randint(6, 12)
-            self.TestFunction(self.Data, 'a', iNumber, bStrict = bMode)
+            self.TestFunction(self.Data, 'a', iNumber, IsStrict = bMode)
             self.assertEqual(self.Data.a, iNumber)
             iNumber = random.randint(6, 12)
-            self.TestFunction(self.Data, ['b', 0], iNumber, bStrict = bMode)
+            self.TestFunction(self.Data, ['b', 0], iNumber, IsStrict = bMode)
             self.assertEqual(self.Data.b[0], iNumber)
             iNumber = random.randint(6, 12)
-            self.TestFunction(self.Data, 'c.a', iNumber, bStrict= bMode)
+            self.TestFunction(self.Data, 'c.a', iNumber, IsStrict= bMode)
             self.assertEqual(self.Data.c['a'], iNumber)
             iNumber = random.randint(6, 12)
-            self.TestFunction(self.Data, ['c.e', 0, 0], iNumber, bStrict= bMode)
+            self.TestFunction(self.Data, ['c.e', 0, 0], iNumber, IsStrict=bMode)
             self.assertEqual(self.Data.c['e'][0][0], iNumber)
             iNumber = random.randint(6, 12)
             self.TestFunction(self.Data, ['c.e', 1, 'a'], iNumber,
-                                                                bStrict = bMode)
+                                                                IsStrict =bMode)
             self.assertEqual(self.Data.c['e'][1]['a'], iNumber)
             iNumber = random.randint(6, 12)
             self.TestFunction(self.Data, ['c', 'e', 2, 'a'], iNumber,
-                                                                bStrict= bMode)
+                                                                IsStrict= bMode)
             self.assertEqual(self.Data.c['e'][2].a, iNumber)
     
     def test_ImmutableNodes(self):
@@ -1067,7 +1067,7 @@ class Test_SetElement(unittest.TestCase):
                                                                     ['c.d', 0]]:
                 with self.assertRaises(TypeError,
                                 msg = '{} in strict {}'.format(gPath, bMode)):
-                    self.TestFunction(self.Data, gPath, 9, bStrict = bMode)
+                    self.TestFunction(self.Data, gPath, 9, IsStrict = bMode)
 
 #+ test suites
 

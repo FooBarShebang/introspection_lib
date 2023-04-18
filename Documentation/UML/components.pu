@@ -7,6 +7,10 @@ title Components Diagram of the Library introspection_lib
 !endif
 
 $library(introspection_lib) {
+    !if $is_not_defined("$UNIVERSAL_ACCESS")
+        !include ./universal_access/universal_access_components.iuml
+    !endif
+    
     !if $is_not_defined("$PACKAGE_STRUCTURE_COMPONENTS")
         !include ./package_structure/package_structure_components.iuml
     !endif
@@ -16,6 +20,8 @@ $library(introspection_lib) {
     !endif
     
     package_structure -----> base_exceptions
+    
+    universal_access -----> base_exceptions
     
     !if $is_not_defined("$TRACEBACK_COMPONENTS")
         !include ./traceback/traceback_components.iuml

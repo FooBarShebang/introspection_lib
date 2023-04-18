@@ -134,11 +134,12 @@ The method *getDependencies*() performs the static analysis of all found Python 
 ![getDependencies()](../UML/package_structure/get_dependencies.png)
 
 Finally, the method *getImportNames*() calls the *getDependencies*() method and returns the cached data.
+
 ## API Reference
 
 ### Functions
 
-**IsPyFile**(strFile)
+**IsPyFile**(FileName)
 
 *Signature*:
 
@@ -146,7 +147,7 @@ str -> bool
 
 *Args*:
 
-* *strFile*: **str**; a path to a file (absolute or relative to the current working directory)
+* *FileName*: **str**; a path to a file (absolute or relative to the current working directory)
 
 *Returns*:
 
@@ -160,7 +161,7 @@ str -> bool
 
 Checks if a file exists, it is not a link, and it has '.py' extention, i.e. it is a Python source file.
 
-**IsPyPackage**(strFolder)
+**IsPyPackage**(FolderName)
 
 *Signature*:
 
@@ -168,7 +169,7 @@ str -> bool
 
 *Args*:
 
-* *strFolder*: **str**; a path to a folder (absolute or relative to the current working directory)
+* *FolderName*: **str**; a path to a folder (absolute or relative to the current working directory)
 
 *Returns*:
 
@@ -182,7 +183,7 @@ str -> bool
 
 Checks if a folder exists, it is not a link, and it has *\_\_init\_\_.py* file within (actual, not a link), i.e. it is a Python package.
 
-**SelectPySourceFiles**(strFolder)
+**SelectPySourceFiles**(FolderName)
 
 *Signature*:
 
@@ -190,7 +191,7 @@ str -> list(str)
 
 *Args*:
 
-* *strFolder*: **str**; a path to a file (absolute or relative to the current working directory)
+* *FolderName*: **str**; a path to a file (absolute or relative to the current working directory)
 
 *Returns*:
 
@@ -204,7 +205,7 @@ str -> list(str)
 
 Finds all Python source files (not symlinks) present in a directory (not a symlink itself).
 
-**GetQualifiedName**(strPath)
+**GetQualifiedName**(Path)
 
 *Signature*:
 
@@ -212,7 +213,7 @@ str -> str OR None
 
 *Args*:
 
-* *strPath*: **str**; a path to a folder or module (absolute or relative to the current working directory)
+* *Path*: **str**; a path to a folder or module (absolute or relative to the current working directory)
 
 *Returns*:
 
@@ -227,7 +228,7 @@ str -> str OR None
 
 Attempts to resolve the qualified (dot notation) of a module or (sub-) package from its path. The symlinks are ignored.
 
-**ResolveRelativeImport**(strFile, strImportName)
+**ResolveRelativeImport**(FileName, ImportName)
 
 *Signature*:
 
@@ -235,8 +236,8 @@ str, str -> str
 
 *Args*:
 
-* *strFile*: **str**; a path to an actual Python source file, ignored in the case of an absolute import as long as it is string
-* *strImportName*: **str**; an absolute or relative import name
+* *FileName*: **str**; a path to an actual Python source file, ignored in the case of an absolute import as long as it is string
+* *ImportName*: **str**; an absolute or relative import name
 
 *Returns*:
 
@@ -257,7 +258,7 @@ Attempts to resolve the relative import into an absolute relatively to the 'root
 
 Static analyzer of a Python package folder structure.
 
-_**Instantiation**_:
+***Instantiation***:
 
 **\_\_init\_\_**(Path)
 
@@ -278,7 +279,7 @@ str -> None
 
 Initializer. Checks and stores the folder path and the fully qualified package name. Sets the files and folders filtering option to the default values, i.e. to ignore everthing related to the setuptools packaging process.
 
-_**Properties**_:
+***Properties***:
 
 * *Path*: (read-only) **str**; path to the folder
 * *Package*: (read-only) **str**; fully qualified package name
@@ -286,7 +287,7 @@ _**Properties**_:
 * *FoldersFilers*: (read-only) **list(str)**; Unix shell sub-folders names filtering patterns
 * *Metadata*: (read-only) **dict(str -> dict(str -> int OR str))**; metadata found for the package
 
-_**Instance methods**_:
+***Instance methods***:
 
 **getModules**()
 

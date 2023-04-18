@@ -10,15 +10,15 @@ Functions:
     GetReadMap(gObject):
         int OR float OR str OR bool OR None OR seq(type A) OR
             dict(str -> type A) -> int OR float OR str OR bool OR None OR
-                list(type A) OR OrderedDict(str -> type A)
+                list(type A) OR dict(str -> type A)
     GetWriteMap(gObject):
         int OR float OR str OR bool OR None OR seq(type A) OR
             dict(str -> type A) -> int OR float OR str OR bool OR None OR
-                list(type A) OR OrderedDict(str -> type A)
+                list(type A) OR dict(str -> type A)
 """
 
 __version__ = "0.1.0.0"
-__date__ = "26-03-2021"
+__date__ = "18-04-2023"
 __status__ = "Development"
 
 #imports
@@ -29,7 +29,7 @@ import sys
 import os
 import collections
 
-from typing import Any, Union, Sequence, Mapping, List, OrderedDict
+from typing import Any, Union, Sequence, Mapping, List, Dict
 
 #+ custom modules
 
@@ -50,11 +50,11 @@ TScalar = Union[int, float, str, bool, None]
 
 TInput = Union[TScalar, Sequence[Any], Mapping[str, Any], object]
 
-TOutput = Union[TScalar, List[Any], OrderedDict[str, Any]]
+TOutput = Union[TScalar, List[Any], Dict[str, Any]]
 
 #main functions - visible, to be imported.
 
-def GetReadMap(gObject: TInput) -> TOutput:
+def GetReadMap(Object: TInput) -> TOutput:
     """
     Creates a map of the internal structure of a (nested) structured data
     storage object, which (map) is JSON-format serialization ready. All
@@ -63,10 +63,10 @@ def GetReadMap(gObject: TInput) -> TOutput:
     Signature:
         int OR float OR str OR bool OR None OR seq(type A) OR
             dict(str -> type A) -> int OR float OR str OR bool OR None OR
-                list(type A) OR OrderedDict(str -> type A)
+                list(type A) OR dict(str -> type A)
     
     Args:
-        gObject: int OR float OR str OR bool OR None OR seq(type A) OR
+        Object: int OR float OR str OR bool OR None OR seq(type A) OR
             dict(str -> type A); any non-callable Python type (except for the
             classes and their instanes, which can callable as well, but are
             acceptable). Expected types are scalar, sequence, mapping types or
@@ -74,7 +74,7 @@ def GetReadMap(gObject: TInput) -> TOutput:
     
     Returns:
         type int OR float OR str OR bool OR None OR list(type A) OR
-            OrderedDict(str -> type A): a scalar, a (nested) list or dictionary
+            dict(str -> type A): a scalar, a (nested) list or dictionary
     
     Raises:
         UT_TypeError: unacceptable type of the argument, e.g. a function,
@@ -85,7 +85,7 @@ def GetReadMap(gObject: TInput) -> TOutput:
     """
     pass
 
-def GetWriteMap(gObject: TInput) -> TOutput:
+def GetWriteMap(Object: TInput) -> TOutput:
     """
     Creates a map of the internal structure of a (nested) structured data
     storage object, which (map) is JSON-format serialization ready. Only the
@@ -93,15 +93,15 @@ def GetWriteMap(gObject: TInput) -> TOutput:
     cannot be modified, but are required for the preservation of the structure
     of an object are represented by the special value '!@#immutable'. Immutable
     sequences and dictionaries without nested mutable elements are represented
-    by an empty list or empty OrderedDict respectively
+    by an empty list or empty dictionary respectively
 
     Signature:
         int OR float OR str OR bool OR None OR seq(type A) OR
             dict(str -> type A) -> int OR float OR str OR bool OR None OR
-                list(type A) OR OrderedDict(str -> type A)
+                list(type A) OR dict(str -> type A)
     
     Args:
-        gObject: int OR float OR str OR bool OR None OR seq(type A) OR
+        Object: int OR float OR str OR bool OR None OR seq(type A) OR
             dict(str -> type A); any non-callable Python type (except for the
             classes and their instanes, which can callable as well, but are
             acceptable). Expected types are scalar, sequence, mapping types or
@@ -109,7 +109,7 @@ def GetWriteMap(gObject: TInput) -> TOutput:
     
     Returns:
         type int OR float OR str OR bool OR None OR list(type A) OR
-            OrderedDict(str -> type A): a scalar, a (nested) list or dictionary
+            dict(str -> type A): a scalar, a (nested) list or dictionary
     
     Raises:
         UT_TypeError: unacceptable type of the argument, e.g. a function,

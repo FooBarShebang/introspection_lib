@@ -103,9 +103,9 @@ def import_module(Path:str, Alias:Optional[str] = None, *,
     try:
         Module = importlib.import_module(Path)
     except ImportError as err:
-        objException = UT_ValueError(1, 'Import error - ', SkipFrames = 1)
-        objException.appendMessage(''.join(map(str, err.args)))
-        raise objException from None
+        Error = UT_ValueError(1, 'Import error - ', SkipFrames = 1)
+        Error.appendMessage(''.join(map(str, err.args)))
+        raise Error from None
     if Alias is None:
         Name = Path.split('.')[0]
         Globals[Name] = sys.modules[Name]
@@ -178,9 +178,9 @@ def import_from_module(Path:str, Name:str, Alias:Optional[str] = None, *,
     try:
         Object = getattr(importlib.import_module(Path), Name)
     except (ImportError, AttributeError) as err:
-        objException = UT_ValueError(1, 'Import error - ', SkipFrames = 1)
-        objException.appendMessage(''.join(map(str, err.args)))
-        raise objException from None
+        Error = UT_ValueError(1, 'Import error - ', SkipFrames = 1)
+        Error.appendMessage(''.join(map(str, err.args)))
+        raise Error from None
     if Alias is None:
         Globals[Name] = Object
     else:

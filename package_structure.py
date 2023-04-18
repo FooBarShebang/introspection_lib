@@ -6,23 +6,23 @@ Static anaysis of the structure and dependencies of a Python import package.
 Designed mostly as a helper tools set for distribution packaging.
 
 Functions:
-    IsPyFile(strFile):
+    IsPyFile(FileName):
         str -> bool
-    IsPyPackage(strFolder):
+    IsPyPackage(FolderName):
         str -> bool
-    SelectPySourceFiles(strFolder):
+    SelectPySourceFiles(FolderName):
         str -> list(str)
-    GetQualifiedName(strPath):
+    GetQualifiedName(Path):
         str -> str OR None
-    ResolveRelativeImport(strFile, strImportName):
+    ResolveRelativeImport(FileName, ImportName):
         str, str -> str
 
 Classes:
     PackageStructure: static structure analyzer
 """
 
-__version__ = "1.0.0.0"
-__date__ = "14-04-2021"
+__version__ = "1.0.0.1"
+__date__ = "17-04-2023"
 __status__ = "Production"
 
 #imports
@@ -58,7 +58,7 @@ METADATA_KEYS = [ '__version_info__', '__version_suffix__', '__version__',
 
 #functions
 
-def IsPyFile(strFile: str) -> bool:
+def IsPyFile(FileName: str) -> bool:
     """
     Checks if a file exists, it is not a link, and it has '.py' extention, i.e.
     it is a Python source file.
@@ -67,7 +67,7 @@ def IsPyFile(strFile: str) -> bool:
         str -> bool
     
     Args:
-        strFile: str; a path to a file (absolute or relative to the current
+        FileName: str; a path to a file (absolute or relative to the current
             working directory)
     
     Returns:
@@ -78,13 +78,13 @@ def IsPyFile(strFile: str) -> bool:
     
     Version 1.0.0.0
     """
-    if not isinstance(strFile, str):
-        raise UT_TypeError(strFile, str, SkipFrames = 1)
-    Result = (os.path.isfile(strFile) and (not os.path.islink(strFile))
-                                                and strFile.endswith('.py'))
+    if not isinstance(FileName, str):
+        raise UT_TypeError(FileName, str, SkipFrames = 1)
+    Result = (os.path.isfile(FileName) and (not os.path.islink(FileName))
+                                                and FileName.endswith('.py'))
     return Result
 
-def IsPyPackage(strFolder: str) -> bool:
+def IsPyPackage(FolderName: str) -> bool:
     """
     Checks if a folder exists, it is not a link, and it has '__init__.py' file
     within (actual, not a link), i.e. it is a Python package.
@@ -93,7 +93,7 @@ def IsPyPackage(strFolder: str) -> bool:
         str -> bool
     
     Args:
-        strFolder: str; a path to a folder (absolute or relative to the current
+        FolderName: str; a path to a folder (absolute or relative to the current
             working directory)
     
     Returns:
@@ -104,18 +104,18 @@ def IsPyPackage(strFolder: str) -> bool:
     
     Version 1.0.0.0
     """
-    if not isinstance(strFolder, str):
-        raise UT_TypeError(strFolder, str, SkipFrames = 1)
-    if os.path.isdir(strFolder):
-        if not os.path.islink(strFolder):
-            Result = IsPyFile(os.path.join(strFolder, '__init__.py'))
+    if not isinstance(FolderName, str):
+        raise UT_TypeError(FolderName, str, SkipFrames = 1)
+    if os.path.isdir(FolderName):
+        if not os.path.islink(FolderName):
+            Result = IsPyFile(os.path.join(FolderName, '__init__.py'))
         else:
             Result = False
     else:
         Result = False
     return Result
 
-def SelectPySourceFiles(strFolder: str) -> List[str]:
+def SelectPySourceFiles(FolderName: str) -> List[str]:
     """
     Finds all Python source files (not symlinks) present in a directory (not a
     symlink itself).
@@ -124,7 +124,7 @@ def SelectPySourceFiles(strFolder: str) -> List[str]:
         str -> list(str)
     
     Args:
-        strFolder: str; a path to a folder (absolute or relative to the current
+        FolderName: str; a path to a folder (absolute or relative to the current
             working directory)
     
     Returns:
@@ -135,17 +135,17 @@ def SelectPySourceFiles(strFolder: str) -> List[str]:
     
     Version 1.0.0.0
     """
-    if not isinstance(strFolder, str):
-        raise UT_TypeError(strFolder, str, SkipFrames = 1)
-    if os.path.isdir(strFolder) and (not os.path.islink(strFolder)):
+    if not isinstance(FolderName, str):
+        raise UT_TypeError(FolderName, str, SkipFrames = 1)
+    if os.path.isdir(FolderName) and (not os.path.islink(FolderName)):
         Result = list(map(os.path.basename,
-                        filter(IsPyFile, [os.path.join(strFolder, strFile)
-                                        for strFile in os.listdir(strFolder)])))
+                        filter(IsPyFile, [os.path.join(FolderName, FileName)
+                                    for FileName in os.listdir(FolderName)])))
     else:
         Result = []
     return Result
 
-def GetQualifiedName(strPath: str) -> Union[str, None]:
+def GetQualifiedName(Path: str) -> Union[str, None]:
     """
     Attempts to resolve the qualified (dot notation) of a module or (sub-)
     package from its path. The symlinks are ignored.
@@ -154,7 +154,7 @@ def GetQualifiedName(strPath: str) -> Union[str, None]:
         str -> str OR None
     
     Args:
-        strPath: str; a path to a folder or module (absolute or relative to the
+        Path: str; a path to a folder or module (absolute or relative to the
             current working directory)
     
     Returns:
@@ -167,27 +167,27 @@ def GetQualifiedName(strPath: str) -> Union[str, None]:
     
     Version 1.0.0.0
     """
-    if not isinstance(strPath, str):
-        raise UT_TypeError(strPath, str, SkipFrames = 1)
-    strPath = os.path.abspath(strPath)
-    PathLen = len(strPath)
-    if PathLen and IsPyFile(strPath):
-        Result = os.path.basename(strPath)[:-3]
-    elif PathLen and IsPyPackage(strPath):
-        Result = os.path.basename(strPath)
-    else:
-        Result = None
+    if not isinstance(Path, str):
+        raise UT_TypeError(Path, str, SkipFrames = 1)
+    Path = os.path.abspath(Path)
+    PathLength = len(Path)
+    Result = None
+    if PathLength:
+        if IsPyFile(Path):
+            Result = os.path.basename(Path)[:-3]
+        elif IsPyPackage(Path):
+            Result = os.path.basename(Path)
     if not (Result is None):
-        ParentPath = os.path.dirname(strPath)
-        if len(ParentPath):
+        ParentPath = os.path.dirname(Path)
+        if ParentPath:
             Temp = GetQualifiedName(ParentPath)
             if not (Temp is None):
                 Result = '{}.{}'.format(Temp, Result)
     return Result
 
-def ResolveRelativeImport(strFile: str, strImportName: str) -> str:
+def ResolveRelativeImport(FileName: str, ImportName: str) -> str:
     """
-    Attempts to resolve the relative import into an absolute relatively to
+    Attempts to resolve the relative import into an 'absolute' relatively to
     the 'root' package of the referenced by path module. The module must be
     whithin a package, and the relative path must end-up within the 'root' of
     the package structure, to which the referenced module belongs. The actual
@@ -198,9 +198,9 @@ def ResolveRelativeImport(strFile: str, strImportName: str) -> str:
         str, str -> str
     
     Args:
-        strFile: str; a path to an actual Python source file, ignored in the
+        FileName: str; a path to an actual Python source file, ignored in the
             case of an absolute import as long as it is string
-        strImportName: str; an absolute or relative import name
+        ImportName: str; an absolute or relative import name
     
     Returns:
         str: the absolute import path
@@ -212,29 +212,29 @@ def ResolveRelativeImport(strFile: str, strImportName: str) -> str:
             leads to the outside of the 'root' package of the module, OR the
             module itself is not a part of a package
     
-    Version 1.0.0.0
+    Version 1.0.1.0
     """
-    if not isinstance(strFile, str):
-        raise UT_TypeError(strFile, str, SkipFrames = 1)
-    elif not isinstance(strImportName, str):
-        raise UT_TypeError(strImportName, str, SkipFrames = 1)
-    if not strImportName.startswith('.'):
-        Result = str(strImportName)
+    if not isinstance(FileName, str):
+        raise UT_TypeError(FileName, str, SkipFrames = 1)
+    elif not isinstance(ImportName, str):
+        raise UT_TypeError(ImportName, str, SkipFrames = 1)
+    if not ImportName.startswith('.'):
+        Result = str(ImportName)
     else:
-        strFile = os.path.abspath(strFile)
-        if (IsPyFile(strFile)):
-            strSuffix = strImportName.lstrip('.')
-            iLevelsUp = len(strImportName) - len(strSuffix)
-            strModuleName = GetQualifiedName(strFile)
-            lstComponents = strModuleName.split('.')
-            if len(lstComponents) > iLevelsUp:
-                strPrefix = '.'.join(lstComponents[:-iLevelsUp])
-                Result = '{}.{}'.format(strPrefix, strSuffix)
+        FileName = os.path.abspath(FileName)
+        if (IsPyFile(FileName)):
+            Suffix = ImportName.lstrip('.')
+            LevelsUp = len(ImportName) - len(Suffix)
+            ModuleName = GetQualifiedName(FileName)
+            Components = ModuleName.split('.')
+            if len(Components) > LevelsUp:
+                Prefix = '.'.join(Components[:-LevelsUp])
+                Result = f'{Prefix}.{Suffix}'
             else:
-                raise UT_ValueError(strImportName,
-                                'within the root of {}'.format(strModuleName))
+                raise UT_ValueError(ImportName,
+                                            f'within the root of {ModuleName}')
         else:
-            raise UT_ValueError(strFile, 'existing Python source file')
+            raise UT_ValueError(FileName, 'existing Python source file')
     return Result
 
 class PackageStructure:
@@ -274,7 +274,7 @@ class PackageStructure:
             seq(str) -> None
         
 
-    Version 1.0.0.0
+    Version 1.0.0.1
     """
     
     #magic methods
@@ -297,23 +297,23 @@ class PackageStructure:
             * UT_ValueError: passed argument is a string, but not a path to
                 a Python package folder
         
-        Version 1.0.0.0
+        Version 1.0.0.1
         """
         if not isinstance(Path, str):
             raise UT_TypeError(Path, str, SkipFrames = 1)
         if len(Path):
-            self._strPath = os.path.abspath(Path)
+            self._Path = os.path.abspath(Path)
             if not IsPyPackage(self.Path):
                 raise UT_ValueError(Path, 'path to a Python package',
                                                                 SkipFrames= 1)
         else:
             raise UT_ValueError('Empty string', 'path to a Python package',
                                                                 SkipFrames= 1)
-        self._strPackage = GetQualifiedName(self.Path)
-        self._dictMeta = None
+        self._Package = GetQualifiedName(self.Path)
+        self._Metadata = None
         self._resetCache()
-        self._strlstFilesFilters = ['setup.py']
-        self._strlstFoldersFilters = ['build', 'build/*', '*/build',
+        self._FilesFilters = ['setup.py']
+        self._FoldersFilters = ['build', 'build/*', '*/build',
                                         '*/build/*', 'dist', 'dist/*',
                                         '*/dist', '*/dist/*', '*egg-info*',
                                         '*dist-info*']
@@ -329,9 +329,9 @@ class PackageStructure:
             str: human readable instance content representation, including name
                 of the class, name of the package and folder path linked to it
         
-        Version 1.0.0.0
+        Version 1.0.0.1
         """
-        return '{}(Package={}, Path={}'.format(self.__class__.__name__,
+        return '{}(Package={}, Path={})'.format(self.__class__.__name__,
                                                         self.Package, self.Path)
     
     #private methods
@@ -344,13 +344,14 @@ class PackageStructure:
         Signature:
             None -> None
         
-        Version 1.0.0.0
+        Version 1.0.0.1
         """
-        self._strlstModules = None
-        self._strlstDependences = None
-        self._dictImports = None
+        self._Modules = None
+        self._Dependences = None
+        self._Imports = None
+        self._Metadata = None
 
-    def _isAcceptableFile(self, strFile: str) -> bool:
+    def _isAcceptableFile(self, FileName: str) -> bool:
         """
         Helper 'private' method to check if the file (passed path string) should
         be included into the analysis, or not.
@@ -362,20 +363,20 @@ class PackageStructure:
             bool: True if the file is a Python source code and is not filtered
                 out, False - otherwise
         
-        Version 1.0.0.0
+        Version 1.0.0.1
         """
-        if IsPyFile(strFile):
-            strName = os.path.basename(strFile)
+        if IsPyFile(FileName):
+            strName = os.path.basename(FileName)
             if any(map(
                     lambda x: fnmatch.fnmatch(strName, x), self.FilesFilters)):
-                bResult = False
+                Result = False
             else:
-                bResult = True
+                Result = True
         else:
-            bResult = True
-        return bResult
+            Result = True
+        return Result
     
-    def _isAcceptableFolder(self, strFolder: str) -> bool:
+    def _isAcceptableFolder(self, FolderName: str) -> bool:
         """
         Helper 'private' method to check if the sub-folder (passed path string)
         should be included into the analysis, or not.
@@ -387,17 +388,17 @@ class PackageStructure:
             bool: True if the file is a Python source code and is not filtered
                 out, False - otherwise
         
-        Version 1.0.0.0
+        Version 1.0.0.1
         """
         if os.sep != '/':
-            _Folder = strFolder.replace(os.sep, '/')
+            _Folder = FolderName.replace(os.sep, '/')
         else:
-            _Folder = strFolder
+            _Folder = FolderName
         if any(map(lambda x: fnmatch.fnmatch(_Folder, x), self.FoldersFilters)):
-            bResult = False
+            Result = False
         else:
-            bResult = True
-        return bResult
+            Result = True
+        return Result
 
     #public API
 
@@ -412,9 +413,9 @@ class PackageStructure:
         Signature:
             None -> str
         
-        Version 1.0.0.0
+        Version 1.0.0.1
         """
-        return str(self._strPath)
+        return str(self._Path)
     
     @property
     def Package(self) -> str:
@@ -425,9 +426,9 @@ class PackageStructure:
         Signature:
             None -> str
         
-        Version 1.0.0.0
+        Version 1.0.0.1
         """
-        return str(self._strPackage)
+        return str(self._Package)
     
     @property
     def FilesFilters(self) -> List[str]:
@@ -438,9 +439,9 @@ class PackageStructure:
         Signature:
             None -> list(str)
         
-        Version 1.0.0.0
+        Version 1.0.0.1
         """
-        return list(self._strlstFilesFilters)
+        return list(self._FilesFilters)
     
     @property
     def FoldersFilters(self) -> List[str]:
@@ -451,9 +452,9 @@ class PackageStructure:
         Signature:
             None -> list(str)
         
-        Version 1.0.0.0
+        Version 1.0.0.1
         """
-        return list(self._strlstFoldersFilters)
+        return list(self._FoldersFilters)
     
     @property
     def Metadata(self) -> Dict[str, Dict[str, Union[str, int]]]:
@@ -463,25 +464,25 @@ class PackageStructure:
         Signature:
             None -> dict(str -> dict(str -> str OR int))
         
-        Version 1.0.0.0
+        Version 1.0.0.1
         """
-        if self._dictMeta is None:
-            self._dictMeta = dict()
-            strPath = os.path.join(self.Path, '__init__.py')
-            with open(strPath, 'rt') as fFile:
-                for iIndex, strLine in enumerate(fFile.readlines()):
-                    bCond1 = strLine.startswith('__')
-                    bCond2 = '=' in strLine
-                    if bCond1 and bCond2:
-                        lstTemp = strLine.rstrip().split('=')
-                        strName = lstTemp[0].strip()
-                        if len(lstTemp) >= 2:
-                            strValue = '='.join(lstTemp[1:]).strip()
-                            if strName in METADATA_KEYS:
-                                self._dictMeta[strName] = {
-                                    'line' : iIndex,
-                                    'value' : strValue}
-        return dict(self._dictMeta)
+        if self._Metadata is None:
+            self._Metadata = dict()
+            Path = os.path.join(self.Path, '__init__.py')
+            with open(Path, 'rt') as fFile:
+                for Index, Line in enumerate(fFile.readlines()):
+                    Cond1 = Line.startswith('__')
+                    Cond2 = '=' in Line
+                    if Cond1 and Cond2:
+                        Temp = Line.rstrip().split('=')
+                        Name = Temp[0].strip()
+                        if len(Temp) >= 2:
+                            Value = '='.join(Temp[1:]).strip()
+                            if Name in METADATA_KEYS:
+                                self._Metadata[Name] = {
+                                    'line' : Index,
+                                    'value' : Value}
+        return dict(self._Metadata)
     
     #+ public methods
 
@@ -498,30 +499,30 @@ class PackageStructure:
             list(str): remaining parts of the paths to the modules, relative to
                 the package's folder
         
-        Version 1.0.0.0
+        Version 1.0.0.1
         """
-        if self._strlstModules is None:
-            strlstResult = []
-            iPrefixLen = len('{}{}'.format(self.Path, os.sep))
-            for strRoot, _, strlstFiles in os.walk(self.Path):
-                if strRoot != self.Path:
-                    strRelRoot = strRoot[iPrefixLen:]
-                    bCheck = self._isAcceptableFolder(strRelRoot)
+        if self._Modules is None:
+            Result = []
+            PrefixLen = len(f'{self.Path}{os.sep}')
+            for Root, _, Files in os.walk(self.Path):
+                if Root != self.Path:
+                    RelRoot = Root[PrefixLen:]
+                    Check = self._isAcceptableFolder(RelRoot)
                 else:
-                    strRelRoot = None
-                    bCheck = True
-                if bCheck:
-                    for strBaseName in strlstFiles:
-                        strFile = os.path.join(strRoot, strBaseName)
-                        if self._isAcceptableFile(strFile):
-                            if strRelRoot is None:
-                                strlstResult.append(strBaseName)
+                    RelRoot = None
+                    Check = True
+                if Check:
+                    for BaseName in Files:
+                        FileName = os.path.join(Root, BaseName)
+                        if self._isAcceptableFile(FileName):
+                            if RelRoot is None:
+                                Result.append(BaseName)
                             else:
-                                strPath = os.path.join(strRelRoot, strBaseName)
-                                strPath = strPath.replace(os.sep, '/')
-                                strlstResult.append(strPath)
-            self._strlstModules = strlstResult
-        return list(self._strlstModules)
+                                Path = os.path.join(RelRoot, BaseName)
+                                Path = Path.replace(os.sep, '/')
+                                Result.append(Path)
+            self._Modules = Result
+        return list(self._Modules)
 
     def getDependencies(self) -> List[str]:
         """
@@ -536,84 +537,81 @@ class PackageStructure:
             list(str): found unique 'top level' dependencies, excluding the
                 Standard Library
         
-        Version 1.0.0.0
+        Version 1.0.0.1
         """
-        if self._strlstDependences is None:
-            self._strlstDependences = []
-            self._dictImports = dict()
-            strlstDependences = []
-            lstRootPackages = self.Package.split('.')
-            for strRelPath in self.getModules():
-                strAbsPath = os.path.join(self.Path,
-                                                strRelPath.replace('/', os.sep))
-                lstPackages = list(lstRootPackages)
-                strDirName = os.path.dirname(strAbsPath)[len(self.Path)+1:]
-                if len(strDirName):
-                    lstPackages.extend(strDirName.split(os.sep))
-                iLenPackages = len(lstPackages)
-                dictTemp = dict()
-                with open(strAbsPath, 'rt') as fFile:
-                    for strRawLine in fFile.readlines():
-                        strLine = strRawLine.strip()
-                        bCond1 = strLine.startswith('import')
-                        bCond2 = ((strLine.startswith('from'))
-                                                    and ('import' in strLine))
-                        if bCond1:
-                            lstImports = strLine[6:].split(',')
-                            for strEntry in lstImports:
-                                lstNames = strEntry.strip().split('as')
-                                strName = lstNames[0].strip()
-                                strTop = strName.split('.')[0]
-                                if not (strTop in strlstDependences):
-                                    if strTop != lstPackages[0]:
-                                        strlstDependences.append(strTop)
-                                if len(lstNames) == 2:
-                                    strAlias = lstNames[1].strip()
+        if self._Dependences is None:
+            self._Dependences = []
+            self._Imports = dict()
+            Dependences = []
+            RootPackages = self.Package.split('.')
+            for RelPath in self.getModules():
+                AbsPath = os.path.join(self.Path, RelPath.replace('/', os.sep))
+                Packages = list(RootPackages)
+                DirName = os.path.dirname(AbsPath)[len(self.Path)+1:]
+                if len(DirName):
+                    Packages.extend(DirName.split(os.sep))
+                PackagesDepth = len(Packages)
+                Temp = dict()
+                with open(AbsPath, 'rt') as fFile:
+                    for RawLine in fFile.readlines():
+                        Line = RawLine.strip()
+                        Cond1 = Line.startswith('import')
+                        Cond2 = Line.startswith('from') and ('import' in Line)
+                        if Cond1:
+                            Imports = Line[6:].split(',')
+                            for Entry in Imports:
+                                Names = Entry.strip().split('as')
+                                Name = Names[0].strip()
+                                Top = Name.split('.')[0]
+                                if (not (Top in Dependences) and
+                                                            Top != Packages[0]):
+                                    Dependences.append(Top)
+                                if len(Names) == 2:
+                                    Alias = Names[1].strip()
                                 else:
-                                    strAlias = strName
-                                dictTemp[strAlias] = strName
-                        elif bCond2:
-                            lstTemp = strLine[4:].split('import')
-                            strPrefix = lstTemp[0].strip()
-                            strStripped = strPrefix.lstrip('.')
-                            iCount = len(strPrefix) - len(strStripped)
-                            if iCount > iLenPackages:
+                                    Alias = Name
+                                Temp[Alias] = Name
+                        elif Cond2:
+                            TempLine = Line[4:].split('import')
+                            Prefix = TempLine[0].strip()
+                            Stripped = Prefix.lstrip('.')
+                            Count = len(Prefix) - len(Stripped)
+                            if Count > PackagesDepth:
                                 break
-                            elif iCount > 1:
-                                strPrefix = '.'.join(lstPackages[:-iCount + 1])
-                                strPrefix='{}.{}'.format(strPrefix, strStripped)
-                            elif iCount:
-                                strPrefix='{}.{}'.format(strPrefix, strStripped)
-                            strTop = strPrefix.split('.')[0]
-                            if not (strTop in strlstDependences):
-                                if strTop != lstPackages[0]:
-                                    strlstDependences.append(strTop)
-                            lstImports = lstTemp[1].strip().split(',')
-                            for strEntry in lstImports:
-                                lstNames = strEntry.strip().split('as')
-                                strName = lstNames[0].strip()
-                                strFullName = '.'.join([strPrefix, strName])
-                                if len(lstNames) == 2:
-                                    strAlias = lstNames[1].strip()
+                            else:
+                                if Count > 1:
+                                    Prefix = '.'.join(Packages[:-Count + 1])
+                                if Count:
+                                    Prefix = f'{Prefix}.{Stripped}'
+                            Top = Prefix.split('.')[0]
+                            if not (Top in Dependences) and Top != Packages[0]:
+                                    Dependences.append(Top)
+                            Imports = TempLine[1].strip().split(',')
+                            for Entry in Imports:
+                                Names = Entry.strip().split('as')
+                                Name = Names[0].strip()
+                                FullName = f'{Prefix}.{Name}'
+                                if len(Names) == 2:
+                                    Alias = Names[1].strip()
                                 else:
-                                    strAlias = strName
-                                dictTemp[strAlias] = strFullName
-                if len(dictTemp):
-                    self._dictImports[strRelPath] = dictTemp
-            for strTop in strlstDependences:
-                gSpecs = importlib.util.find_spec(strTop)
-                if not (gSpecs is None):
-                    strLocation = gSpecs.origin
-                    if not (strLocation is None):
-                        bCond1 = (strLocation.startswith(sys.base_prefix) or
-                                            strLocation.startswith(sys.prefix))
-                        bCond2 = not (('site-packages' in strLocation) or
-                                            ('dist-packages' in strLocation))
-                        if not(bCond1 and bCond2):
-                            self._strlstDependences.append(strTop)
+                                    Alias = Name
+                                Temp[Alias] = FullName
+                if Temp:
+                    self._Imports[RelPath] = Temp
+            for Top in Dependences:
+                Specs = importlib.util.find_spec(Top)
+                if not (Specs is None):
+                    Location = Specs.origin
+                    if not (Location is None):
+                        Cond1 = (Location.startswith(sys.base_prefix) or
+                                            Location.startswith(sys.prefix))
+                        Cond2 = not (('site-packages' in Location) or
+                                            ('dist-packages' in Location))
+                        if not(Cond1 and Cond2):
+                            self._Dependences.append(Top)
                 else:
-                    self._strlstDependences.append(strTop)
-        return list(self._strlstDependences)
+                    self._Dependences.append(Top)
+        return list(self._Dependences)
 
     def getImportNames(self) -> Dict[str, Dict[str, str]]:
         """
@@ -631,9 +629,9 @@ class PackageStructure:
         
         Version 1.0.0.0
         """
-        if self._dictImports is None:
+        if self._Imports is None:
             self.getDependencies()
-        return dict(self._dictImports)
+        return dict(self._Imports)
     
     def getPackagingNames(self) -> List[str]:
         """
@@ -649,16 +647,16 @@ class PackageStructure:
         
         Version 1.0.0.0
         """
-        strRoot = self.Package.split('.')[-1]
-        lstNames = [strRoot]
-        for strRelPath in self.getModules():
-            strDirPath = os.path.dirname(strRelPath.replace('/', os.sep))
-            if len(strDirPath):
-                strSuffix = strDirPath.replace(os.sep, '.')
-                strPackage = '{}.{}'.format(strRoot, strSuffix)
-                if not (strPackage in lstNames):
-                    lstNames.append(strPackage)
-        return lstNames
+        Root = self.Package.split('.')[-1]
+        Names = [Root]
+        for RelPath in self.getModules():
+            DirPath = os.path.dirname(RelPath.replace('/', os.sep))
+            if len(DirPath):
+                Suffix = DirPath.replace(os.sep, '.')
+                Package = f'{Root}.{Suffix}'
+                if not (Package in Names):
+                    Names.append(Package)
+        return Names
     
     def addFilesFilter(self, Pattern: str) -> bool:
         """
@@ -677,17 +675,17 @@ class PackageStructure:
         Raises:
             UT_TypeError: passed argument is not a string
         
-        Version 1.0.0.0
+        Version 1.0.0.1
         """
         if not isinstance(Pattern, str):
             raise UT_TypeError(Pattern, str, SkipFrames = 1)
         if Pattern in self.FilesFilters:
-            bResult = False
+            Result = False
         else:
-            bResult = True
-            self._strlstFilesFilters.append(Pattern)
+            Result = True
+            self._FilesFilters.append(Pattern)
             self._resetCache()
-        return bResult
+        return Result
     
     def removeFilesFilter(self, Pattern: str) -> bool:
         """
@@ -707,17 +705,17 @@ class PackageStructure:
         Raises:
             UT_TypeError: passed argument is not a string
         
-        Version 1.0.0.0
+        Version 1.0.0.1
         """
         if not isinstance(Pattern, str):
             raise UT_TypeError(Pattern, str, SkipFrames = 1)
         if Pattern in self.FilesFilters:
-            bResult = True
-            self._strlstFilesFilters.remove(Pattern)
+            Result = True
+            self._FilesFilters.remove(Pattern)
             self._resetCache()
         else:
-            bResult = False
-        return bResult
+            Result = False
+        return Result
     
     def setFilesFilters(self, Patterns: Sequence[str]) -> None:
         """
@@ -733,18 +731,16 @@ class PackageStructure:
         Raises:
             UT_TypeError: passed argument is not a sequence of strings
         
-        Version 1.0.0.0
+        Version 1.0.0.1
         """
         if not isinstance(Patterns, c_abc.Sequence):
             raise UT_TypeError(Patterns, c_abc.Sequence, SkipFrames = 1)
-        for iIndex, Pattern in enumerate(Patterns):
+        for Index, Pattern in enumerate(Patterns):
             if not isinstance(Pattern, str):
-                objError = UT_TypeError(Pattern, str, SkipFrames = 1)
-                strMessage = '{} at position {}'.format(objError.args[0],
-                                                                    iIndex)
-                objError.args = (strMessage, )
-                raise objError
-        self._strlstFilesFilters = list(Patterns)
+                Error = UT_TypeError(Pattern, str, SkipFrames = 1)
+                Error.appendMessage(f'at position {Index}')
+                raise Error
+        self._FilesFilters = list(Patterns)
         self._resetCache()
 
     def addFoldersFilter(self, Pattern: str) -> bool:
@@ -764,17 +760,17 @@ class PackageStructure:
         Raises:
             UT_TypeError: passed argument is not a string
         
-        Version 1.0.0.0
+        Version 1.0.0.1
         """
         if not isinstance(Pattern, str):
             raise UT_TypeError(Pattern, str, SkipFrames = 1)
         if Pattern in self.FilesFilters:
-            bResult = False
+            Result = False
         else:
-            bResult = True
-            self._strlstFoldersFilters.append(Pattern)
+            Result = True
+            self._FoldersFilters.append(Pattern)
             self._resetCache()
-        return bResult
+        return Result
     
     def removeFoldersFilter(self, Pattern: str) -> bool:
         """
@@ -793,17 +789,17 @@ class PackageStructure:
         Raises:
             UT_TypeError: passed argument is not a string
         
-        Version 1.0.0.0
+        Version 1.0.0.1
         """
         if not isinstance(Pattern, str):
             raise UT_TypeError(Pattern, str, SkipFrames = 1)
         if Pattern in self.FoldersFilters:
-            bResult = True
-            self._strlstFoldersFilters.remove(Pattern)
+            Result = True
+            self._FoldersFilters.remove(Pattern)
             self._resetCache()
         else:
-            bResult = False
-        return bResult
+            Result = False
+        return Result
     
     def setFoldersFilters(self, Patterns: Sequence[str]) -> None:
         """
@@ -823,12 +819,10 @@ class PackageStructure:
         """
         if not isinstance(Patterns, c_abc.Sequence):
             raise UT_TypeError(Patterns, c_abc.Sequence, SkipFrames = 1)
-        for iIndex, Pattern in enumerate(Patterns):
+        for Index, Pattern in enumerate(Patterns):
             if not isinstance(Pattern, str):
-                objError = UT_TypeError(Pattern, str, SkipFrames = 1)
-                strMessage = '{} at position {}'.format(objError.args[0],
-                                                                    iIndex)
-                objError.args = (strMessage, )
-                raise objError
-        self._strlstFoldersFilters = list(Patterns)
+                Error = UT_TypeError(Pattern, str, SkipFrames = 1)
+                Error.appendMessage(f'at position {Index}')
+                raise Error
+        self._FoldersFilters = list(Patterns)
         self._resetCache()

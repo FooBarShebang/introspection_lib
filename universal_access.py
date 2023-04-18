@@ -7,24 +7,24 @@ keys of mapping type objects and attributes of classes / instances, with the
 support for nested elements path.
 
 Functions:
-    GetData(gObject, gPath):
+    GetData(Object, gPath):
         type A, str OR int -> type B
-    GetDataDefault(gObject, gPath, gValue):
+    GetDataDefault(Object, Path, Default):
         type A, str OR int, type B -> type C
-    SetDataStrict(gObject, gPath, gValue):
+    SetDataStrict(Object, Path, Value):
         type A, str OR int, type B -> None
-    SetData(gObject, gPath, gValue):
+    SetData(Object, Path, Value):
         type A, str OR int, type B -> None
-    FlattenPath(gPath):
+    FlattenPath(Path):
         str OR int OR seq(type A) -> list(str OR int)
-    GetElement(gObject, gPath, *, bStrict = True, gDefault = None):
+    GetElement(Object, Path, *, IsStrict = True, Default = None):
         type A, str OR int OR seq(type B)/, *, bool, type C/ -> type D
-    SetElement(gObject, gPath, gValue, *, bStrict = True):
+    SetElement(Object, Path, Value, *, IsStrict = True):
         type A, str OR int OR seq(type B), type C/, *, bool/ -> None
 """
 
-__version__ = "1.0.0.0"
-__date__ = "04-03-2021"
+__version__ = "1.0.1.0"
+__date__ = "18-04-2021"
 __status__ = "Production"
 
 #imports
@@ -61,7 +61,7 @@ TGenericPath = Union[int, str, Sequence[Any]]
 
 #functions
 
-def GetData(gObject: Any, gPath: TPathElement) -> Any:
+def GetData(Object: Any, Path: TPathElement) -> Any:
     """
     Universal 'read' access to an element of a list, key : value pair entry of
     a mapping type or an attribute of a generic class or instance. Raises
@@ -73,8 +73,8 @@ def GetData(gObject: Any, gPath: TPathElement) -> Any:
         type A, str OR int -> type B
     
     Args:
-        gObject: type A; the object to be inspected
-        gPath: str OR int; the attribute name / key or index of the element to
+        Object: type A; the object to be inspected
+        Path: str OR int; the attribute name / key or index of the element to
             be accessed
     
     Returns:
@@ -92,56 +92,49 @@ def GetData(gObject: Any, gPath: TPathElement) -> Any:
         UT_AttributeError: object is a genric class or instance, and path is a
             string, but it is not found among the attributes
     
-    Version 1.0.0.0
+    Version 1.1.0.0
     """
-    if not isinstance(gPath, (int, str)):
-        objError = UT_TypeError(gPath, [int, str], SkipFrames = 1)
-        strMessage = '{} in "{}" path'.format(objError.args[0], gPath)
-        objError.args = (strMessage, )
-        raise objError
-    if isinstance(gObject, collections.abc.Sequence):
+    if not isinstance(Path, (int, str)):
+        Error = UT_TypeError(Path, [int, str], SkipFrames = 1)
+        Error.appendMessage(f'in "{Path}" path')
+        raise Error
+    if isinstance(Object, collections.abc.Sequence):
         #dirty hack to allow string (attrubute) access to named tuples
-        if isinstance(gPath, str) and (not hasattr(gObject, '_fields')):
-            objError = UT_TypeError(gPath, int, SkipFrames = 1)
-            strMessage = '{} in "{}" path for sequence {}'.format(
-                                            objError.args[0], gPath, gObject)
-            objError.args = (strMessage, )
-            raise objError
-        if isinstance(gPath, int): #index access
-            iLen = len(gObject)
-            if (gPath < (- iLen)) or (gPath >= iLen):
-                strName = 'passed sequence {}'.format(gObject)
-                raise UT_IndexError(strName, gPath, SkipFrames = 1)
-            gResult = gObject[gPath]
+        if isinstance(Path, str) and (not hasattr(Object, '_fields')):
+            Error = UT_TypeError(Path, int, SkipFrames = 1)
+            Error.appendMessage(f'in "{Path}" path for sequence {Object}')
+            raise Error
+        if isinstance(Path, int): #index access
+            Length = len(Object)
+            if (Path < (- Length)) or (Path >= Length):
+                Name = f'passed sequence {Object}'
+                raise UT_IndexError(Name, Path, SkipFrames = 1)
+            Result = Object[Path]
         else: #attribute access - for named tuples only
-            if not hasattr(gObject, gPath):
-                objError = UT_AttributeError(gObject, gPath, SkipFrames = 1)
-                strMessage = '{} not found attribute'.format(objError.args[0])
-                objError.args = (strMessage, )
-                raise objError
-            gResult = getattr(gObject, gPath)
+            if not hasattr(Object, Path):
+                Error = UT_AttributeError(Object, Path, SkipFrames = 1)
+                Error.appendMessage('not found attribute')
+                raise Error
+            Result = getattr(Object, Path)
     else:
-        if not isinstance(gPath, str):
-            objError = UT_TypeError(gPath, str, SkipFrames = 1)
-            strMessage = '{} in "{}" path for {}'.format(
-                            objError.args[0], gPath, gObject)
-            objError.args = (strMessage, )
-            raise objError
-        if isinstance(gObject, collections.abc.Mapping):
-            if not gPath in gObject:
-                strName = 'passed mapping {}'.format(gObject)
-                raise UT_KeyError(strName, gPath, SkipFrames = 1)
-            gResult = gObject[gPath]
+        if not isinstance(Path, str):
+            Error = UT_TypeError(Path, str, SkipFrames = 1)
+            Error.appendMessage(f'in "{Path}" path for {Object}')
+            raise Error
+        if isinstance(Object, collections.abc.Mapping):
+            if not Path in Object:
+                Name = f'passed mapping {Object}'
+                raise UT_KeyError(Name, Path, SkipFrames = 1)
+            Result = Object[Path]
         else:
-            if not hasattr(gObject, gPath):
-                objError = UT_AttributeError(gObject, gPath, SkipFrames = 1)
-                strMessage = '{} not found attribute'.format(objError.args[0])
-                objError.args = (strMessage, )
-                raise objError
-            gResult = getattr(gObject, gPath)
-    return gResult
+            if not hasattr(Object, Path):
+                Error = UT_AttributeError(Object, Path, SkipFrames = 1)
+                Error.appendMessage('not found attribute')
+                raise Error
+            Result = getattr(Object, Path)
+    return Result
 
-def GetDataDefault(gObject: Any, gPath: TPathElement, gValue: Any) -> Any:
+def GetDataDefault(Object: Any, Path: TPathElement, Default: Any) -> Any:
     """
     Universal 'read' access to an element of a list, key : value pair entry of
     a mapping type or an attribute of a generic class or instance with a default
@@ -152,10 +145,10 @@ def GetDataDefault(gObject: Any, gPath: TPathElement, gValue: Any) -> Any:
         type A, str OR int, type B -> type C
     
     Args:
-        gObject: type A; the object to be inspected
-        gPath: str OR int; the attribute name / key or index of the element to
+        Object: type A; the object to be inspected
+        Path: str OR int; the attribute name / key or index of the element to
             be accessed
-        gValue: type B; the default value to return, if such element is not
+        Default: type B; the default value to return, if such element is not
             found
     
     Returns:
@@ -167,43 +160,38 @@ def GetDataDefault(gObject: Any, gPath: TPathElement, gValue: Any) -> Any:
             and non-integer path, non-sequence object and non-string path, OR
             the path is neither an integer or a string
     
-    Version 1.0.0.0
+    Version 1.1.0.0
     """
-    if not isinstance(gPath, (int, str)):
-        objError = UT_TypeError(gPath, [int, str], SkipFrames = 1)
-        strMessage = '{} in "{}" path'.format(objError.args[0], gPath)
-        objError.args = (strMessage, )
-        raise objError
-    if isinstance(gObject, collections.abc.Sequence):
+    if not isinstance(Path, (int, str)):
+        Error = UT_TypeError(Path, [int, str], SkipFrames = 1)
+        Error.appendMessage(f'in "{Path}" path')
+        raise Error
+    if isinstance(Object, collections.abc.Sequence):
         #dirty hack to allow string (attrubute) access to named tuples
-        if isinstance(gPath, str) and (not hasattr(gObject, '_fields')):
-            objError = UT_TypeError(gPath, int, SkipFrames = 1)
-            strMessage = '{} in "{}" path for sequence {}'.format(
-                                        objError.args[0], gPath, gObject)
-            objError.args = (strMessage, )
-            raise objError
-        if isinstance(gPath, int): #index access
-            iLen = len(gObject)
-            if (gPath < (- iLen)) or (gPath >= iLen):
-                gResult = gValue
+        if isinstance(Path, str) and (not hasattr(Object, '_fields')):
+            Error = UT_TypeError(Path, int, SkipFrames = 1)
+            Error.appendMessage(f'in "{Path}" path for sequence {Object}')
+            raise Error
+        if isinstance(Path, int): #index access
+            Length = len(Object)
+            if (Path < (- Length)) or (Path >= Length):
+                Result = Default
             else:
-                gResult = gObject[gPath]
+                Result = Object[Path]
         else: #attribute access - for named tuples only
-            gResult = getattr(gObject, gPath, gValue)
+            Result = getattr(Object, Path, Default)
     else:
-        if not isinstance(gPath, str):
-            objError = UT_TypeError(gPath, str, SkipFrames = 1)
-            strMessage = '{} in "{}" path for {}'.format(
-                                            objError.args[0], gPath, gObject)
-            objError.args = (strMessage, )
-            raise objError
-        if isinstance(gObject, collections.abc.Mapping):
-            gResult = gObject.get(gPath, gValue)
+        if not isinstance(Path, str):
+            Error = UT_TypeError(Path, str, SkipFrames = 1)
+            Error.appendMessage(f'in "{Path}" path for {Object}')
+            raise Error
+        if isinstance(Object, collections.abc.Mapping):
+            Result = Object.get(Path, Default)
         else:
-            gResult = getattr(gObject, gPath, gValue)
-    return gResult
+            Result = getattr(Object, Path, Default)
+    return Result
 
-def SetDataStrict(gObject: Any, gPath: TPathElement, gValue: Any) -> None:
+def SetDataStrict(Object: Any, Path: TPathElement, Value: Any) -> None:
     """
     Universal 'write' access to an element of a list, key : value pair entry of
     a mapping type or an attribute of a generic class or instance, but only to
@@ -216,10 +204,10 @@ def SetDataStrict(gObject: Any, gPath: TPathElement, gValue: Any) -> None:
         type A, str OR int, type B -> None
     
     Args:
-        gObject: type A; the object to be inspected
-        gPath: str OR int; the attribute name / key or index of the element to
+        Object: type A; the object to be inspected
+        Path: str OR int; the attribute name / key or index of the element to
             be accessed
-        gValue: type B; the value assign
+        Value: type B; the value assign
     
     Raises:
         UT_TypeError: object (first argument) is immutable, OR type mismatch
@@ -236,50 +224,43 @@ def SetDataStrict(gObject: Any, gPath: TPathElement, gValue: Any) -> None:
     
     Version 1.0.0.0
     """
-    if not isinstance(gPath, (int, str)):
-        objError = UT_TypeError(gPath, [int, str], SkipFrames = 1)
-        strMessage = '{} in "{}" path'.format(objError.args[0], gPath)
-        objError.args = (strMessage, )
-        raise objError
-    if isinstance(gObject, collections.abc.Sequence):
-        if not isinstance(gObject, collections.abc.MutableSequence):
-            raise UT_TypeError(gObject, collections.abc.MutableSequence,
+    if not isinstance(Path, (int, str)):
+        Error = UT_TypeError(Path, [int, str], SkipFrames = 1)
+        Error.appendMessage(f'in "{Path}" path')
+        raise Error
+    if isinstance(Object, collections.abc.Sequence):
+        if not isinstance(Object, collections.abc.MutableSequence):
+            raise UT_TypeError(Object, collections.abc.MutableSequence,
                                                                 SkipFrames = 1)
-        if not isinstance(gPath, int):
-            objError = UT_TypeError(gPath, int, SkipFrames = 1)
-            strMessage = '{} in "{}" path for sequence {}'.format(
-                                            objError.args[0], gPath, gObject)
-            objError.args = (strMessage, )
-            raise objError
-        iLen = len(gObject)
-        if (gPath < (- iLen)) or (gPath >= iLen):
-            strName = 'passed sequence {}'.format(gObject)
-            raise UT_IndexError(strName, gPath, SkipFrames = 1)
-        gObject[gPath] = gValue
+        if not isinstance(Path, int):
+            Error = UT_TypeError(Path, int, SkipFrames = 1)
+            Error.appendMessage(f'in "{Path}" path for sequence {Object}')
+            raise Error
+        Length = len(Object)
+        if (Path < (- Length)) or (Path >= Length):
+            raise UT_IndexError(f'passed sequence {Object}', Path, SkipFrames=1)
+        Object[Path] = Value
     else:
-        if not isinstance(gPath, str):
-            objError = UT_TypeError(gPath, str, SkipFrames = 1)
-            strMessage = '{} in "{}" path for {}'.format(
-                                            objError.args[0], gPath, gObject)
-            objError.args = (strMessage, )
-            raise objError
-        if isinstance(gObject, collections.abc.Mapping):
-            if not isinstance(gObject, collections.abc.MutableMapping):
-                raise UT_TypeError(gObject, collections.abc.MutableMapping,
+        if not isinstance(Path, str):
+            Error = UT_TypeError(Path, str, SkipFrames = 1)
+            Error.appendMessage(f'in "{Path}" path for {Object}')
+            raise Error
+        if isinstance(Object, collections.abc.Mapping):
+            if not isinstance(Object, collections.abc.MutableMapping):
+                raise UT_TypeError(Object, collections.abc.MutableMapping,
                                                                 SkipFrames = 1)
-            if not gPath in gObject:
-                strName = 'passed mapping {}'.format(gObject)
-                raise UT_KeyError(strName, gPath, SkipFrames = 1)
-            gObject[gPath] = gValue
+            if not Path in Object:
+                raise UT_KeyError(f'passed mapping {Object}', Path,
+                                                                SkipFrames = 1)
+            Object[Path] = Value
         else:
-            if not hasattr(gObject, gPath):
-                objError = UT_AttributeError(gObject, gPath, SkipFrames = 1)
-                strMessage = '{} not found attribute'.format(objError.args[0])
-                objError.args = (strMessage, )
-                raise objError
-            setattr(gObject, gPath, gValue)
+            if not hasattr(Object, Path):
+                Error = UT_AttributeError(Object, Path, SkipFrames = 1)
+                Error.appendMessage(f'not found attribute')
+                raise Error
+            setattr(Object, Path, Value)
 
-def SetData(gObject: Any, gPath: TPathElement, gValue: Any) -> None:
+def SetData(Object: Any, Path: TPathElement, Value: Any) -> None:
     """
     Universal 'write' access to an element of a list, key : value pair entry of
     a mapping type or an attribute of a generic class or instance. If such
@@ -308,44 +289,39 @@ def SetData(gObject: Any, gPath: TPathElement, gValue: Any) -> None:
     
     Version 1.0.0.0
     """
-    if not isinstance(gPath, (int, str)):
-        objError = UT_TypeError(gPath, [int, str], SkipFrames = 1)
-        strMessage = '{} in "{}" path'.format(objError.args[0], gPath)
-        objError.args = (strMessage, )
-        raise objError
-    if isinstance(gObject, collections.abc.Sequence):
-        if not isinstance(gObject, collections.abc.MutableSequence):
-            raise UT_TypeError(gObject, collections.abc.MutableSequence,
+    if not isinstance(Path, (int, str)):
+        Error = UT_TypeError(Path, [int, str], SkipFrames = 1)
+        Error.appendMessage(f'in "{Path}" path')
+        raise Error
+    if isinstance(Object, collections.abc.Sequence):
+        if not isinstance(Object, collections.abc.MutableSequence):
+            raise UT_TypeError(Object, collections.abc.MutableSequence,
                                                                 SkipFrames = 1)
-        if not isinstance(gPath, int):
-            objError = UT_TypeError(gPath, int, SkipFrames = 1)
-            strMessage = '{} in "{}" path for sequence {}'.format(
-                                            objError.args[0], gPath, gObject)
-            objError.args = (strMessage, )
-            raise objError
-        iLen = len(gObject)
-        if gPath < (- iLen):
-            gObject.insert(0, gValue)
-        elif gPath >= iLen:
-            gObject.append(gValue)
+        if not isinstance(Path, int):
+            Error = UT_TypeError(Path, int, SkipFrames = 1)
+            Error.appendMessage(f'in "{Path}" path for sequence {Object}')
+            raise Error
+        Length = len(Object)
+        if Path < (- Length):
+            Object.insert(0, Value)
+        elif Path >= Length:
+            Object.append(Value)
         else:
-            gObject[gPath] = gValue
+            Object[Path] = Value
     else:
-        if not isinstance(gPath, str):
-            objError = UT_TypeError(gPath, str, SkipFrames = 1)
-            strMessage = '{} in "{}" path for {}'.format(
-                                            objError.args[0], gPath, gObject)
-            objError.args = (strMessage, )
-            raise objError
-        if isinstance(gObject, collections.abc.Mapping):
-            if not isinstance(gObject, collections.abc.MutableMapping):
-                raise UT_TypeError(gObject, collections.abc.MutableMapping,
+        if not isinstance(Path, str):
+            Error = UT_TypeError(Path, str, SkipFrames = 1)
+            Error.appendMessage(f'in "{Path}" for {Object}')
+            raise Error
+        if isinstance(Object, collections.abc.Mapping):
+            if not isinstance(Object, collections.abc.MutableMapping):
+                raise UT_TypeError(Object, collections.abc.MutableMapping,
                                                                 SkipFrames = 1)
-            gObject[gPath] = gValue
+            Object[Path] = Value
         else:
-            setattr(gObject, gPath, gValue)
+            setattr(Object, Path, Value)
 
-def FlattenPath(gPath: TGenericPath) -> TCannonicalPath:
+def FlattenPath(Path: TGenericPath) -> TCannonicalPath:
     """
     Flattens a nested generic path definition into a plain list of only strings
     and integers defining a navigation path within a nested structured object,
@@ -358,7 +334,7 @@ def FlattenPath(gPath: TGenericPath) -> TCannonicalPath:
         str OR int OR seq(type A) -> list(str OR int)
     
     Args:
-        gPath: str OR int OR seq(type A); the generic nested path description
+        Path: str OR int OR seq(type A); the generic nested path description
             to be flattened
     
     Returns:
@@ -370,31 +346,31 @@ def FlattenPath(gPath: TGenericPath) -> TCannonicalPath:
     
     Version 1.0.0.0
     """
-    if isinstance(gPath, str):
-        lstResult = gPath.split(".")
-    elif isinstance(gPath, int):
-        lstResult = [gPath]
-    elif isinstance(gPath, collections.abc.Sequence):
-        lstResult = []
-        for gItem in gPath:
+    if isinstance(Path, str):
+        Result = Path.split(".")
+    elif isinstance(Path, int):
+        Result = [Path]
+    elif isinstance(Path, collections.abc.Sequence):
+        Result = []
+        for Item in Path:
             try:
-                lstTemp = FlattenPath(gItem)
+                Temp = FlattenPath(Item)
             except UT_TypeError as err:
-                objError = UT_TypeError(1, int, SkipFrames = 1)
-                objError.args = ('{} in {}'.format(err.args[0], gPath), )
-                raise objError from None
-            lstResult.extend(lstTemp)
+                Error = UT_TypeError(1, int, SkipFrames = 1)
+                Message = err.getMessage()
+                Error.setMessage(f'{Message} in {Path}')
+                raise Error from None
+            Result.extend(Temp)
     else:
-        objError = UT_TypeError(gPath, [int, str, collections.abc.Sequence],
+        Error = UT_TypeError(Path, [int, str, collections.abc.Sequence],
                                                                 SkipFrames = 1)
-        strMessage = '{} in {}'.format(objError.args[0], gPath)
-        objError.args = (strMessage, )
-        raise objError
-    return lstResult
+        Error.appendMessage(f'in {Path}')
+        raise Error
+    return Result
 
-def GetElement(gObject: Any, gPath: TGenericPath, *,
-                bStrict: Optional[bool] = True,
-                gDefault: Optional[Any] = None) -> Any:
+def GetElement(Object: Any, Path: TGenericPath, *,
+                IsStrict: bool = True,
+                Default: Any = None) -> Any:
     """
     Attempts to retrieve the value of an element (key, attribute) of the nested
     structured object (including nested sequences) defined by a generic path.
@@ -407,12 +383,12 @@ def GetElement(gObject: Any, gPath: TGenericPath, *,
         type A, str OR int OR seq(type B)/, *, bool, type C/ -> type D
     
     Args:
-        gObject: type A; the object to be inspected
-        gPath: str OR int OR seq(type B); the generic path to the end node
+        Object: type A; the object to be inspected
+        Path: str OR int OR seq(type B); the generic path to the end node
             of a nested struture object
-        bStrict: (keyword) bool; the flag if the strict access mode is to be
+        IsStrict: (keyword) bool; the flag if the strict access mode is to be
             used, defaults to True
-        gDefault: (keyword) type C; the default value to return, if any level
+        Default: (keyword) type C; the default value to return, if any level
             element is not found along the path, defaults to None, has an effect
             only if the bStrict flag is False
     
@@ -440,49 +416,50 @@ def GetElement(gObject: Any, gPath: TGenericPath, *,
     """
     #convert the path into the canonical form - and check that it is not empty
     try:
-        lstPath = FlattenPath(gPath)
+        Path = FlattenPath(Path)
     except UT_TypeError as err:
-        objError = UT_TypeError(1, int, SkipFrames = 1)
-        objError.args = (err.args[0], )
-        raise objError from None
-    if not len(lstPath):
-        raise UT_ValueError(gPath, 'not empty path', SkipFrames = 1)
+        Message = err.getMessage()
+        Error = UT_TypeError(1, int, SkipFrames = 1)
+        Error.setMessage(f'{Message} - invalid path definition')
+        raise Error from None
+    if not Path:
+        raise UT_ValueError(Path, 'not empty path', SkipFrames = 1)
     #walk the object structure
-    gCurrentObject = gObject
-    strName = GetObjectClass(gCurrentObject)
-    for gItem in lstPath:
+    CurrentObject = Object
+    Name = GetObjectClass(CurrentObject)
+    for Item in Path:
         #check the current level type to prepare the exceptions and construct
         #+ the already walked path
-        if isinstance(gCurrentObject, collections.abc.Sequence):
-            clsError = UT_IndexError
-            strNewName = '{}[{}]'.format(strName, gItem)
-        elif isinstance(gCurrentObject, collections.abc.Mapping):
-            clsError = UT_KeyError
-            strNewName = '{}[{}]'.format(strName, gItem)
+        if isinstance(CurrentObject, collections.abc.Sequence):
+            ErrorClass = UT_IndexError
+            FullName = f'{Name}[{Item}]'
+        elif isinstance(CurrentObject, collections.abc.Mapping):
+            ErrorClass = UT_KeyError
+            FullName = f'{Name}[{Item}]'
         else:
-            clsError = UT_AttributeError
-            strNewName = '{}.{}'.format(strName, gItem)
+            ErrorClass = UT_AttributeError
+            FullName = f'{Name}.{Item}'
         try:
-            gResult = GetData(gCurrentObject, gItem)
+            Result = GetData(CurrentObject, Item)
         except UT_TypeError as err1: #object - path mismatch
-            objError = UT_TypeError(1, int, SkipFrames = 1)
-            strMessage = '{} - {}'.format(strNewName, err1.args[0])
-            objError.args = (strMessage, )
-            raise objError from None
+            Message = err1.getMessage()
+            Error = UT_TypeError(1, int, SkipFrames = 1)
+            Error.setMessage(f'{FullName} - {Message}')
+            raise Error from None
         except (UT_AttributeError, UT_IndexError, UT_KeyError):
             #not found level
-            if bStrict:
-                raise clsError(strName, gItem, SkipFrames = 1) from None
+            if IsStrict:
+                raise ErrorClass(FullName, Item, SkipFrames = 1) from None
             else:
-                gResult = gDefault
+                Result = Default
                 break
-        gCurrentObject = gResult #reference to the next level
-        strName = strNewName
+        CurrentObject = Result #reference to the next level
+        Name = FullName
     # no errors or access error in 'relaxed' mode
-    return gResult
+    return Result
 
-def SetElement(gObject: Any, gPath: TGenericPath, gValue: Any, *,
-                bStrict: Optional[bool] = True) -> Any:
+def SetElement(Object: Any, Path: TGenericPath, Value: Any, *,
+                IsStrict: bool = True) -> Any:
     """
     Attempts to assign a value to an element (key, attribute) of the nested
     structured object (including nested sequences) defined by a generic path.
@@ -496,11 +473,11 @@ def SetElement(gObject: Any, gPath: TGenericPath, gValue: Any, *,
         type A, str OR int OR seq(type B), type C/, *, bool/ -> None
     
     Args:
-        gObject: type A; the object to be inspected
-        gPath: str OR int OR seq(type B); the generic path to the end node
+        Object: type A; the object to be inspected
+        Path: str OR int OR seq(type B); the generic path to the end node
             of a nested struture object
-        gValue: type C; the value to be assigned to the end node
-        bStrict: (keyword) bool; the flag if the strict access mode is to be
+        Value: type C; the value to be assigned to the end node
+        IsStrict: (keyword) bool; the flag if the strict access mode is to be
             used, defaults to True
     
     Raises:
@@ -523,65 +500,66 @@ def SetElement(gObject: Any, gPath: TGenericPath, gValue: Any, *,
     """
     #convert the path into the canonical form - and check that it is not empty
     try:
-        lstPath = FlattenPath(gPath)
+        Path = FlattenPath(Path)
     except UT_TypeError as err:
-        objError = UT_TypeError(1, int, SkipFrames = 1)
-        objError.args = (err.args[0], )
-        raise objError from None
-    iLen = len(lstPath)
-    if not iLen:
-        raise UT_ValueError(gPath, 'not empty path', SkipFrames = 1)
+        Error = UT_TypeError(1, int, SkipFrames = 1)
+        Message = err.getMessage()
+        Error.setMessage(f'{Message} - invalid path definition')
+        raise Error from None
+    Length = len(Path)
+    if not Length:
+        raise UT_ValueError(Path, 'not empty path', SkipFrames = 1)
     #walk the object structure
-    gCurrentObject = gObject
-    strName = GetObjectClass(gCurrentObject)
-    for iIndex, gItem in enumerate(lstPath):
+    CurrentObject = Object
+    Name = GetObjectClass(CurrentObject)
+    for Index, Item in enumerate(Path):
         #check the current level type to prepare the exceptions and construct
         #+ the already walked path
-        if isinstance(gCurrentObject, collections.abc.Sequence):
-            clsError = UT_IndexError
-            strNewName = '{}[{}]'.format(strName, gItem)
-        elif isinstance(gCurrentObject, collections.abc.Mapping):
-            clsError = UT_KeyError
-            strNewName = '{}[{}]'.format(strName, gItem)
+        if isinstance(CurrentObject, collections.abc.Sequence):
+            ErrorClass = UT_IndexError
+            FullName = f'{Name}[{Item}]'
+        elif isinstance(CurrentObject, collections.abc.Mapping):
+            ErrorClass = UT_KeyError
+            FullName = f'{Name}[{Item}]'
         else:
-            clsError = UT_AttributeError
-            strNewName = '{}.{}'.format(strName, gItem)
-        if iIndex < (iLen - 1): #not last element in the path
+            ErrorClass = UT_AttributeError
+            FullName = f'{Name}.{Item}'
+        if Index < (Length - 1): #not last element in the path
             try:
-                gResult = GetData(gCurrentObject, gItem)
+                Result = GetData(CurrentObject, Item)
             except UT_TypeError as err1: #object - path mismatch
-                objError = UT_TypeError(1, int, SkipFrames = 1)
-                strMessage = '{} - {}'.format(strNewName, err1.args[0])
-                objError.args = (strMessage, )
-                raise objError from None
+                Error = UT_TypeError(1, int, SkipFrames = 1)
+                Message = err1.getMessage()
+                Error.setMessage(f'{FullName} - {Message}')
+                raise Error from None
             except (UT_AttributeError, UT_IndexError, UT_KeyError):
                 #not found level
-                if bStrict:
-                    raise clsError(strName, gItem, SkipFrames = 1) from None
+                if IsStrict:
+                    raise ErrorClass(Name, Item, SkipFrames = 1) from None
                 else:
-                    gNextElement = lstPath[iIndex + 1]
-                    if isinstance(gNextElement, int):
-                        gNewItem = list()
+                    NextElement = Path[Index + 1]
+                    if isinstance(NextElement, int):
+                        NewItem = list()
                     else:
-                        gNewItem = dict()
+                        NewItem = dict()
                     try:
-                        SetData(gCurrentObject, gItem, gNewItem)
+                        SetData(CurrentObject, Item, NewItem)
                     except UT_TypeError as err2: #immutable at this level
-                        objError = UT_TypeError(1, int, SkipFrames = 1)
-                        strMessage = '{} - {}'.format(strNewName, err2.args[0])
-                        objError.args = (strMessage, )
-                        raise objError from None
-                    gResult = gNewItem
-            gCurrentObject = gResult #reference to the next level
-            strName = strNewName
+                        Error = UT_TypeError(1, int, SkipFrames = 1)
+                        Message = err2.getMessage()
+                        Error.setMessage(f'{FullName} - {Message}')
+                        raise Error from None
+                    Result = NewItem
+            CurrentObject = Result #reference to the next level
+            Name = FullName
         else: #last element in the path
             try:
-                if bStrict:
-                    SetDataStrict(gCurrentObject, gItem, gValue)
+                if IsStrict:
+                    SetDataStrict(CurrentObject, Item, Value)
                 else:
-                    SetData(gCurrentObject, gItem, gValue)
+                    SetData(CurrentObject, Item, Value)
             except UT_TypeError as err3: #object - path mismatch or immutable
-                objError = UT_TypeError(1, int, SkipFrames = 1)
-                strMessage = '{} - {}'.format(strNewName, err3.args[0])
-                objError.args = (strMessage, )
-                raise objError from None
+                Error = UT_TypeError(1, int, SkipFrames = 1)
+                Message = err3.getMessage()
+                Error.setMessage(f'{FullName} - {Message}')
+                raise Error from None
