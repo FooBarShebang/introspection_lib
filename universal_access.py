@@ -23,35 +23,22 @@ Functions:
         type A, str OR int OR seq(type B), type C/, *, bool/ -> None
 """
 
-__version__ = "1.0.1.0"
-__date__ = "18-04-2021"
+__version__ = "1.0.1.1"
+__date__ = "21-04-2021"
 __status__ = "Production"
 
 #imports
 
 #+ standard libraries
 
-import sys
-import os
 import collections
 
 from typing import Any, Union, Sequence, List, Optional
 
 #+ custom modules
 
-MODULE_PATH = os.path.realpath(__file__)
-LIB_FOLDER = os.path.dirname(MODULE_PATH)
-ROOT_FOLDER = os.path.dirname(LIB_FOLDER)
-
-if not (ROOT_FOLDER in sys.path):
-    sys.path.append(ROOT_FOLDER)
-
-from introspection_lib.base_exceptions import UT_TypeError
-from introspection_lib.base_exceptions import UT_ValueError
-from introspection_lib.base_exceptions import UT_AttributeError
-from introspection_lib.base_exceptions import UT_KeyError
-from introspection_lib.base_exceptions import UT_IndexError
-from introspection_lib.base_exceptions import GetObjectClass
+from .base_exceptions import UT_TypeError, UT_ValueError, UT_AttributeError
+from .base_exceptions import UT_KeyError, UT_IndexError, GetObjectClass
 
 #types
 

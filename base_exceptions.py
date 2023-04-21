@@ -22,7 +22,7 @@ Classes:
     UT_KeyError: custom version of KeyError
 """
 
-__version__ = "1.1.0.0"
+__version__ = "1.1.0.1"
 __date__ = "13-04-2023"
 __status__ = "Production"
 
@@ -30,8 +30,6 @@ __status__ = "Production"
 
 #+ standard libraries
 
-import sys
-import os
 import collections
 import types
 import abc
@@ -40,14 +38,7 @@ from typing import Any, List, Optional, Union
 
 #+ custom modules
 
-MODULE_PATH = os.path.realpath(__file__)
-LIB_FOLDER = os.path.dirname(MODULE_PATH)
-ROOT_FOLDER = os.path.dirname(LIB_FOLDER)
-
-if not (ROOT_FOLDER in sys.path):
-    sys.path.append(ROOT_FOLDER)
-
-from introspection_lib.my_traceback import ExceptionTraceback
+from .my_traceback import ExceptionTraceback
 
 #types
 

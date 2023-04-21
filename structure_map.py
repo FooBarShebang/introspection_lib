@@ -18,31 +18,20 @@ Functions:
 """
 
 __version__ = "0.1.0.0"
-__date__ = "18-04-2023"
+__date__ = "21-04-2023"
 __status__ = "Development"
 
 #imports
 
 #+ standard libraries
 
-import sys
-import os
 import collections
 
 from typing import Any, Union, Sequence, Mapping, List, Dict
 
 #+ custom modules
 
-MODULE_PATH = os.path.realpath(__file__)
-LIB_FOLDER = os.path.dirname(MODULE_PATH)
-ROOT_FOLDER = os.path.dirname(LIB_FOLDER)
-
-if not (ROOT_FOLDER in sys.path):
-    sys.path.append(ROOT_FOLDER)
-
-#++ actual imports
-
-from introspection_lib.base_exceptions import UT_TypeError
+from .base_exceptions import UT_TypeError
 
 #types
 

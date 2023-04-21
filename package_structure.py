@@ -21,8 +21,8 @@ Classes:
     PackageStructure: static structure analyzer
 """
 
-__version__ = "1.0.0.1"
-__date__ = "17-04-2023"
+__version__ = "1.0.1.0"
+__date__ = "21-04-2023"
 __status__ = "Production"
 
 #imports
@@ -39,16 +39,7 @@ from typing import List, Union, Dict, Sequence
 
 #+ local libraries
 
-LIB_ROOT = os.path.dirname(os.path.realpath(__file__))
-
-ROOT_FOLDER = os.path.dirname(LIB_ROOT)
-
-if not (ROOT_FOLDER in sys.path):
-    sys.path.append(ROOT_FOLDER)
-
-#++ actual imports
-
-from introspection_lib.base_exceptions import UT_TypeError, UT_ValueError
+from .base_exceptions import UT_TypeError, UT_ValueError
 
 #globals
 
@@ -537,7 +528,7 @@ class PackageStructure:
             list(str): found unique 'top level' dependencies, excluding the
                 Standard Library
         
-        Version 1.0.0.1
+        Version 1.0.1.0
         """
         if self._Dependences is None:
             self._Dependences = []
@@ -599,6 +590,12 @@ class PackageStructure:
                 if Temp:
                     self._Imports[RelPath] = Temp
             for Top in Dependences:
+                #the most direct manner to get all system import names
+                if Top in sys.builtin_module_names or (
+                                        hasattr(sys, 'stdlib_module_names') and
+                                            (Top in sys.stdlib_module_names)):
+                    continue
+                #fall-back option for Python < v3.10
                 Specs = importlib.util.find_spec(Top)
                 if not (Specs is None):
                     Location = Specs.origin
@@ -607,7 +604,9 @@ class PackageStructure:
                                             Location.startswith(sys.prefix))
                         Cond2 = not (('site-packages' in Location) or
                                             ('dist-packages' in Location))
-                        if not(Cond1 and Cond2):
+                        Cond3 = Location == 'built-in'
+                        IsSystem = (Cond1 and Cond2) or Cond3
+                        if not IsSystem:
                             self._Dependences.append(Top)
                 else:
                     self._Dependences.append(Top)

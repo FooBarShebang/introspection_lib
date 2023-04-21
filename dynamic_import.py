@@ -12,8 +12,8 @@ Functions:
         str, str/, str, *, dict/ -> type A
 """
 
-__version__ = "1.0.1.0"
-__date__ = "17-04-2023"
+__version__ = "1.0.1.1"
+__date__ = "21-04-2023"
 __status__ = "Production"
 
 #imports
@@ -21,7 +21,6 @@ __status__ = "Production"
 #+ standard libraries
 
 import sys
-import os
 import importlib
 import collections
 import types
@@ -30,16 +29,7 @@ from typing import Optional, Any
 
 #+ other modules / libraries (DO)
 
-LIB_ROOT = os.path.dirname(os.path.realpath(__file__))
-
-ROOT_FOLDER = os.path.dirname(LIB_ROOT)
-
-if not (ROOT_FOLDER in sys.path):
-    sys.path.append(ROOT_FOLDER)
-
-#++ actual import
-
-from introspection_lib.base_exceptions import UT_TypeError, UT_ValueError
+from .base_exceptions import UT_TypeError, UT_ValueError
 
 #functions
 
