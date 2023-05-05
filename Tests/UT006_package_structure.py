@@ -3,6 +3,9 @@
 Module introspection_lib.Tests.UT006_package_structure
 
 Implements unit testing of the module package_structure. See test report TE007.
+
+NOTE: Must be executed with administrative privelegies in Windows 11, because
+of issues with os.symlink() in Windows.
 """
 
 __version__ = "1.0.0.0"

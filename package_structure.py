@@ -32,8 +32,9 @@ __status__ = "Production"
 import os
 import sys
 import fnmatch
-import importlib
 import collections.abc as c_abc
+import importlib
+import importlib.util #does not work in Windows 11 otherwise
 
 from typing import List, Union, Dict, Sequence
 
