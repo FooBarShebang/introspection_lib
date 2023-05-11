@@ -6,6 +6,8 @@ Functionality enhancements and usage convenience wrappers for the Python 3 Stand
 
 ## Installation
 
+### Via git
+
 Clone the official repository into your local workspace / project folder:
 
 ```bash
@@ -34,9 +36,27 @@ Download the content of the UML templates submodule
 $git submodule update --recursive --remote
 ```
 
+### Via pip
+
+You need a personal access token (with *api* scope), a deploy token (with *write_package_registry* scope) or a CI job token from GitLab. The installation command is:
+
+```bash
+pip install introspection_lib  --extra-index-url https://<token_name>:<token_value>@gitlab.com/api/v4/projects/25522607/packages/pypi/simple
+```
+
+The *pip* package manager should be able to find and install all missing dependencies automatically. However, the documentation is not included, only the source code and the test modules.
+
+Please, consider using virtual enviroment in order to not mess with the global Python installation.
+
 ## System requirements
 
-This library is written in Python 3 programming language (>= v3.6) and is intended to be OS platform independent. At least, it is tested under MS Windows and GNU Linux OSes, see [Documentation/Tests/tested_OS.md](./Documentation/Tests/tested_OS.md).
+* Operational system: - any supported by the Python language developers (see [tested_OS](./Documentation/Tests/tested_OS.md)), e.g.
+  * MS Windows (8, 10)
+  * MacOS X
+  * GNU Linux
+* Python 3.6+ interpreter with the 'pip' installed
+  * On POSIX systems (MacOS X, Linux) comes pre-installed
+  * On MS Windows must be installed from [Python website](https://www.python.org/downloads/windows/)
 
 This library does not depend on any other Python library / package except for the Standard Library (see [Dependencies.md](./Dependencies.md)).
 

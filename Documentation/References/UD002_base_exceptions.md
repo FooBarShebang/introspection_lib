@@ -270,7 +270,7 @@ Left plugin class implementing the built-in traceback aalysis functionality. Can
 
 * **Traceback**: (read-only property) instance of **introspection_lib.traceback.ExceptinTraceback** class to provide the machine- and human-readable exception traceback analysis
 
-__*Initialization*__:
+***Initialization***:
 
 **\_\_init\_\_**(*args, SkipFrames = None, FromTraceback = None)
 
@@ -280,7 +280,7 @@ __*Initialization*__:
 
 *Args*:
 
-* _*args_: type A; any number of arguments of the exception
+* *\*args*: type A; any number of arguments of the exception
 * *SkipFrames*: (keyword) int > 0 OR None; number of the innermost frames to remove from the actual traceback, ignored if the keyword argument *FromTraceback* holds a proper traceback object
 * *FromTraceback*: (keyword) types.TracebackType OR None; substitute traceback (from another exception) to use; if it is provided and holds a proper traceback object the *SkipFrames* argument is ignored
 
@@ -290,7 +290,7 @@ Hooks into instantiation of a custom exception. Passes the provided positional a
 
 **Note**: this left mixin class is not supposed to be instantiated on itself. If, at least, one positional argument is provided such an attempt will result in **TypeError**. This is, actually, a hooking into the instantiation of the mixed-in exception class.
 
-__*Instance methods*__:
+***Instance methods***:
 
 **with_traceback**(Traceback)
 
@@ -358,13 +358,13 @@ Base custom exception, which is considered to be a base class (real or virtual) 
 
 Sub-classes the standard **Exception** and the left plugin **TracebackPlugin**.
 
-__*Class and Instance Data Attributes*__:
+***Class and Instance Data Attributes***:
 
 * *args*: tuple(str x1); one string element tuple storing the passed message. Inherited from the standard exceptions.
 * *\_\_traceback\_\_*: types.TracebackType; stores the actual traceback of the exception. Inherited from the standard exceptions.
 * *Traceback*: (read-only property) instance of **introspection_lib.traceback.ExceptinTraceback** class to provide the machine- and human-readable exception traceback analysis. Inherited from **TracebackPlugin** mixin class.
 
-__*Initialization*__:
+***Initialization***:
 
 **\_\_init\_\_**(Message, *, SkipFrames = None, FromTraceback = None)
 
@@ -382,7 +382,7 @@ str/, int > 0 OR None, types.TracebackType OR None/ -> None
 
 The single mandatory argument (the error message) is stored as the only element of the args tuple attribute. If the *FromTraceback* keyword argument holds the proper value, the traceback analysis object is created immediately from the substituion object; otherwise its creation is delayed until the first access of the property *Traceback*, in wich case the actual traceback can be truncated is *SkipFrames* is provided as a positive integer. Note that if the method *with_traceback()* is called the truncated or substituted traceback is replaced by the actual one, including the chained frames.
 
-__*Instance methods*__:
+***Instance methods***:
 
 * **with_traceback**(Traceback): types.TracebackType -> Exception
 * **getMessage**(): None -> str
@@ -403,7 +403,7 @@ Sub-classes the standard **TypeError** and the left plugin **TracebackPlugin**, 
 
 Has the same API as **UT_Exception**, except for the instantiation.
 
-__*Initialization*__:
+***Initialization***:
 
 **\_\_init\_\_**(Value, Types, *, SkipFrames = None, FromTraceback = None): type A, type B/, int > 0 OR None, types.TracebackType OR None/ -> None
 
@@ -428,7 +428,7 @@ Sub-classes the standard **ValueError** and the left plugin **TracebackPlugin**,
 
 Has the same API as **UT_Exception**, except for the instantiation.
 
-__*Initialization*__:
+***Initialization***:
 
 **\_\_init\_\_**(Value, Ranges, *, SkipFrames = None, FromTraceback = None): type A, str/, int > 0 OR None, types.TracebackType OR None/ -> None
 
@@ -453,7 +453,7 @@ Sub-classes the standard **AttributeError** and the left plugin **TracebackPlugi
 
 Has the same API as **UT_Exception**, except for the instantiation.
 
-__*Initialization*__:
+***Initialization***:
 
 **\_\_init\_\_**(gObject, AttributeName, *, SkipFrames = None, FromTraceback = None): type A, str/, int > 0 OR None, types.TracebackType OR None/ -> None
 
@@ -478,7 +478,7 @@ Sub-classes the standard **IndexError** and the left plugin **TracebackPlugin**,
 
 Has the same API as **UT_Exception**, except for the instantiation.
 
-__*Initialization*__:
+***Initialization***:
 
 **\_\_init\_\_**(Name, Index, *, SkipFrames = None, FromTraceback = None): str, int/, int > 0 OR None, types.TracebackType OR None/ -> None
 
@@ -503,7 +503,7 @@ Sub-classes the standard **KeyError** and the left plugin **TracebackPlugin**, a
 
 Has the same API as **UT_Exception**, except for the instantiation.
 
-__*Initialization*__:
+***Initialization***:
 
 **\_\_init\_\_**(Name, Key, *, SkipFrames = None, FromTraceback = None): str, str/, int > 0 OR None, types.TracebackType OR None/ -> None
 
