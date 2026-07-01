@@ -1,5 +1,9 @@
 # TE006 Test Report on the Module structure_map
 
+## Updates
+
+* 2026-07-01 - changed typing hints to Python 3.12 conventions. The module structure\_map is still a stub!
+
 ## Conventions
 
 Each test is defined following the same format. Each test receives a unique test identifier and a reference to the ID(s) of the requirements it covers (if applicable). The goal of the test is described to clarify what is to be tested. The test steps are described in brief but clear instructions. For each test it is defined what the expected results are for the test to pass. Finally, the test result is given, this can be only pass or fail.

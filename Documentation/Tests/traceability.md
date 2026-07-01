@@ -1,5 +1,9 @@
 # Entire Library Requirements and Tests Traceability List
 
+## Updates
+
+* 2026-07-01 - Re-tested all modules after changing type hints style to Python 3.12
+
 ## Relation between modules, classes and the requirements and tests indexing
 
 * global requirements - 00x

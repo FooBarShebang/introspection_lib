@@ -1,4 +1,3 @@
-#usr/bin/python3
 """
 Module introspection_lib.my_logging
 
@@ -13,8 +12,8 @@ Classes:
     FileHandlerFilter: helper class - file logging handler
 """
 
-__version__ = "1.0.1.1"
-__date__ = "17-04-2023"
+__version__ = "1.1.0.0"
+__date__ = "01-07-2026"
 __status__ = "Production"
 
 #imports
@@ -26,15 +25,15 @@ import weakref
 import datetime
 import logging as base_logging
 
-from typing import Optional, Union, Tuple
+from typing import Optional, Union, ClassVar
 
 #types
 
-TStrNone = Optional[str]
+type TStrNone = Optional[str]
 
-TStrInt = Union[str, int]
+type TStrInt = Union[str, int]
 
-TRange = Tuple[int, int]
+type TRange = tuple[int, int]
 
 #global variables
 
@@ -363,7 +362,7 @@ class DualLogger(base_logging.Logger):
 
     #private class attributes
 
-    _DefaultFormatter = base_logging.Formatter(' '.join(['{asctime}',
+    _DefaultFormatter: ClassVar = base_logging.Formatter(' '.join(['{asctime}',
                             '{levelname}@{name} FROM {funcName} IN {filename}',
                             '(LINE {lineno})\n{message}']),
                             datefmt = '%Y-%m-%d %H:%M:%S',

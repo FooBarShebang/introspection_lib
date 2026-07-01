@@ -1,4 +1,3 @@
-#usr/bin/python3
 """
 Module introspection_lib.universal_access
 
@@ -23,8 +22,8 @@ Functions:
         type A, str OR int OR seq(type B), type C/, *, bool/ -> None
 """
 
-__version__ = "1.0.1.1"
-__date__ = "21-04-2021"
+__version__ = "1.1.0.0"
+__date__ = "01-07-2026"
 __status__ = "Production"
 
 #imports
@@ -33,7 +32,7 @@ __status__ = "Production"
 
 import collections
 
-from typing import Any, Union, Sequence, List, Optional
+from typing import Any, Union
 
 #+ custom modules
 
@@ -42,9 +41,9 @@ from .base_exceptions import UT_KeyError, UT_IndexError, GetObjectClass
 
 #types
 
-TPathElement = Union[int, str]
-TCannonicalPath = List[TPathElement]
-TGenericPath = Union[int, str, Sequence[Any]]
+type TPathElement = Union[int, str]
+type TCannonicalPath = list[TPathElement]
+type TGenericPath = Union[int, str, collections.abc.Sequence[Any]]
 
 #functions
 

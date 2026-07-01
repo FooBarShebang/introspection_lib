@@ -1,4 +1,3 @@
-#usr/bin/python3
 """
 Module introspection_lib.check_dependencies
 

@@ -934,7 +934,7 @@ class Test_PackageStructure(unittest.TestCase):
     def test_ModifyFiltering(self):
         """
         Checks correctness of modification of the filtering parameters. The
-        alreade cached data should be invalidated.
+        already cached data should be invalidated.
 
         Test ID: TEST-T-761. Covers requirement REQ-FUN-762.
         """

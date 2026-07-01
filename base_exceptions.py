@@ -1,4 +1,3 @@
-#usr/bin/python3
 """
 Module introspection_lib.base_exceptions
 
@@ -22,8 +21,8 @@ Classes:
     UT_KeyError: custom version of KeyError
 """
 
-__version__ = "1.1.0.1"
-__date__ = "13-04-2023"
+__version__ = "1.2.0.0"
+__date__ = "01-07-2026"
 __status__ = "Production"
 
 #imports
@@ -34,7 +33,7 @@ import collections
 import types
 import abc
 
-from typing import Any, List, Optional, Union
+from typing import Any, Optional, Union
 
 #+ custom modules
 
@@ -42,9 +41,9 @@ from .my_traceback import ExceptionTraceback
 
 #types
 
-TIntNone = Optional[int]
-TTracebackNone = Optional[types.TracebackType]
-TScalarSequence = Union[Any, List[Any]]
+type TIntNone = Optional[int]
+type TTracebackNone = Optional[types.TracebackType]
+type TScalarSequence = Union[Any, list[Any]]
 
 #functions
 
@@ -141,7 +140,7 @@ class TracebackPlugin():
     #added public API
 
     @property
-    def Traceback(self):
+    def Traceback(self) -> ExceptionTraceback:
         """
         Read-only property returning exception traceback analysis object. If
         such object does not yet exist, it is created 'on the fly' and is stored
@@ -264,7 +263,7 @@ class UT_Exception(TracebackPlugin, Exception, abc.ABC):
     #special methods
 
     @classmethod
-    def __subclasshook__(cls, C):
+    def __subclasshook__(cls, C: type) -> Union[bool, types.NotImplementedType]:
         """
         Special class method to modify the behaviour of the standard functions
         issubclass() and isinstance() as follows:

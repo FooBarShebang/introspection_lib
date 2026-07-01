@@ -42,3 +42,12 @@ Renamed modules *traceback* and *logging* to *my_traceback* and *my_logging* res
 * Added *universal_access* module into the distribution
 * Improved resolution of the system libraries / modules
 * Relative import is used between the modules in the library.
+
+## 2026-07-01 v0.6.0-dev1
+
+* Changed typing hints to conform Python 3.12 conventions.
+* Bug fixes in package_structure module
+  * imports via functions from dynamic_import module are ignored
+  * doc-strings content is ignored
+  * relative imports are now properly resolved
+  * proper treatment of imports aliasing

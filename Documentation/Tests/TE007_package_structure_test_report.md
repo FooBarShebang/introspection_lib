@@ -1,5 +1,9 @@
 # TE007 Test Report on the Module package_structure
 
+## Updates
+
+* 2026-07-01 - Re-tested package\_structure module after changing type hints style to Python 3.12
+
 ## Conventions
 
 Each test is defined following the same format. Each test receives a unique test identifier and a reference to the ID(s) of the requirements it covers (if applicable). The goal of the test is described to clarify what is to be tested. The test steps are described in brief but clear instructions. For each test it is defined what the expected results are for the test to pass. Finally, the test result is given, this can be only pass or fail.

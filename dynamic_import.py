@@ -1,4 +1,3 @@
-#usr/bin/python
 """
 Module introspection_lib.dynamic_import
 

@@ -1,4 +1,3 @@
-#usr/bin/python3
 """
 Module introspection_lib.my_traceback
 
@@ -15,8 +14,8 @@ Classes:
     ExceptionTraceback: exception traceback
 """
 
-__version__ = "1.0.2.0"
-__date__ = "12-04-2023"
+__version__ = "1.1.0.0"
+__date__ = "01-07-2026"
 __status__ = "Production"
 
 #imports
@@ -26,15 +25,15 @@ __status__ = "Production"
 import inspect
 
 from types import TracebackType
-from typing import List, Tuple, Optional, ClassVar
+from typing import Optional, ClassVar
 
 #types
 
-TIntNone = Optional[int]
-TStringList = List[str]
-TFramesList = List[inspect.FrameInfo]
-TParsedFrame = List[Tuple[str, str, str, int, int, TStringList]]
-TTracebackNone = Optional[TracebackType]
+type TIntNone = Optional[int]
+type TStringList = list[str]
+type TFramesList = list[inspect.FrameInfo]
+type TParsedFrame = list[tuple[str, str, str, int, int, TStringList]]
+type TTracebackNone = Optional[TracebackType]
 
 #helper functions
 

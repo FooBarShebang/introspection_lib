@@ -1,4 +1,3 @@
-#usr/bin/python3
 """
 Module introspection_lib.structure_map
 
@@ -17,8 +16,8 @@ Functions:
                 list(type A) OR dict(str -> type A)
 """
 
-__version__ = "0.1.0.0"
-__date__ = "21-04-2023"
+__version__ = "0.2.0.0"
+__date__ = "1-07-2026"
 __status__ = "Development"
 
 #imports
@@ -27,7 +26,7 @@ __status__ = "Development"
 
 import collections
 
-from typing import Any, Union, Sequence, Mapping, List, Dict
+from typing import Any, Union
 
 #+ custom modules
 
@@ -35,11 +34,12 @@ from .base_exceptions import UT_TypeError
 
 #types
 
-TScalar = Union[int, float, str, bool, None]
+type TScalar = Union[int, float, str, bool, None]
 
-TInput = Union[TScalar, Sequence[Any], Mapping[str, Any], object]
+type TInput = Union[TScalar, collections.abc.Sequence[Any],
+                    collections.abc.Mapping[str, Any], object]
 
-TOutput = Union[TScalar, List[Any], Dict[str, Any]]
+type TOutput = Union[TScalar, list[Any], dict[str, Any]]
 
 #main functions - visible, to be imported.
 

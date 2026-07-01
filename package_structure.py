@@ -1,4 +1,3 @@
-#!/usr/bin/python3
 """
 Module introspection_lib.package_structure
 
@@ -18,10 +17,10 @@ Functions:
         str, str -> str
 
 Classes:
-    PackageStructure: static structure analyzer
+    PackageStructure: static package structure analyzer
 """
 
-__version__ = "1.0.1.0"
+__version__ = "1.1.0.0"
 __date__ = "21-04-2023"
 __status__ = "Production"
 
@@ -36,7 +35,7 @@ import collections.abc as c_abc
 import importlib
 import importlib.util #does not work in Windows 11 otherwise
 
-from typing import List, Union, Dict, Sequence
+from typing import Union
 
 #+ local libraries
 
@@ -107,7 +106,7 @@ def IsPyPackage(FolderName: str) -> bool:
         Result = False
     return Result
 
-def SelectPySourceFiles(FolderName: str) -> List[str]:
+def SelectPySourceFiles(FolderName: str) -> list[str]:
     """
     Finds all Python source files (not symlinks) present in a directory (not a
     symlink itself).
@@ -157,7 +156,7 @@ def GetQualifiedName(Path: str) -> Union[str, None]:
     Raises:
         UT_TypeError: passed argument is not a string
     
-    Version 1.0.0.0
+    Version 1.0.0.1
     """
     if not isinstance(Path, str):
         raise UT_TypeError(Path, str, SkipFrames = 1)
@@ -174,7 +173,7 @@ def GetQualifiedName(Path: str) -> Union[str, None]:
         if ParentPath:
             Temp = GetQualifiedName(ParentPath)
             if not (Temp is None):
-                Result = '{}.{}'.format(Temp, Result)
+                Result = f'{Temp}.{Result}'
     return Result
 
 def ResolveRelativeImport(FileName: str, ImportName: str) -> str:
@@ -266,7 +265,7 @@ class PackageStructure:
             seq(str) -> None
         
 
-    Version 1.0.0.1
+    Version 1.1.0.0
     """
     
     #magic methods
@@ -305,10 +304,10 @@ class PackageStructure:
         self._Metadata = None
         self._resetCache()
         self._FilesFilters = ['setup.py']
-        self._FoldersFilters = ['build', 'build/*', '*/build',
-                                        '*/build/*', 'dist', 'dist/*',
-                                        '*/dist', '*/dist/*', '*egg-info*',
-                                        '*dist-info*']
+        self._FoldersFilters = ['build', 'build/*', '*/build', '*/build/*',
+                                'dist', 'dist/*', '*/dist', '*/dist/*',
+                                '*egg-info*', '*dist-info*', '*__pycache__*',
+                                '*.git*']
     
     def __str__(self) -> str:
         """
@@ -355,7 +354,7 @@ class PackageStructure:
             bool: True if the file is a Python source code and is not filtered
                 out, False - otherwise
         
-        Version 1.0.0.1
+        Version 1.1.0.0
         """
         if IsPyFile(FileName):
             strName = os.path.basename(FileName)
@@ -365,7 +364,7 @@ class PackageStructure:
             else:
                 Result = True
         else:
-            Result = True
+            Result = False
         return Result
     
     def _isAcceptableFolder(self, FolderName: str) -> bool:
@@ -423,7 +422,7 @@ class PackageStructure:
         return str(self._Package)
     
     @property
-    def FilesFilters(self) -> List[str]:
+    def FilesFilters(self) -> list[str]:
         """
         Read-only property - the list of the string Unix shell matching patterns
         for filtering of the base filenames.
@@ -436,7 +435,7 @@ class PackageStructure:
         return list(self._FilesFilters)
     
     @property
-    def FoldersFilters(self) -> List[str]:
+    def FoldersFilters(self) -> list[str]:
         """
         Read-only property - the list of the string Unix shell matching patterns
         for filtering of the remaining relative sub-folders names.
@@ -449,7 +448,7 @@ class PackageStructure:
         return list(self._FoldersFilters)
     
     @property
-    def Metadata(self) -> Dict[str, Dict[str, Union[str, int]]]:
+    def Metadata(self) -> dict[str, dict[str, Union[str, int]]]:
         """
         Read-only property. The found metadata of the package.
 
@@ -478,7 +477,7 @@ class PackageStructure:
     
     #+ public methods
 
-    def getModules(self) -> List[str]:
+    def getModules(self) -> list[str]:
         """
         Makes a list of the relative paths to all found Python source modules,
         recursively checking all sub-folders, even if they are not sub-packages.
@@ -491,7 +490,7 @@ class PackageStructure:
             list(str): remaining parts of the paths to the modules, relative to
                 the package's folder
         
-        Version 1.0.0.1
+        Version 1.1.0.0
         """
         if self._Modules is None:
             Result = []
@@ -516,7 +515,7 @@ class PackageStructure:
             self._Modules = Result
         return list(self._Modules)
 
-    def getDependencies(self) -> List[str]:
+    def getDependencies(self) -> list[str]:
         """
         Makes a list of the top level dependencies found in the Python source
         modules, recursively checking all sub-folders, even if they are not
@@ -529,7 +528,7 @@ class PackageStructure:
             list(str): found unique 'top level' dependencies, excluding the
                 Standard Library
         
-        Version 1.0.1.0
+        Version 1.1.0.0
         """
         if self._Dependences is None:
             self._Dependences = []
@@ -544,18 +543,21 @@ class PackageStructure:
                     Packages.extend(DirName.split(os.sep))
                 PackagesDepth = len(Packages)
                 Temp = dict()
+                InDocString = False
                 with open(AbsPath, 'rt') as fFile:
                     for RawLine in fFile.readlines():
                         Line = RawLine.strip()
-                        Cond1 = Line.startswith('import')
-                        Cond2 = Line.startswith('from') and ('import' in Line)
-                        if Cond1:
+                        if Line.startswith('"""'):
+                            InDocString = not InDocString
+                        Cond1 = Line.startswith('import ')
+                        Cond2= Line.startswith('from ') and (' import ' in Line)
+                        if Cond1 and (not InDocString):
                             Imports = Line[6:].split(',')
                             for Entry in Imports:
-                                Names = Entry.strip().split('as')
+                                Names = Entry.strip().split(' as ')
                                 Name = Names[0].strip()
                                 Top = Name.split('.')[0]
-                                if (not (Top in Dependences) and
+                                if (not (Top in Dependences) and Top and
                                                             Top != Packages[0]):
                                     Dependences.append(Top)
                                 if len(Names) == 2:
@@ -563,24 +565,26 @@ class PackageStructure:
                                 else:
                                     Alias = Name
                                 Temp[Alias] = Name
-                        elif Cond2:
-                            TempLine = Line[4:].split('import')
+                        elif Cond2 and (not InDocString):
+                            TempLine = Line[4:].split(' import ')
                             Prefix = TempLine[0].strip()
                             Stripped = Prefix.lstrip('.')
                             Count = len(Prefix) - len(Stripped)
                             if Count > PackagesDepth:
                                 break
-                            else:
+                            elif Count:
                                 if Count > 1:
                                     Prefix = '.'.join(Packages[:-Count + 1])
-                                if Count:
-                                    Prefix = f'{Prefix}.{Stripped}'
+                                else:
+                                    Prefix = '.'.join(Packages)
+                                Prefix = f'{Prefix}.{Stripped}'
                             Top = Prefix.split('.')[0]
-                            if not (Top in Dependences) and Top != Packages[0]:
+                            if (not (Top in Dependences) and Top and
+                                                            Top != Packages[0]):
                                     Dependences.append(Top)
                             Imports = TempLine[1].strip().split(',')
                             for Entry in Imports:
-                                Names = Entry.strip().split('as')
+                                Names = Entry.strip().split(' as ')
                                 Name = Names[0].strip()
                                 FullName = f'{Prefix}.{Name}'
                                 if len(Names) == 2:
@@ -613,7 +617,7 @@ class PackageStructure:
                     self._Dependences.append(Top)
         return list(self._Dependences)
 
-    def getImportNames(self) -> Dict[str, Dict[str, str]]:
+    def getImportNames(self) -> dict[str, dict[str, str]]:
         """
         Creates a look-up table mapping per module the local names of the
         imported components to their fully qualified names.
@@ -633,7 +637,7 @@ class PackageStructure:
             self.getDependencies()
         return dict(self._Imports)
     
-    def getPackagingNames(self) -> List[str]:
+    def getPackagingNames(self) -> list[str]:
         """
         Creates a list of the (sub-) packages names relative to this one, which
         is to be packaged as 'top level'.
@@ -717,7 +721,7 @@ class PackageStructure:
             Result = False
         return Result
     
-    def setFilesFilters(self, Patterns: Sequence[str]) -> None:
+    def setFilesFilters(self, Patterns: c_abc.Sequence[str]) -> None:
         """
         Method to set the entire list of the base filename matching pattern for
         filtering.
@@ -801,7 +805,7 @@ class PackageStructure:
             Result = False
         return Result
     
-    def setFoldersFilters(self, Patterns: Sequence[str]) -> None:
+    def setFoldersFilters(self, Patterns: c_abc.Sequence[str]) -> None:
         """
         Method to set the entire list of the sub-folder matching pattern for
         filtering.
